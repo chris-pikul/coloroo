@@ -30,12 +30,6 @@ export class Color implements IColorClass {
    */
   readonly #object:IColorClass;
 
-  /**
-   * The alpha (opacity) of the color, clamped to a unit number 0..1 by the
-   * public getter/setters.
-   */
-  #alpha = 1.0;
-
   constructor() {
     // Bind methods
     this.toString = this.toString.bind(this);
@@ -72,25 +66,7 @@ export class Color implements IColorClass {
   get object():IColorClass {
     return this.#object;
   }
-
-  /**
-   * The alpha, or opacity, of the color.
-   * 
-   * This value is clamped to 0..1 when set.
-   */
-  get alpha():number {
-    return this.#alpha;
-  }
-
-  /**
-   * The alpha, or opacity, of the color.
-   * 
-   * This value is clamped to 0..1 when set.
-   */
-  set alpha(opacity:number) {
-    this.#alpha = Math.min(Math.max(opacity, 0.0), 1.0);
-  }
-
+  
   public toString():string {
     return '';
   }
