@@ -5,7 +5,9 @@
  * project root "LICENSE" for more information.
  * -----------------------------------------------------------------------------
  * 
- * Defines the implementation for the RGB color spectrum.
+ * Defines the implementation for the RGB color spectrum. This version of the
+ * RGB color-space uses 8-bit channel values for R, G, and B. Alpha is present
+ * as an optional unit float (0..1)
  * 
  * @module Color
  */
@@ -26,6 +28,10 @@ const RGBFormat:StringEnum = {
 };
 export type ERGBStringFormat = typeof RGBFormat[string];
 
+/**
+ * RGB with Alpha color-space. The red, green, and blue channels are 8-bit
+ * bytes (0..255) and will round/truncate on manipulation.
+ */
 export class ColorRGB implements IColorClass {
   /**
    * The accepted string formats for parsing and generation
@@ -68,17 +74,6 @@ export class ColorRGB implements IColorClass {
   }
 
   /**
-   * The red component as a unit (0..1) float
-   */
-  get redUnit():number {
-    return this.#components[0];
-  }
-
-  set redUnit(unitValue:number) {
-    this.#components[0] = clamp(unitValue);
-  }
-
-  /**
    * The green component as a byte (0..255) integer
    */
   get green():number {
@@ -90,17 +85,6 @@ export class ColorRGB implements IColorClass {
   }
 
   /**
-   * The green component as a unit (0..1) float
-   */
-  get greenUnit():number {
-    return this.#components[1];
-  }
-
-  set greenUnit(unitValue:number) {
-    this.#components[1] = clamp(unitValue);
-  }
-
-  /**
    * The blue component as a byte (0..255) integer
    */
   get blue():number {
@@ -109,17 +93,6 @@ export class ColorRGB implements IColorClass {
 
   set blue(byteValue:number) {
     this.#components[2] = clamp(byteValue, 0, 255) / 255.0;
-  }
-
-  /**
-   * The blue component as a unit (0..1) float
-   */
-  get blueUnit():number {
-    return this.#components[2];
-  }
-
-  set blueUnit(unitValue:number) {
-    this.#components[2] = clamp(unitValue);
   }
 
   /**
