@@ -30,6 +30,7 @@
     "coverage": "nyc mocha -r ts-node/register './tests/**/*' && nyc report --reporter=html",
     "doc": "typedoc --out docs-md",
     "doc:html": "typedoc --plugin none --out docs-html",
+    "typecheck": "tsc --noEmit",
     "build": "tsc",
     "start": "yarpm-yarn run clean && yarpm-yarn run lint && && yarpm-yarn test && yarpm-yarn run build"
   }

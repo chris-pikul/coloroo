@@ -5,3 +5,9 @@
  * project root "LICENSE" for more information.
  * -----------------------------------------------------------------------------
  */
+
+import Color from './Color';
+
+export * from './ColorSpace';
+
+export default Color;
