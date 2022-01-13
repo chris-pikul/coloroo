@@ -97,6 +97,11 @@ export class ColorRGB implements IColorClass {
     this.toArray = this.toArray.bind(this);
     
     this.set = this.set.bind(this);
+    this.fromInteger = this.fromInteger.bind(this);
+    this.fromString = this.fromString.bind(this);
+    this.fromArray = this.fromArray.bind(this);
+    this.fromObject = this.fromObject.bind(this);
+    this.parse = this.parse.bind(this);
   }
 
   /**
@@ -299,6 +304,50 @@ export class ColorRGB implements IColorClass {
         this.#alpha = clamp(components[ind]);
       else
         break;
+    }
+
+    return this;
+  }
+
+  public fromInteger(value:number, alphaMSB = false):IColorClass {
+    // Convert the number to an integer
+    const int = (value >>> 0);
+
+
+
+    return this;
+  }
+
+  public fromString(str:string):IColorClass {
+    return this;
+  }
+
+  public fromArray(arr: number[]): IColorClass {
+      
+  }
+
+  public fromObject(obj: Record<any, any>): IColorClass {
+      
+  }
+
+  /**
+   * Attempts to parse the incoming parameter as a ColorRGB object and sets the
+   * appropriate channels when found. Any missing components will use their
+   * defaults, which for RGB is 0.0, and for Alpha is 1.0.
+   * 
+   * Any failure to parse the object will throw an `Error` object. If a null, 
+   * or undefined object is supplied it will be quietly skipped.
+   * 
+   * @param arg The argument to attempt to parse.
+   * @returns `this` for method-chaining
+   */
+  public parse(arg:any):IColorClass {
+    // Check that we even have an argument first
+    if(arg) {
+      // Cache the typeof for the remaining if statements
+      const to = typeof arg;
+      if(to === 'number')
+        return this.fromInteger(arg);
     }
 
     return this;

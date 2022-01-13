@@ -20,4 +20,9 @@ export interface IColorClass {
   toArray():number[];
 
   set():IColorClass;
+  fromInteger(value:number):IColorClass;
+  fromString(str:string):IColorClass;
+  fromArray(arr:number[]):IColorClass;
+  fromObject(obj:Record<any, any>):IColorClass;
+  parse(arg:any):IColorClass;
 }
