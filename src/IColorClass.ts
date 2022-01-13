@@ -18,4 +18,6 @@
 export interface IColorClass {
   toString():string;
   toArray():number[];
+
+  set():IColorClass;
 }

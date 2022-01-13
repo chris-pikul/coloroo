@@ -288,8 +288,10 @@ export class ColorRGB implements IColorClass {
    * Sets the components of this RGB Color using variable arguments. The order
    * of the variables is taken as `set(R, G, B, A)`. Any missing components are
    * skipped.
+   * 
+   * @returns `this` for method-chaining
    */
-  public set(...components:number[]):void {
+  public set(...components:number[]):IColorClass {
     for(let ind = 0; ind < components.length; ind++) {
       if(ind <= 2)
         this.#components[ind] = Math.trunc(clamp(components[ind], 0, 255));
@@ -298,6 +300,8 @@ export class ColorRGB implements IColorClass {
       else
         break;
     }
+
+    return this;
   }
 }
 export default ColorRGB;
