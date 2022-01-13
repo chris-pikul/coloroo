@@ -245,7 +245,8 @@ export class ColorRGB implements IColorClass {
    * being used with CSS.
    * 
    * By default the alpha information is only included if the alpha value is
-   * not 1.0, or the `forceAlpha` flag is true (defaults to false).
+   * not 1.0, or the `forceAlpha` flag is true (defaults to false). Additionally
+   * it is truncated to 4 points of precision.
    * 
    * The output follows this format:
    * ```
@@ -260,7 +261,10 @@ export class ColorRGB implements IColorClass {
    * @returns {string} Functional-notation string
    */
   public toFunctionalString(forceAlpha = false):string {
-    return '';
+    if(forceAlpha || this.#alpha !== 1)
+      return `rgba(${this.red}, ${this.green}, ${this.blue}, ${this.#alpha.toPrecision(4)})`;
+
+    return `rgb(${this.red}, ${this.green}, ${this.blue})`;
   }
 
   public toArray():number[] {
