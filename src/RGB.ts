@@ -90,12 +90,13 @@ export class ColorRGB implements IColorClass {
 
   constructor() {
     // Bind methods
-    this.set = this.set.bind(this);
     this.toString = this.toString.bind(this);
     this.toInteger = this.toInteger.bind(this);
     this.toHexString = this.toHexString.bind(this);
     this.toFunctionalString = this.toFunctionalString.bind(this);
     this.toArray = this.toArray.bind(this);
+    
+    this.set = this.set.bind(this);
   }
 
   /**
@@ -140,22 +141,6 @@ export class ColorRGB implements IColorClass {
 
   set alpha(value:number) {
     this.#alpha = clamp(value);
-  }
-
-  /**
-   * Sets the components of this RGB Color using variable arguments. The order
-   * of the variables is taken as `set(R, G, B, A)`. Any missing components are
-   * skipped.
-   */
-  public set(...components:number[]):void {
-    for(let ind = 0; ind < components.length; ind++) {
-      if(ind <= 2)
-        this.#components[ind] = Math.trunc(clamp(components[ind], 0, 255));
-      else if(ind === 3)
-        this.#alpha = clamp(components[ind]);
-      else
-        break;
-    }
   }
 
   public toString(format:ERGBStringFormat = ColorRGB.Formats.FUNCTIONAL):string {
@@ -297,6 +282,22 @@ export class ColorRGB implements IColorClass {
    */
   public toArray():number[] {
     return [ ...this.#components, this.#alpha ];
+  }
+
+  /**
+   * Sets the components of this RGB Color using variable arguments. The order
+   * of the variables is taken as `set(R, G, B, A)`. Any missing components are
+   * skipped.
+   */
+  public set(...components:number[]):void {
+    for(let ind = 0; ind < components.length; ind++) {
+      if(ind <= 2)
+        this.#components[ind] = Math.trunc(clamp(components[ind], 0, 255));
+      else if(ind === 3)
+        this.#alpha = clamp(components[ind]);
+      else
+        break;
+    }
   }
 }
 export default ColorRGB;
