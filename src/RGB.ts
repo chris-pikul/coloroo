@@ -18,12 +18,43 @@ import type { StringEnum } from './utils/types';
 
 export type RGBTuple = [number, number, number];
 
+/**
+ * Valid string enumerations for formating `ColorRGB` into either a string, or
+ * an integer number.
+ */
 const RGBFormat:StringEnum = {
+  /**
+   * Format the color into a single integer value, with automatic alpha
+   * detection.
+   */
   INTEGER: 'INTEGER',
+
+  /**
+   * Format the color into a single integer value, with FORCED alpha usage.
+   */
   INTEGER_ALPHA: 'INTEGER_ALPHA',
+
+  /**
+   * Format the color into a hexidecimal string, with automatic alpha
+   * detection.
+   */
   HEX: 'HEX',
+
+  /**
+   * Format the color into a hexidecimal string, with FORCED alpha usage.
+   */
   HEX_ALPHA: 'HEX_ALPHA',
+
+  /**
+   * Format the color into it's functional notation string, with automatic
+   * alpha detection.
+   */
   FUNCTIONAL: 'FUNCTIONAL',
+
+  /**
+   * Format the color into it's functional notation string, with FORCED alpha
+   * usage.
+   */
   FUNCTIONAL_ALPHA: 'FUNCTIONAL_ALPHA',
 };
 export type ERGBStringFormat = typeof RGBFormat[string];
@@ -140,11 +171,11 @@ export class ColorRGB implements IColorClass {
    * (default) it remains as the Least Significant Byte.
    * 
    * @param {boolean} [forceAlpha = false] If this flag is true, then
-   * regardless of whether or not the alpha channel is opaque (1), then the
+   * regardless of whether or not the alpha channel is opaque (1), than the
    * alpha information will be included in the results. This defaults to false
    * which will only use the alpha information if it is not completely opaque. 
    * @param {boolean} [alphaMSB = false] Instructs the alpha component to be the
-   * Most Significant Byte in the final result. If false (default) then it will
+   * Most Significant Byte in the final result. If false (default) than it will
    * be the Least Significant Byte. 
    * @returns {number} Integer number representation of the color.
    */
@@ -166,23 +197,44 @@ export class ColorRGB implements IColorClass {
     return value;
   };
 
-  public toHexString(forceAlpha = false):string {
+  /**
+   * Converts this RGB Color into it's hexidecimal string representation.
+   * 
+   * By default the alpha information is only included if the alpha value is
+   * not 1.0, or the `forceAlpha` flag is true (defaults to false). For
+   * serialization of colors it may be best to have this flag as true and
+   * manage the alpha channels byte position with the `alphaMSB` flag for more
+   * consistant byte arrangement.
+   * 
+   * Additionally the `alphaMSB` switch can be used to move the alpha
+   * information to the Most Significant Byte portion of the integer. Otherwise
+   * (default) it remains as the Least Significant Byte.
+   * 
+   * @param {boolean} [forceAlpha = false] If this flag is true, then
+   * regardless of whether or not the alpha channel is opaque (1), than the
+   * alpha information will be included in the results. This defaults to false
+   * which will only use the alpha information if it is not completely opaque. 
+   * @param {boolean} [alphaMSB = false] Instructs the alpha component to be the
+   * Most Significant Byte in the final result. If false (default) than it will
+   * be the Least Significant Byte. 
+   * @returns {string} Hexidecimal string representation
+   */
+  public toHexString(forceAlpha = false, alphaMSB = false):string {
     // Helper function to convert the Hex with padding to make it 2-chars
     const enc = (val:number):string => ((val & 0xFF).toString(16).padStart(2, '0'));
     
-    // Pull apart the components
-    const [
-      red,
-      grn,
-      blu,
-    ] = this.#components;
-    
     // Build the RGB representation
-    const str = `#${enc(red)}${enc(grn)}${enc(blu)}`;
+    const str = `#${enc(this.red)}${enc(this.green)}${enc(this.blue)}`;
 
     // If we force the alpha, or if alpha is not fully-opaque (1) then add it
-    if(forceAlpha || this.#alpha !== 1)
+    if(forceAlpha || this.#alpha !== 1) {
+      // With alphaMSB, the alpha component is first in the string
+      if(alphaMSB)
+        return `#${enc(this.#alpha * 255)}${str.substring(1)}`;
+
+      // Without alphaMSB, the alpha component is last
       return str + enc(this.#alpha * 255);
+    }
     
     // Alpha was not needed, so return the original string
     return str;
