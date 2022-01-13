@@ -21,6 +21,8 @@ export type RGBTuple = [number, number, number];
 /**
  * Valid string enumerations for formating `ColorRGB` into either a string, or
  * an integer number.
+ * 
+ * @enum
  */
 const RGBFormat:StringEnum = {
   /**
@@ -56,7 +58,7 @@ const RGBFormat:StringEnum = {
    * usage.
    */
   FUNCTIONAL_ALPHA: 'FUNCTIONAL_ALPHA',
-};
+} as const;
 export type ERGBStringFormat = typeof RGBFormat[string];
 
 /**
@@ -66,6 +68,8 @@ export type ERGBStringFormat = typeof RGBFormat[string];
 export class ColorRGB implements IColorClass {
   /**
    * The accepted string formats for parsing and generation
+   * 
+   * @enum
    */
   public static readonly Formats = RGBFormat;
 
@@ -86,6 +90,7 @@ export class ColorRGB implements IColorClass {
 
   constructor() {
     // Bind methods
+    this.set = this.set.bind(this);
     this.toString = this.toString.bind(this);
     this.toInteger = this.toInteger.bind(this);
     this.toHexString = this.toHexString.bind(this);
@@ -135,6 +140,22 @@ export class ColorRGB implements IColorClass {
 
   set alpha(value:number) {
     this.#alpha = clamp(value);
+  }
+
+  /**
+   * Sets the components of this RGB Color using variable arguments. The order
+   * of the variables is taken as `set(R, G, B, A)`. Any missing components are
+   * skipped.
+   */
+  public set(...components:number[]):void {
+    for(let ind = 0; ind < components.length; ind++) {
+      if(ind <= 2)
+        this.#components[ind] = Math.trunc(clamp(components[ind], 0, 255));
+      else if(ind === 3)
+        this.#alpha = clamp(components[ind]);
+      else
+        break;
+    }
   }
 
   public toString(format:ERGBStringFormat = ColorRGB.Formats.FUNCTIONAL):string {
