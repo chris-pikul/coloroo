@@ -97,33 +97,33 @@ export class ColorRGB implements IColorClass {
    * The red component as a byte (0..255) integer
    */
   get red():number {
-    return Math.round(this.#components[0] * 255.0);
+    return this.#components[0];
   }
 
   set red(byteValue:number) {
-    this.#components[0] = clamp(byteValue, 0, 255) / 255.0;
+    this.#components[0] = Math.trunc(clamp(byteValue, 0, 255));
   }
 
   /**
    * The green component as a byte (0..255) integer
    */
   get green():number {
-    return Math.round(this.#components[1] * 255.0);
+    return this.#components[1];
   }
 
   set green(byteValue:number) {
-    this.#components[1] = clamp(byteValue, 0, 255) / 255.0;
+    this.#components[1] = Math.trunc(clamp(byteValue, 0, 255));
   }
 
   /**
    * The blue component as a byte (0..255) integer
    */
   get blue():number {
-    return Math.round(this.#components[2] * 255.0);
+    return this.#components[2];
   }
 
   set blue(byteValue:number) {
-    this.#components[2] = clamp(byteValue, 0, 255) / 255.0;
+    this.#components[2] = Math.trunc(clamp(byteValue, 0, 255));
   }
 
   /**
@@ -240,6 +240,25 @@ export class ColorRGB implements IColorClass {
     return str;
   };
 
+  /**
+   * Converts this RGB Color into it's functional-notation string, as if it was
+   * being used with CSS.
+   * 
+   * By default the alpha information is only included if the alpha value is
+   * not 1.0, or the `forceAlpha` flag is true (defaults to false).
+   * 
+   * The output follows this format:
+   * ```
+   * rgb(255, 180, 127)
+   * rgba(255, 180, 127, 180)
+   * ```
+   * 
+   * @param {boolean} [forceAlpha = false] If this flag is true, then
+   * regardless of whether or not the alpha channel is opaque (1), than the
+   * alpha information will be included in the results. This defaults to false
+   * which will only use the alpha information if it is not completely opaque.
+   * @returns {string} Functional-notation string
+   */
   public toFunctionalString(forceAlpha = false):string {
     return '';
   }
