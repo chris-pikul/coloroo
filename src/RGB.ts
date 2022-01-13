@@ -267,6 +267,13 @@ export class ColorRGB implements IColorClass {
     return `rgb(${this.red}, ${this.green}, ${this.blue})`;
   }
 
+  /**
+   * Returns this color as an Array of numbers. The first 3 components are the
+   * RGB channels as byte integers (0..255). The last component is the alpha
+   * channel as it's unit-float (0..1).
+   * 
+   * @returns {Array} Array of component values
+   */
   public toArray():number[] {
     return [ ...this.#components, this.#alpha ];
   }
