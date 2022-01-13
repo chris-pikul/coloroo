@@ -309,11 +309,40 @@ export class ColorRGB implements IColorClass {
     return this;
   }
 
-  public fromInteger(value:number, alphaMSB = false):IColorClass {
+  /**
+   * Converts an incoming integer number into it's RGB(A) channel values and
+   * sets this `ColorRGB` components appropriately.
+   * 
+   * @param value Incoming integer number to convert
+   * @param useAlpha If true, then an alpha component is present on this value,
+   * and will be parsed appropriately. Default is `false`.
+   * @param alphaMSB When `useAlpha` is true, this flag sets whether the alpha
+   * component is in the Most-Significant-Byte, or the Least-Significant-Byte.
+   * Default is to treat alpha as the LSB.
+   * @returns `this` for method-chaining
+   */
+  public fromInteger(value:number, useAlpha = false, alphaMSB = false):IColorClass {
     // Convert the number to an integer
-    const int = (value >>> 0);
+    let int = (value >>> 0);
 
+    if(useAlpha) {
+      // Determine the alpha byte position and grab it
+      const alphaByte = alphaMSB ? ((int >> 24) & 0xFF) : (int & 0xFF);
+      this.#alpha = alphaByte / 255.0;
 
+      // If the alpha was LSB then shift the remaining integer right by 8-bits
+      if(!alphaMSB)
+        int >>= 8;
+    }
+
+    // Red component
+    this.#components[0] = (int >> 16) & 0xFF;
+    
+    // Green component
+    this.#components[1] = (int >> 8) & 0xFF;
+
+    // Blue component
+    this.#components[2] = int & 0xFF;
 
     return this;
   }
