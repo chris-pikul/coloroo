@@ -13,7 +13,9 @@
  * @module RGB
  */
 
-export const NamedColors:Record<string, string> = {
+import { StringEnum } from './utils/types';
+
+export const NamedColors:StringEnum = {
   aliceblue: '#F0F8FF',
   antiquewhite: '#FAEBD7',
   aqua: '#00FFFF',

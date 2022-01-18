@@ -9,12 +9,22 @@
  * RGB color-space uses 8-bit channel values for R, G, and B. Alpha is present
  * as an optional unit float (0..1)
  * 
- * @module Color
+ * @module RGB
  */
+import NamedColors from './NamedColors';
+
 import { clamp } from './utils/math';
+import {
+  regexpHex,
+  regexpFunc,
+  regexpValidateParams,
+  regexpParams,
+} from './utils/regexp';
+import { convertParam, ParameterType } from './utils/params';
 
 import type { IColorClass } from './IColorClass';
 import type { StringEnum } from './utils/types';
+
 
 export type RGBTuple = [number, number, number];
 
@@ -294,16 +304,44 @@ export class ColorRGB implements IColorClass {
    * of the variables is taken as `set(R, G, B, A)`. Any missing components are
    * skipped.
    * 
+   * This will parse string values to the best of it's ability. This includes
+   * parameter detection, and then treatment depending on the type.
+   * 
+   * For the RGB components the following formats are accepted
+   * - Integer 0..255 = mapped directly to the component
+   * - Float 0..255 = truncates the decimal point and applied
+   * - Percentage 0..100% = applies to the range 0..255 and set.
+   * 
+   * For the alpha component, any value given is clamped to a unit 0..1. For
+   * floats and percentages this is straight forward, for integers it just
+   * becomes an on/off of 0 or 1. In other words, no byte conversion is made.
+   * 
    * @returns `this` for method-chaining
    */
-  public set(...components:number[]):IColorClass {
+  public set(...components:(number|string)[]):IColorClass {
+    // Iterate through the arguments
     for(let ind = 0; ind < components.length; ind++) {
-      if(ind <= 2)
-        this.#components[ind] = Math.trunc(clamp(components[ind], 0, 255));
-      else if(ind === 3)
-        this.#alpha = clamp(components[ind]);
-      else
+      const comp = components[ind];
+      const { type, value } = convertParam(comp);
+
+      // Check if this is the first 3 arguments (R, G, B)
+      if(ind <= 2) {
+        // Each type gets a treatment on RGB
+        if(type === ParameterType.INTEGER)
+          this.#components[ind] = clamp(value, 0, 255);
+        else if(type === ParameterType.FLOAT)
+          this.#components[ind] = Math.trunc(clamp(value, 0, 255));
+        else if(type === ParameterType.PERCENTAGE)
+          this.#components[ind] = Math.trunc(clamp(value * 255, 0, 255));
+        else
+          this.#components[ind] = 0;
+      } else if(ind === 3) {
+        // For alpha, we don't care on the type, just clamp its number
+        this.#alpha = clamp(value);
+      } else {
+        // Break here since it's over 4 components
         break;
+      }
     }
 
     return this;
@@ -348,7 +386,105 @@ export class ColorRGB implements IColorClass {
   }
 
   public fromString(str:string):IColorClass {
-    return this;
+    let clnStr = str.trim().toLowerCase();
+
+    // First, check if it is a NamedColor and replace the string with it's hex
+    if(NamedColors[clnStr])
+      clnStr = NamedColors[clnStr];
+  
+    // Next check if it counts as a valid Hex string (if it doesn't throw)
+    try {
+      const hexRtn = this.fromHexString(clnStr);
+      if(hexRtn)
+        return hexRtn;
+    } finally {
+      // Do nothing, this is here to trick the IDE
+    }
+
+    // Finally check if it is functional-notation (if it doesn't throw)
+    try {
+      const funcRtn = this.fromFunctionalString(clnStr);
+      if(funcRtn)
+        return funcRtn;
+    } finally {
+      // Do nothing, this is here to trick the IDE
+    }
+
+    throw new TypeError(`ColorRGB.fromString() failed to parse the input string "${str}".`);
+  }
+
+  public fromHexString(str:string):ColorRGB {
+    const hexMatch = str.match(regexpHex);
+    if(hexMatch && hexMatch.length === 2) {
+      const hex = hexMatch[1];
+      const int = Number.parseInt(hex, 16) >>> 0;
+
+      // Performs a pseudo-left-shift and rescales to full-byte from half-byte
+      const lsh = (val:number) => Math.trunc((val / 0xF) * 0xFF);
+
+      if(hex.length === 3) {
+        // 3 length hex implies shorthand 4-bit colors (RGB)
+        this.#components[2] = lsh(int & 0xF);
+        this.#components[1] = lsh((int & 0xF0) >>> 4);
+        this.#components[0] = lsh((int & 0xF00) >>> 8);
+      } else if(hex.length === 4) {
+        // 4 length hex implies shorthand 4-bit colors (RGBA)
+        this.#alpha = lsh(int & 0xF) / 255.0;
+        this.#components[2] = lsh((int & 0xF0) >>> 4);
+        this.#components[1] = lsh((int & 0xF00) >>> 8);
+        this.#components[0] = lsh((int & 0xF00) >>> 12);
+      } else if(hex.length === 6) {
+        // 6 length hex is opaque 8-bit colors (RRGGBB)
+        this.fromInteger(int);
+      } else if(hex.length === 8) {
+        // 8 length hex is transparent 8-bit colors (RRGGBBAA)
+        this.fromInteger(int, true);
+      } else {
+        throw new Error(`ColorRGB.fromHexString() received malformed hexidecimal string. Expected length of 3, 6, or 8, but instead got "${hex.length}".`);
+      }
+
+      return this;
+    }
+
+    throw new TypeError(`ColorRGB.fromHexString() received malformed hexidecimal string. The value "${str}" cannot be parsed.`);
+  }
+
+  public fromFunctionalString(str:string):ColorRGB {
+    const clnStr = str.trim().toLowerCase();
+
+    // Use the regular expression to check for functional notation
+    const funcMatch = clnStr.match(regexpFunc);
+    if(funcMatch && funcMatch.length === 3) {
+      // Grab the matches from the groups
+      const func = funcMatch[1].toLowerCase();
+      const paramsStr = funcMatch[2].trim();
+
+      // Use the regexp for parameter validation to make sure this is worth it
+      if(regexpValidateParams.test(paramsStr)) {
+        // Use the regexp for grabbing parameters, so we can iterate through
+        const paramMatch = paramsStr.match(regexpParams);
+        if(paramMatch && paramMatch.length > 3) {
+          // This is the parameter list taken from the match groups
+          const params = paramMatch.slice(1);
+
+          // We only accept RGB[A] functions in this parsing pass
+          if(func === 'rgb' || func === 'rgba') {
+            if(params.length < 3 || params.length > 4)
+              throw new TypeError(`ColorRGB.fromFunctionalString() received an improper number of parameters, expected 3 or 4, instead got ${params.length}.`);
+            
+            return this.set(params[0], params[1], params[2], params[3] || 1.0) as ColorRGB;
+          }
+
+          throw new TypeError(`ColorRGB.fromFunctionalString() was supplied an invalid function "${func}".`);
+        } else {
+          throw new TypeError(`ColorRGB.fromFunctionalString() detected a functional notation, but an invalid parameter list "${paramsStr}" was supplied.`);
+        }
+      } else {
+        throw new TypeError(`ColorRGB.fromFunctionalString() detected a functional notation, but the parameters "${paramsStr}" are malformed.`);
+      }
+    }
+
+    throw new TypeError(`ColorRGB.fromFunctionalString() received a malformed functional notation string. The value "${clnStr}" cannot be parsed.`);
   }
 
   public fromArray(arr: number[]): IColorClass {
