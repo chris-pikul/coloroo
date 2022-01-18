@@ -401,6 +401,9 @@ export class ColorRGB implements IColorClass {
    * CSS4 color module. If there is a match, it is converted to hexidecimal and
    * then processed.
    * 
+   * The special named color "transparent" is accepted and will result in black
+   * with an alpha of 0 (fully transparent).
+   * 
    * ### Hexidecimal
    * Uses the {@link ColorRGB.fromHexString} method to parse as a hexidecimal
    * string. This is case insensitive and accepts shortform and longform hex
@@ -428,11 +431,23 @@ export class ColorRGB implements IColorClass {
   public fromString(str:string):IColorClass {
     let clnStr = str.trim().toLowerCase();
 
-    // First, check if it is a NamedColor and replace the string with it's hex
+    // Check for the special keyword "transparent"
+    if(clnStr === 'transparent') {
+      this.#components = [
+        0,
+        0,
+        0,
+      ];
+      this.#alpha = 0.0;
+
+      return this;
+    }
+
+    // Check if it is a NamedColor and replace the string with it's hex
     if(NamedColors[clnStr])
       clnStr = NamedColors[clnStr];
   
-    // Next check if it counts as a valid Hex string (if it doesn't throw)
+    // Check if it counts as a valid Hex string (if it doesn't throw)
     try {
       const hexRtn = this.fromHexString(clnStr);
       if(hexRtn)
@@ -440,7 +455,7 @@ export class ColorRGB implements IColorClass {
     // eslint-disable-next-line no-empty
     } catch { }
 
-    // Finally check if it is functional-notation (if it doesn't throw)
+    // Check if it is functional-notation (if it doesn't throw)
     try {
       const funcRtn = this.fromFunctionalString(clnStr);
       if(funcRtn)

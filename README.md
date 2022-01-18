@@ -7,7 +7,7 @@ Work-in-progress TypeScript/JavaScript library for colors, color-space, conversi
 I wanted a modern feeling API that uses TypeScript as a first-class citizen for Color
 containers and manipulation. Other libraries I've seen seem to have slightly complicated APIs, or the TypeScript definitions are an after-thought, or the code bases for them in general are generally hard to read.
 
-Additionally to this, I wanted to explore as many color-spaces and encoding formats as
+Additional to this, I wanted to explore as many color-spaces and encoding formats as
 I could for this project while remaining flexible to add more as needed.
 
 ## Installation
