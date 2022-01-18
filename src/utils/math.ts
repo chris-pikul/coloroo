@@ -21,3 +21,11 @@
 export function clamp(value:number, min = 0.0, max = 1.0):number {
   return Math.min(Math.max(value, min), max);
 }
+
+/**
+ * Clamps an incoming number to fit within an integer-byte (0..255)
+ * 
+ * @param value The given value to clamp
+ * @returns Integer number within the range 0..255
+ */
+export const clampByte = (value:number):number => Math.trunc(clamp(value, 0, 255));
