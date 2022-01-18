@@ -13,6 +13,7 @@
 import { StringEnum } from './types';
 
 export const ParameterType:StringEnum = {
+  NONE: 'NONE',
   INTEGER: 'INTEGER',
   FLOAT: 'FLOAT',
   PERCENTAGE: 'PERCENTAGE',
@@ -30,9 +31,13 @@ export type EParameterType = typeof ParameterType[string];
  * @returns ParameterType enum
  */
 export function detectParamType(param:string):EParameterType {
-  if(param.endsWith('%'))
+  const clnStr = param.trim().toLowerCase();
+
+  if(clnStr === 'none')
+    return ParameterType.NONE;
+  else if(clnStr.endsWith('%'))
     return ParameterType.PERCENTAGE;
-  else if(param.includes('.') || param.toLowerCase().includes('e'))
+  else if(clnStr.includes('.') || clnStr.includes('e'))
     return ParameterType.FLOAT;
   return ParameterType.INTEGER;
 }
