@@ -32,30 +32,9 @@ export type EParameterType = typeof ParameterType[string];
 export function detectParamType(param:string):EParameterType {
   if(param.endsWith('%'))
     return ParameterType.PERCENTAGE;
-  else if(param.includes('.'))
+  else if(param.includes('.') || param.toLowerCase().includes('e'))
     return ParameterType.FLOAT;
   return ParameterType.INTEGER;
-}
-
-/**
- * Attempts to coerce the input parameter into a number value by guessing it's 
- * type, and then converting from there.
- * 
- * @param param Input parameter string
- * @returns A float number
- */
-export function paramToFloat(param:string):number {
-  const detect:EParameterType = detectParamType(param);
-  switch(detect) {
-    case ParameterType.INTEGER:
-      return parseInt(param);
-    case ParameterType.FLOAT:
-      return parseFloat(param);
-    case ParameterType.PERCENTAGE:
-      return parseFloat(param.substring(0, param.indexOf('%'))) / 100;
-    default:
-      return 0.0;
-  }
 }
 
 export interface ParamConvertResults {
