@@ -16,9 +16,6 @@ import NamedColors from './NamedColors';
 import { clamp, clampByte } from './utils/math';
 import {
   regexpHex,
-  regexpFunc,
-  regexpValidateParams,
-  regexpParams,
   captureFirst,
   regexpRGBFunc,
 } from './utils/regexp';
@@ -111,6 +108,7 @@ export class ColorRGB implements IColorClass {
     this.set = this.set.bind(this);
     this.fromInteger = this.fromInteger.bind(this);
     this.fromString = this.fromString.bind(this);
+    this.fromFunctionalString = this.fromFunctionalString.bind(this);
     this.fromArray = this.fromArray.bind(this);
     this.fromObject = this.fromObject.bind(this);
     this.parse = this.parse.bind(this);
@@ -439,18 +437,16 @@ export class ColorRGB implements IColorClass {
       const hexRtn = this.fromHexString(clnStr);
       if(hexRtn)
         return hexRtn;
-    } finally {
-      // Do nothing, this is here to trick the IDE
-    }
+    // eslint-disable-next-line no-empty
+    } catch { }
 
     // Finally check if it is functional-notation (if it doesn't throw)
     try {
       const funcRtn = this.fromFunctionalString(clnStr);
       if(funcRtn)
         return funcRtn;
-    } finally {
-      // Do nothing, this is here to trick the IDE
-    }
+    // eslint-disable-next-line no-empty
+    } catch { }
 
     throw new TypeError(`ColorRGB.fromString() failed to parse the input string "${str}".`);
   }
