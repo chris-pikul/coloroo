@@ -13,12 +13,14 @@
  */
 import NamedColors from './NamedColors';
 
-import { clamp } from './utils/math';
+import { clamp, clampByte } from './utils/math';
 import {
   regexpHex,
   regexpFunc,
   regexpValidateParams,
   regexpParams,
+  captureFirst,
+  regexpRGBFunc,
 } from './utils/regexp';
 import { convertParam, ParameterType } from './utils/params';
 
@@ -122,7 +124,7 @@ export class ColorRGB implements IColorClass {
   }
 
   set red(byteValue:number) {
-    this.#components[0] = Math.trunc(clamp(byteValue, 0, 255));
+    this.#components[0] = clampByte(byteValue);
   }
 
   /**
@@ -133,7 +135,7 @@ export class ColorRGB implements IColorClass {
   }
 
   set green(byteValue:number) {
-    this.#components[1] = Math.trunc(clamp(byteValue, 0, 255));
+    this.#components[1] = clampByte(byteValue);
   }
 
   /**
@@ -144,7 +146,7 @@ export class ColorRGB implements IColorClass {
   }
 
   set blue(byteValue:number) {
-    this.#components[2] = Math.trunc(clamp(byteValue, 0, 255));
+    this.#components[2] = clampByte(byteValue);
   }
 
   /**
@@ -322,6 +324,9 @@ export class ColorRGB implements IColorClass {
     // Iterate through the arguments
     for(let ind = 0; ind < components.length; ind++) {
       const comp = components[ind];
+      if(comp === null || typeof comp === 'undefined')
+        continue;
+      
       const { type, value } = convertParam(comp);
 
       // Check if this is the first 3 arguments (R, G, B)
@@ -330,9 +335,9 @@ export class ColorRGB implements IColorClass {
         if(type === ParameterType.INTEGER)
           this.#components[ind] = clamp(value, 0, 255);
         else if(type === ParameterType.FLOAT)
-          this.#components[ind] = Math.trunc(clamp(value, 0, 255));
+          this.#components[ind] = clampByte(value);
         else if(type === ParameterType.PERCENTAGE)
-          this.#components[ind] = Math.trunc(clamp(value * 255, 0, 255));
+          this.#components[ind] = clampByte(value * 255);
         else
           this.#components[ind] = 0;
       } else if(ind === 3) {
@@ -385,6 +390,43 @@ export class ColorRGB implements IColorClass {
     return this;
   }
 
+  /**
+   * Converts an incoming string to acceptable components and sets the channels
+   * of this ColorRGB object. Will attempt to parse as each format in order
+   * until one does not give an error. If none of the processes work then a
+   * `TypeError` is thrown specifying so.
+   * 
+   * Accepts the following formats with their specifications:
+   * 
+   * ### Named Colors (X11)
+   * Checks if the input string is a valid X11 color name as specified in the
+   * CSS4 color module. If there is a match, it is converted to hexidecimal and
+   * then processed.
+   * 
+   * ### Hexidecimal
+   * Uses the {@link ColorRGB.fromHexString} method to parse as a hexidecimal
+   * string. This is case insensitive and accepts shortform and longform hex
+   * strings, with or without alpha channel. As with most hex strings if there
+   * is an alpha component it is the least-significant byte. Additionally, the
+   * prefix "#" is optional as well.
+   * 
+   * - `#FA0`: Short-form, half-byte values for each channel RGB. Will be
+   * resized to the full-byte size 0..255.
+   * - `#FA08`: Short-form, half-byte values for the RGB and Alpha channels. 
+   * Will be resized to the full-byte size 0..255.
+   * - `#FFAA00`: Long-form, byte values for the RGB channels.
+   * - `#FFAA0088`: Long-form, byte values for the RGB and Alpha channels.
+   * 
+   * ### Functional-notation
+   * Uses the {@link ColorRGB.fromFunctionalString} method to parse as a
+   * functional notation string in the style of CSS4, with some forgiveness.
+   * Will accept either 3-component for RGB, or 4-component for RGBA. Each
+   * parameter can be either an integer, float, or percentage value which will
+   * be converted as appropriate for the channel.
+   * 
+   * @param str Input string
+   * @returns `this` for method-chaining
+   */
   public fromString(str:string):IColorClass {
     let clnStr = str.trim().toLowerCase();
 
@@ -413,6 +455,21 @@ export class ColorRGB implements IColorClass {
     throw new TypeError(`ColorRGB.fromString() failed to parse the input string "${str}".`);
   }
 
+  /**
+   * Parses the incoming string as a hexidecimal notation RGB(A) color. This is
+   * case-insensitive, and the prefix "#" is optional. Accepts the following
+   * formats:
+   * 
+   * - `#FA0`: Short-form, half-byte values for each channel RGB. Will be
+   * resized to the full-byte size 0..255.
+   * - `#FA08`: Short-form, half-byte values for the RGB and Alpha channels. 
+   * Will be resized to the full-byte size 0..255.
+   * - `#FFAA00`: Long-form, byte values for the RGB channels.
+   * - `#FFAA0088`: Long-form, byte values for the RGB and Alpha channels.
+   * 
+   * @param str Input string to parse
+   * @returns `this` for method-chaining
+   */
   public fromHexString(str:string):ColorRGB {
     const hexMatch = str.match(regexpHex);
     if(hexMatch && hexMatch.length === 2) {
@@ -449,50 +506,85 @@ export class ColorRGB implements IColorClass {
     throw new TypeError(`ColorRGB.fromHexString() received malformed hexidecimal string. The value "${str}" cannot be parsed.`);
   }
 
+  /**
+   * Parses the input string as a CSS4 functional-notation color value. Only
+   * accepts the `rgb()` and `rgba()` functions. Both the comma-separated and
+   * space-separated formats are accepted. If the space-separated version is
+   * used with an alpha channel, then a forward-slash delimiter is required
+   * before the alpha channel. It will convert numeric formats in integer,
+   * fractional, and scientific notation. As well as supporting percentages, and
+   * the new "none" keyword for CSS4 (just implies 0). There is some forgiveness
+   * on the formatting since it's regular-expression based. Things like mixed
+   * formats between space/comma separated and such. Additionally, according to
+   * the CSS4 spec, the `rgb()` version can still accept an alpha channel.
+   * Either way, at least 3 components are required for at least RGB.
+   * 
+   * Example formats accepted.
+   * ```
+   * rgb(255, 127, 64)
+   * rgb(255 127 64)
+   * rgb(255, 127, 64, 0.5)
+   * rgb(255 127 64 / 0.5)
+   * rgba(100%, 50%, 25%)
+   * rgba(100% 50% 25% / 50%)
+   * ```
+   * 
+   * @param str Input string to parse
+   * @returns `this` for method-chaining
+   */
   public fromFunctionalString(str:string):ColorRGB {
     const clnStr = str.trim().toLowerCase();
 
-    // Use the regular expression to check for functional notation
-    const funcMatch = clnStr.match(regexpFunc);
-    if(funcMatch && funcMatch.length === 3) {
-      // Grab the matches from the groups
-      const func = funcMatch[1].toLowerCase();
-      const paramsStr = funcMatch[2].trim();
+    // Use the regular expression to match against functional notation for RGB
+    const matches = captureFirst(regexpRGBFunc, clnStr);
+    if(matches === null)
+      throw new TypeError(`ColorRGB.fromFunctionalString() failed to parse the string "${str}".`);
 
-      // Use the regexp for parameter validation to make sure this is worth it
-      if(regexpValidateParams.test(paramsStr)) {
-        // Use the regexp for grabbing parameters, so we can iterate through
-        const paramMatch = paramsStr.match(regexpParams);
-        if(paramMatch && paramMatch.length > 3) {
-          // This is the parameter list taken from the match groups
-          const params = paramMatch.slice(1);
+    // Ensure there are at least 3 components
+    if(matches.length < 3)
+      throw new TypeError(`ColorRGB.fromFunctionalString() requires at least 3 parameter.`);
 
-          // We only accept RGB[A] functions in this parsing pass
-          if(func === 'rgb' || func === 'rgba') {
-            if(params.length < 3 || params.length > 4)
-              throw new TypeError(`ColorRGB.fromFunctionalString() received an improper number of parameters, expected 3 or 4, instead got ${params.length}.`);
-            
-            return this.set(params[0], params[1], params[2], params[3] || 1.0) as ColorRGB;
-          }
-
-          throw new TypeError(`ColorRGB.fromFunctionalString() was supplied an invalid function "${func}".`);
-        } else {
-          throw new TypeError(`ColorRGB.fromFunctionalString() detected a functional notation, but an invalid parameter list "${paramsStr}" was supplied.`);
-        }
-      } else {
-        throw new TypeError(`ColorRGB.fromFunctionalString() detected a functional notation, but the parameters "${paramsStr}" are malformed.`);
-      }
-    }
-
-    throw new TypeError(`ColorRGB.fromFunctionalString() received a malformed functional notation string. The value "${clnStr}" cannot be parsed.`);
+    // Pass the remaining values off to this.set() since it converts strings
+    return this.set(...matches) as ColorRGB;
   }
 
-  public fromArray(arr: number[]): IColorClass {
-      
+  /**
+   * Sets the components of this `ColorRGB` given an array. This is supplied
+   * for clarity of API, but really just shortcuts to spread operating the
+   * array into the `ColorRGB.set()` function.
+   * 
+   * Accepts both strings and numbers. Strings will attempt to be converted
+   * based on whatever type the value can be detected as.
+   * 
+   * @see {@link ColorRGB.set} for the underlying functionality.
+   * @param arr Input array
+   * @returns `this` for method-chaining
+   */
+  public fromArray(arr: (number|string)[]): IColorClass {
+    return this.set(...arr);
   }
 
+  /**
+   * Attempts to set the components of this `ColorRGB` given potential
+   * properties of the supplied object. Any missing components will default to
+   * 0, except for alpha which defaults to 1 (opaque).
+   * 
+   * Each color searches for a single-letter property, or the full-word name.
+   * - Red: `obj.r` OR `obj.red` OR 0
+   * - Green: `obj.g` OR `obj.green` OR 0
+   * - Blue: `obj.b` OR `obj.blue` OR 0
+   * - Alpha: `obj.a` OR `obj.alpha` OR obj.opacity OR 1
+   * 
+   * @param obj Plain JS object
+   * @returns `this` for method-chaining
+   */
   public fromObject(obj: Record<any, any>): IColorClass {
-      
+    this.red = obj.r ?? obj.red ?? 0;
+    this.green = obj.g ?? obj.green ?? 0;
+    this.blue = obj.b ?? obj.blue ?? 0;
+    this.alpha = obj.a ?? obj.alpha ?? obj.opacity ?? 1;
+
+    return this;
   }
 
   /**
@@ -511,8 +603,17 @@ export class ColorRGB implements IColorClass {
     if(arg) {
       // Cache the typeof for the remaining if statements
       const to = typeof arg;
-      if(to === 'number')
+      if(to === 'number') {
         return this.fromInteger(arg);
+      } else if(to === 'string') {
+        return this.fromString(arg);
+      } else if(to === 'object') {
+        if(Array.isArray(arg))
+          return this.fromArray(arg);
+        
+        // Default to object parsing, this doesn't throw errors
+        return this.fromObject(arg);
+      }
     }
 
     return this;
