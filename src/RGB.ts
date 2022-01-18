@@ -425,6 +425,18 @@ export class ColorRGB implements IColorClass {
    * parameter can be either an integer, float, or percentage value which will
    * be converted as appropriate for the channel.
    * 
+   * Example formats accepted.
+   * ```
+   * rgb(255, 127, 64)
+   * rgb(255 127 64)
+   * rgb(255, 127, 64, 0.5)
+   * rgb(255 127 64 / 0.5)
+   * rgba(100%, 50%, 25%)
+   * rgba(100% 50% 25% / 50%)
+   * 
+   * rgb(200.5, 1.27e2, +64 / .5)
+   * ```
+   * 
    * @param str Input string
    * @returns `this` for method-chaining
    */
