@@ -164,3 +164,4 @@ export const NamedColors:Record<string, string> = {
   yellowgreen: '#9ACD32',
 } as const;
 
+export default NamedColors;
