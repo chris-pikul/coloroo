@@ -10,9 +10,16 @@
  * @module Utilities
  */
 
-import { StringEnum } from './types';
+import {
+  regexpInteger,
+  regexpNumber,
+  regexpPercent,
+} from './regexp';
+
+import type { StringEnum } from './types';
 
 export const ParameterType:StringEnum = {
+  UNKNOWN: 'UNKNOWN',
   NONE: 'NONE',
   INTEGER: 'INTEGER',
   FLOAT: 'FLOAT',
@@ -35,11 +42,17 @@ export function detectParamType(param:string):EParameterType {
 
   if(clnStr === 'none')
     return ParameterType.NONE;
-  else if(clnStr.endsWith('%'))
+  
+  if(regexpInteger.test(clnStr))
+    return ParameterType.INTEGER;
+
+  if(regexpPercent.test(clnStr))
     return ParameterType.PERCENTAGE;
-  else if(clnStr.includes('.') || clnStr.includes('e'))
+
+  if(regexpNumber.test(clnStr))
     return ParameterType.FLOAT;
-  return ParameterType.INTEGER;
+
+  return ParameterType.UNKNOWN;
 }
 
 export interface ParamConvertResults {
