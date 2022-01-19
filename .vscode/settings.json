@@ -1,0 +1,6 @@
+{
+  "javascript.format.semicolons": "insert",
+  "typescript.autoClosingTags": false,
+  "typescript.preferences.quoteStyle": "single",
+  "javascript.preferences.quoteStyle": "single"
+}
