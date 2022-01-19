@@ -19,6 +19,25 @@ npm install --save coloroo
 yarn add coloroo
 ```
 
+## Test Coverage
+
+Testing is provided by Mocha/Chai, with coverage reporting done by Istanbul/NYC.
+
+Current test coverage is as follows:
+
+-----------------|---------|----------|---------|---------|
+File             | % Stmts | % Branch | % Funcs | % Lines |
+-----------------|---------|----------|---------|---------|
+All files        |     100 |      100 |     100 |     100 |
+ src             |     100 |      100 |     100 |     100 |
+  NamedColors.ts |     100 |      100 |     100 |     100 |
+  RGB.ts         |     100 |      100 |     100 |     100 |
+ src/utils       |     100 |      100 |     100 |     100 |
+  math.ts        |     100 |      100 |     100 |     100 |
+  params.ts      |     100 |      100 |     100 |     100 |
+  regexp.ts      |     100 |      100 |     100 |     100 |
+-----------------|---------|----------|---------|---------|
+
 ## Contibuting
 
 I welcome contributions if you have some. Currently I don't have any formatting requirements since this is mostly a pasion project at the time. So I suppose, just fill out an issue or PR as per usual for repos.
