@@ -181,4 +181,26 @@ describe('ColorRGB Class', () => {
       expect(() => (new ColorRGB().fromFuncString('hsl(255, 127, 64)'))).to.throw();
     });
   });
+
+  describe('ColorRGB.fromString()', () => {
+    it('accepts the "transparent" keyword', () => {
+      expect(new ColorRGB().fromString('transparent')).to.include({ red: 0, green: 0, blue: 0, alpha: 0 });
+    });
+
+    it('accepts X11 named colors', () => {
+      expect(new ColorRGB().fromString('Gold')).to.include({ red: 255, green: 215, blue: 0, alpha: 1});
+    });
+
+    it('accepts hex strings', () => {
+      expect(new ColorRGB().fromString('#FF8840')).to.include({ red: 255, green: 136, blue: 64 });
+    });
+
+    it('accepts functional strings', () => {
+      expect(new ColorRGB().fromString('rgb(255, 127.5, 64, 50%)')).to.include({ red: 255, green: 127, blue: 64, alpha: 0.5 });
+    });
+
+    it('throws on un-parsables', () => {
+      expect(() => new ColorRGB().fromString('bad string')).to.throw();
+    });
+  });
 })

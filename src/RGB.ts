@@ -560,16 +560,14 @@ export class ColorRGB implements IColorClass {
     // Check if it counts as a valid Hex string (if it doesn't throw)
     try {
       const hexRtn = this.fromHexString(clnStr);
-      if(hexRtn)
-        return hexRtn;
+      return hexRtn;
     // eslint-disable-next-line no-empty
     } catch { }
 
     // Check if it is functional-notation (if it doesn't throw)
     try {
       const funcRtn = this.fromFuncString(clnStr);
-      if(funcRtn)
-        return funcRtn;
+      return funcRtn;
     // eslint-disable-next-line no-empty
     } catch { }
 
