@@ -25,7 +25,6 @@ Testing is provided by Mocha/Chai, with coverage reporting done by Istanbul/NYC.
 
 Current test coverage is as follows:
 
------------------|---------|----------|---------|---------|
 File             | % Stmts | % Branch | % Funcs | % Lines |
 -----------------|---------|----------|---------|---------|
 All files        |     100 |      100 |     100 |     100 |
@@ -36,7 +35,6 @@ All files        |     100 |      100 |     100 |     100 |
   math.ts        |     100 |      100 |     100 |     100 |
   params.ts      |     100 |      100 |     100 |     100 |
   regexp.ts      |     100 |      100 |     100 |     100 |
------------------|---------|----------|---------|---------|
 
 ## Contibuting
 
