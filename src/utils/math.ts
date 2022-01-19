@@ -29,3 +29,15 @@ export function clamp(value:number, min = 0.0, max = 1.0):number {
  * @returns Integer number within the range 0..255
  */
 export const clampByte = (value:number):number => Math.trunc(clamp(value, 0, 255));
+
+/**
+ * Performs a fixed-precision conversion of a number and returns the value
+ * as a base-10 string with trailing 0s removed.
+ * 
+ * @param value Input floating point value
+ * @param precision Optional precision value
+ * @returns String of the number with trailing 0s removed
+ */
+export function cleanFloatStr(value:number, precision = 4):string {
+  return parseFloat(value.toFixed(precision)).toString();
+}

@@ -13,7 +13,12 @@
  */
 import NamedColors from './NamedColors';
 
-import { clamp, clampByte } from './utils/math';
+import {
+  clamp,
+  clampByte,
+  cleanFloatStr,
+} from './utils/math';
+
 import {
   regexpHex,
   captureFirst,
@@ -102,7 +107,7 @@ export class ColorRGB implements IColorClass {
     this.toString = this.toString.bind(this);
     this.toInteger = this.toInteger.bind(this);
     this.toHexString = this.toHexString.bind(this);
-    this.toFunctionalString = this.toFunctionalString.bind(this);
+    this.toFuncString = this.toFuncString.bind(this);
     this.toArray = this.toArray.bind(this);
     
     this.set = this.set.bind(this);
@@ -189,9 +194,9 @@ export class ColorRGB implements IColorClass {
       case 'HEX_ALPHA':
         return this.toHexString(true);
       case 'FUNCTIONAL':
-        return this.toFunctionalString();
+        return this.toFuncString();
       case 'FUNCTIONAL_ALPHA':
-        return this.toFunctionalString(true);
+        return this.toFuncString(true);
       default:
         console.warn(`ColorRGB.toString() was supplied a format "${format}" which is invalid, defaulting to "HEX".`);
         return this.toHexString();
@@ -297,9 +302,9 @@ export class ColorRGB implements IColorClass {
    * which will only use the alpha information if it is not completely opaque.
    * @returns {string} Functional-notation string
    */
-  public toFunctionalString(forceAlpha = false):string {
+  public toFuncString(forceAlpha = false):string {
     if(forceAlpha || this.#alpha !== 1)
-      return `rgba(${this.red}, ${this.green}, ${this.blue}, ${this.#alpha.toPrecision(4)})`;
+      return `rgba(${this.red}, ${this.green}, ${this.blue}, ${cleanFloatStr(this.#alpha)})`;
 
     return `rgb(${this.red}, ${this.green}, ${this.blue})`;
   }

@@ -39,6 +39,25 @@ describe('ColorRGB Class', () => {
       const clr = new RGB().set(255, 127, 64) as RGB;
       expect(clr.toString(RGB.Formats.HEX_ALPHA)).to.eql('#ff7f40ff');
     });
+
+    it('uses rgb() for opaque', () => {
+      const clr = new RGB().set(255, 127, 64) as RGB;
+      expect(clr.toString(RGB.Formats.FUNCTIONAL)).to.eql('rgb(255, 127, 64)');
+    });
+
+    it('uses rgba() for transparent', () => {
+      const clr = new RGB().set(255, 127, 64, 0.5) as RGB;
+      expect(clr.toString(RGB.Formats.FUNCTIONAL)).to.eql('rgba(255, 127, 64, 0.5)');
+    });
+
+    it('uses rgba() when forced', () => {
+      const clr = new RGB().set(255, 127, 64) as RGB;
+      expect(clr.toString(RGB.Formats.FUNCTIONAL_ALPHA)).to.eql('rgba(255, 127, 64, 1)');
+    });
+
+    it('defaults to hex when unknown', () => {
+      expect(new RGB().toString('INVALID')).to.eql('#000000');
+    });
   });
 
   describe('ColorRGB.toInteger()', () => {
@@ -82,6 +101,30 @@ describe('ColorRGB Class', () => {
     it('converts RGB to hex with alpha as MSB when forced', () => {
       const clr = new RGB().set(255, 127, 64) as RGB;
       expect(clr.toHexString(true, true)).to.eql('#ffff7f40');
+    });
+  });
+
+  describe('ColorRGB.toFuncString()', () => {
+    it('uses rgb() for opaque', () => {
+      const clr = new RGB().set(255, 127, 64) as RGB;
+      expect(clr.toFuncString()).to.eql('rgb(255, 127, 64)');
+    });
+
+    it('uses rgba() for transparent', () => {
+      const clr = new RGB().set(255, 127, 64, 0.5) as RGB;
+      expect(clr.toFuncString()).to.eql('rgba(255, 127, 64, 0.5)');
+    });
+
+    it('uses rgba() when forced', () => {
+      const clr = new RGB().set(255, 127, 64) as RGB;
+      expect(clr.toFuncString(true)).to.eql('rgba(255, 127, 64, 1)');
+    });
+  });
+
+  describe('ColorRGB.toArray()', () => {
+    it('makes an array', () => {
+      const clr = new RGB().set(255, 127, 64, 0.5) as RGB;
+      expect(clr.toArray()).to.eql([255, 127, 64, 0.5]);
     });
   });
 
