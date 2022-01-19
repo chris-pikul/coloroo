@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import RGB from '../src/RGB';
+import RGB, { ColorRGB } from '../src/RGB';
 
 describe('ColorRGB Class', () => {
   describe('ColorRGB.set()', () => {
@@ -135,6 +135,50 @@ describe('ColorRGB Class', () => {
       const clr = new RGB();
       expect(clr.fromHexString('F83')).to.include({ red: 255, green: 136, blue: 51 });
       expect(clr.fromHexString('FF8840')).to.include({ red: 255, green: 136, blue: 64 });
+    });
+  });
+
+  describe('ColorRGB.fromFunctionalString()', () => {
+    it('accepts standard RGB format with commas', () => {
+      expect(new ColorRGB().fromFuncString('rgb(255, 127, 64)')).to.include({ red: 255, green: 127, blue: 64, alpha: 1});
+      expect(new ColorRGB().fromFuncString('rgb(  255,127 ,64 )')).to.include({ red: 255, green: 127, blue: 64, alpha: 1});
+    });
+
+    it('accepts standard RGB format with spaces', () => {
+      expect(new ColorRGB().fromFuncString('rgb(255 127   64)')).to.include({ red: 255, green: 127, blue: 64, alpha: 1});
+    });
+
+    it('accepts RGB with alpha format with commas', () => {
+      expect(new ColorRGB().fromFuncString('rgb(255, 127, 64, 0.5)')).to.include({ red: 255, green: 127, blue: 64, alpha: 0.5});
+    });
+
+    it('accepts RGB with alpha format with space/slash', () => {
+      expect(new ColorRGB().fromFuncString('rgb(255 127 64 / 0.5)')).to.include({ red: 255, green: 127, blue: 64, alpha: 0.5});
+    });
+
+    it('doesn\'t care about rgb vs rgba', () => {
+      expect(new ColorRGB().fromFuncString('rgba(255, 127, 64)')).to.include({ red: 255, green: 127, blue: 64, alpha: 1});
+      expect(new ColorRGB().fromFuncString('rgba(255 127 64 / 0.5)')).to.include({ red: 255, green: 127, blue: 64, alpha: 0.5});
+    });
+
+    it('is case insensitive', () => {
+      expect(new ColorRGB().fromFuncString('RGB(255, 127, 64)')).to.include({ red: 255, green: 127, blue: 64, alpha: 1});
+    });
+
+    it('accepts the "none" keyword', () => {
+      expect(new ColorRGB().fromFuncString('RGB(255, none, 64)')).to.include({ red: 255, green: 0, blue: 64, alpha: 1});
+    });
+
+    it('allows percentages', () => {
+      expect(new ColorRGB().fromFuncString('rgb(100%, 50%, 25% / 50%)')).to.include({ red: 255, green: 127, blue: 63, alpha: 0.5});
+    });
+
+    it('throws on malformed strings', () => {
+      expect(() => (new ColorRGB().fromFuncString('bad string'))).to.throw();
+    });
+
+    it('throws on wrong function', () => {
+      expect(() => (new ColorRGB().fromFuncString('hsl(255, 127, 64)'))).to.throw();
     });
   });
 })

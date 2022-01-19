@@ -65,4 +65,4 @@ export const regexpPercent = /^[+-]?\d*\.?\d+%$/;
  * the spec, both the rgb() and rgba() variations accept 4 components. This
  * additionally accepts the new "none" keyword.
  */
-export const regexpRGBFunc = /^rgba?\(\s*(?<red>none|(?!e)[+-]?(?![+-])\d*\.?\d+(?:e[+-]?\d+)?|\d*\.?\d+%)\s?,?\s+(?<green>none|(?!e)[+-]?(?![+-])\d*\.?\d+(?:e[+-]?\d+)?|\d*\.?\d+%)\s?,?\s+(?<blue>none|(?!e)[+-]?(?![+-])\d*\.?\d+(?:e[+-]?\d+)?|\d*\.?\d+%)(?:\s*[,/]\s+(?<alpha>none|(?!e)[+-]?(?![+-])\d*\.?\d+(?:e[+-]?\d+)?|\d*\.?\d+%))?\s*\)$/gi;
+export const regexpRGBFunc = /^rgba?\(\s*(?<red>none|(?!e)[+-]?(?![+-])\d*\.?\d+(?:e[+-]?\d+)?|\d*\.?\d+%)\s*,?\s*(?<green>none|(?!e)[+-]?(?![+-])\d*\.?\d+(?:e[+-]?\d+)?|\d*\.?\d+%)\s*,?\s*(?<blue>none|(?!e)[+-]?(?![+-])\d*\.?\d+(?:e[+-]?\d+)?|\d*\.?\d+%)(?:\s*[,/]\s+(?<alpha>none|(?!e)[+-]?(?![+-])\d*\.?\d+(?:e[+-]?\d+)?|\d*\.?\d+%))?\s*\)$/gi;

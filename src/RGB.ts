@@ -470,6 +470,9 @@ export class ColorRGB implements IColorClass {
    * 
    * @param str Input string to parse
    * @returns `this` for method-chaining
+   * 
+   * @throws {TypeError} if the string cannot be parsed
+   * @throws {TypeError} if the number of components is invalid
    */
   public fromFuncString(str:string):ColorRGB {
     const clnStr = str.trim().toLowerCase();
@@ -478,10 +481,6 @@ export class ColorRGB implements IColorClass {
     const matches = captureFirst(regexpRGBFunc, clnStr);
     if(matches === null)
       throw new TypeError(`ColorRGB.fromFuncString() failed to parse the string "${str}".`);
-
-    // Ensure there are at least 3 components
-    if(matches.length < 3)
-      throw new TypeError(`ColorRGB.fromFuncString() requires at least 3 parameter.`);
 
     // Pass the remaining values off to this.set() since it converts strings
     return this.set(...matches) as ColorRGB;
