@@ -45,30 +45,19 @@ export function captureFirst(regexp:RegExp, str:string):(Array<string|undefined>
 export const regexpHex = /^#?([A-F0-9]{3,8})$/i;
 
 /**
- * Regular expression matching (with capture groups) for functional notation
- * colors.
- * 
- * Should return a length of 3 being `[ match, func, params ]`
+ * Regular expression matching integers for testing
  */
-export const regexpFunc = /^([A-Z]+)\(([\d\s.,%]+)\)$/i;
-
-/**
- * Regular expression matching valid functional notation parameters.
- * 
- * Should be used with testing to validate that the parameters are listed in
- * proper format.
- */
-export const regexpValidateParams = /^[\d.%]+(?:(?:\s*,\s*)(?:[\d.%]+))+$/i;
-
-/**
- * Regular expression capturing values within a parameter string.
- */
-export const regexpParams = /([\d.%]+)/gi;
+export const regexpInteger = /^[+-]?\d+$/;
 
 /**
  * Regular expression matching a valid number as of CSS4 standards
  */
 export const regexpNumber = /^(?!e)[+-]?(?![+-])\d*\.?\d+(?:e[+-]?\d+)?$/i;
+
+/**
+ * Regular expression matching a percentage value
+ */
+export const regexpPercent = /^[+-]?\d*\.?\d+%$/;
 
 /**
  * Regular expression matching the CSS4 definition of RGB(A) functional
