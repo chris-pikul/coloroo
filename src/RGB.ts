@@ -372,7 +372,9 @@ export class ColorRGB implements IColorClass {
       this.#alpha = alphaByte / 255.0;
 
       // If the alpha was LSB then shift the remaining integer right by 8-bits
-      if(!alphaMSB)
+      if(alphaMSB)
+        int = int & 0xFFFFFF;
+      else
         int >>= 8;
     }
 
@@ -492,6 +494,9 @@ export class ColorRGB implements IColorClass {
    * 
    * @param str Input string to parse
    * @returns `this` for method-chaining
+   * 
+   * @throws {TypeError} If the string is not parsable as a hex value
+   * @throws {TypeError} If the string has too many or too little
    */
   public fromHexString(str:string):ColorRGB {
     const hexMatch = str.match(regexpHex);
@@ -499,20 +504,20 @@ export class ColorRGB implements IColorClass {
       const hex = hexMatch[1];
       const int = Number.parseInt(hex, 16) >>> 0;
 
-      // Performs a pseudo-left-shift and rescales to full-byte from half-byte
-      const lsh = (val:number) => Math.trunc((val / 0xF) * 0xFF);
+      // Turns half-byte integers into full-byte
+      const htf = (hb:number) => (hb | (hb << 4));
 
       if(hex.length === 3) {
         // 3 length hex implies shorthand 4-bit colors (RGB)
-        this.#components[2] = lsh(int & 0xF);
-        this.#components[1] = lsh((int & 0xF0) >>> 4);
-        this.#components[0] = lsh((int & 0xF00) >>> 8);
+        this.#components[2] = htf(int & 0xF);
+        this.#components[1] = htf((int & 0xF0) >>> 4);
+        this.#components[0] = htf((int & 0xF00) >>> 8);
       } else if(hex.length === 4) {
         // 4 length hex implies shorthand 4-bit colors (RGBA)
-        this.#alpha = lsh(int & 0xF) / 255.0;
-        this.#components[2] = lsh((int & 0xF0) >>> 4);
-        this.#components[1] = lsh((int & 0xF00) >>> 8);
-        this.#components[0] = lsh((int & 0xF00) >>> 12);
+        this.#alpha = htf(int & 0xF) / 255.0;
+        this.#components[2] = htf((int & 0xF0) >>> 4);
+        this.#components[1] = htf((int & 0xF00) >>> 8);
+        this.#components[0] = htf((int & 0xF000) >>> 12);
       } else if(hex.length === 6) {
         // 6 length hex is opaque 8-bit colors (RRGGBB)
         this.fromInteger(int);
