@@ -203,4 +203,84 @@ describe('ColorRGB Class', () => {
       expect(() => new ColorRGB().fromString('bad string')).to.throw();
     });
   });
+
+  describe('ColorRGB.fromArray()', () => {
+    it('accepts an array of numbers for RGB', () => {
+      expect(new ColorRGB().fromArray([ 255, 127, 64 ])).to.include({ red: 255, green: 127, blue: 64 });
+    });
+
+    it('accepts an array of numbers for RGBA', () => {
+      expect(new ColorRGB().fromArray([ 255, 127, 64, 0.5 ])).to.include({ red: 255, green: 127, blue: 64, alpha: 0.5 });
+    });
+
+    it('accepts an array of strings for RGB', () => {
+      expect(new ColorRGB().fromArray([ '255', '100%', 'none' ])).to.include({ red: 255, green: 255, blue: 0 });
+    });
+  });
+
+  describe('ColorRGB.fromObject()', () => {
+    it('works with objects of { r, g, b }', () => {
+      expect(new ColorRGB().fromObject({ r: 255, g: 127, b: 64, a: 0.5 }))
+        .to.include({ red: 255, green: 127, blue: 64, alpha: 0.5 });
+    });
+
+    it('works with long-named properties', () => {
+      expect(new ColorRGB().fromObject({ red: 255, green: 127, blue: 64, alpha: 0.5 }))
+        .to.include({ red: 255, green: 127, blue: 64, alpha: 0.5 });
+    });
+
+    it('allows mixing properties and absense of some', () => {
+      expect(new ColorRGB().fromObject({ red: 255, g: 127, opacity: 0.5 }))
+        .to.include({ red: 255, green: 127, blue: 0, alpha: 0.5 });
+    });
+
+    it('defaults missing components to 0 (or 1 for alpha)', () => {
+      expect(new ColorRGB().fromObject({})).to.include({ red: 0, green: 0, blue: 0, alpha: 1 });
+    });
+
+    it('ignores other properties', () => {
+      expect(new ColorRGB().fromObject({ green: 255, other: 'str', props: 123 }))
+        .to.include({ red: 0, green: 255, blue: 0, alpha: 1 });
+    });
+  });
+
+  describe('ColorRGB.parse()', () => {
+    it('skips on no parameter or null/undefined', () => {
+      const clr = new ColorRGB().set(255, 127, 64);
+      expect(clr.parse(null)).to.include({ red: 255, green: 127, blue: 64 });
+      expect(clr.parse(undefined)).to.include({ red: 255, green: 127, blue: 64 });
+    });
+
+    it('accepts number arguments', () => {
+      expect(new ColorRGB().parse(0xFF8840)).to.include({ red: 255, green: 136, blue: 64, alpha: 1});
+    });
+
+    it('accepts hex-string arguments', () => {
+      expect(new ColorRGB().parse('FF8840')).to.include({ red: 255, green: 136, blue: 64, alpha: 1});
+    });
+
+    it('accepts func-string arguments', () => {
+      expect(new ColorRGB().parse('rgb(255, 136, 64)')).to.include({ red: 255, green: 136, blue: 64, alpha: 1});
+    });
+
+    it('accepts named color arguments', () => {
+      expect(new ColorRGB().parse('Gold')).to.include({ red: 255, green: 215, blue: 0, alpha: 1});
+    });
+
+    it('accepts array of numbers arguments', () => {
+      expect(new ColorRGB().parse([ 255, 136.5, 64 ])).to.include({ red: 255, green: 136, blue: 64, alpha: 1});
+    });
+
+    it('accepts array of string arguments', () => {
+      expect(new ColorRGB().parse([ '100%', '136', '6.4e1'])).to.include({ red: 255, green: 136, blue: 64, alpha: 1});
+    });
+
+    it('accepts generic object arguments', () => {
+      expect(new ColorRGB().parse({ r: 255, g: 136, b: 64 })).to.include({ red: 255, green: 136, blue: 64, alpha: 1});
+    });
+
+    it('throws on invalid argument type', () => {
+      expect(() => (new ColorRGB().parse(true))).to.throw();
+    });
+  });
 })

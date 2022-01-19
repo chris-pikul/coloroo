@@ -640,6 +640,8 @@ export class ColorRGB implements IColorClass {
         // Default to object parsing, this doesn't throw errors
         return this.fromObject(arg);
       }
+      
+      throw new TypeError(`ColorRGB.parse() only accepts numbers, strings, arrays, and objects. Instead found "${typeof arg}".`);
     }
 
     return this;
