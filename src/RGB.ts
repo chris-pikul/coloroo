@@ -159,6 +159,25 @@ export class ColorRGB implements IColorClass {
     this.#alpha = clamp(value);
   }
 
+  /**
+   * Returns the string representation of this color, with an optional formating
+   * parameter.
+   * 
+   * The following enums are accepted for formats:
+   * - `INTEGER`: Integer representation including alpha as the LSB if it is not
+   * the default 1.0.
+   * - `INTEGER_ALPHA`: Integer representation with alpha included as the LSB.
+   * - `HEX`: Hexidecimal string representation, only includes alpha as the LSB
+   * if it is not the default opaque (1.0).
+   * - `HEX_ALPHA`: Hexidecimal string with the alpha as the LSB.
+   * - `FUNCTIONAL` (default): CSS-style functional notation. Only includes the
+   * alpha channel if it is not opaque (1.0).
+   * - `FUNCTIONAL_ALPHA`: CSS-style functional notation with the alpha
+   * channel. Uses the "rgba()" function style. 
+   * 
+   * @param format Optional enum for the output format. Defaults to functional.
+   * @returns String representation
+   */
   public toString(format:ERGBStringFormat = ColorRGB.Formats.FUNCTIONAL):string {
     switch(format) {
       case 'INTEGER':
@@ -202,21 +221,17 @@ export class ColorRGB implements IColorClass {
    * @returns {number} Integer number representation of the color.
    */
   public toInteger(forceAlpha = false, alphaMSB = false):number {
-    let value = 0;
+    let value = ((this.red & 0xFF) << 16) | ((this.green & 0xFF) << 8) | (this.blue & 0xFF);
 
-    value |= (this.red << 16);
-    value |= (this.green << 8);
-    value |= (this.blue);
-
-    if(forceAlpha || this.alpha !== -1) {
-      const alphaComp = (Math.round(this.alpha * 255) & 0xFF);
+    if(forceAlpha || this.alpha !== 1) {
+      const alphaComp = Math.trunc(this.alpha * 255);
       if(alphaMSB)
-        value = (alphaComp << 24) | value;
+        value |= (alphaComp & 0xFF) << 24;
       else
-        value = (value << 8) | alphaComp;
+        value = (value << 8) | (alphaComp & 0xFF);
     }
 
-    return value;
+    return value >>> 0;
   };
 
   /**
@@ -640,7 +655,7 @@ export class ColorRGB implements IColorClass {
         // Default to object parsing, this doesn't throw errors
         return this.fromObject(arg);
       }
-      
+
       throw new TypeError(`ColorRGB.parse() only accepts numbers, strings, arrays, and objects. Instead found "${typeof arg}".`);
     }
 

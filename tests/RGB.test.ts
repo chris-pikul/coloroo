@@ -1,7 +1,57 @@
 import { expect } from 'chai';
-import RGB, { ColorRGB } from '../src/RGB';
+import RGB from '../src/RGB';
 
 describe('ColorRGB Class', () => {
+  describe('ColorRGB.toString()', () => {
+    it('outputs functional by default', () => {
+      expect(new RGB().toString()).to.eql('rgb(0, 0, 0)');
+    });
+
+    /*
+    it('outputs integer without alpha on opaque', () => {
+      const clr = new RGB().set(255, 127, 64) as RGB;
+      expect(clr.toString(RGB.Formats.INTEGER)).to.eql((0xFF7FA4).toString());
+    });
+
+    it('outputs integer with alpha on transparent', () => {
+      const clr = new RGB().set(255, 127, 64, 0.5) as RGB;
+      expect(clr.toString(RGB.Formats.INTEGER)).to.eql((0xFF7FA47F).toString());
+    });
+
+    it('outputs integer with alpha forced', () => {
+      const clr = new RGB().set(255, 127, 64) as RGB;
+      expect(clr.toString(RGB.Formats.INTEGER_ALPHA)).to.eql((0xFF7FA400).toString());
+    });
+
+    it('outputs integer with alpha forced on transparent', () => {
+      const clr = new RGB().set(255, 127, 64, 0.5) as RGB;
+      expect(clr.toString(RGB.Formats.INTEGER_ALPHA)).to.eql((0xFF7FA47F).toString());
+    });
+    */
+  });
+
+  describe('ColorRGB.toInteger()', () => {
+    it('converts RGB to integer without alpha if opaque', () => {
+      const clr = new RGB().set(255, 127, 64) as RGB;
+      expect(clr.toInteger()).to.eql(0xFF7F40);
+    });
+
+    it('converts RGBA to integer with alpha if transparent', () => {
+      const clr = new RGB().set(255, 127, 64, 0.5) as RGB;
+      expect(clr.toInteger()).to.eql(0xFF7F407F);
+    });
+
+    it('converts RGB to integer with alpha forced', () => {
+      const clr = new RGB().set(255, 127, 64) as RGB;
+      expect(clr.toInteger(true)).to.eql(0xFF7F40FF);
+    });
+
+    it('converts RGB to integer with alpha forced as MSB', () => {
+      const clr = new RGB().set(255, 127, 64, 0.5) as RGB;
+      expect(clr.toInteger(true, true)).to.eql(0x7FFF7F40);
+    });
+  });
+
   describe('ColorRGB.set()', () => {
     it('accepts 3 number arguments', () => {
       const clr = new RGB();
@@ -140,147 +190,147 @@ describe('ColorRGB Class', () => {
 
   describe('ColorRGB.fromFunctionalString()', () => {
     it('accepts standard RGB format with commas', () => {
-      expect(new ColorRGB().fromFuncString('rgb(255, 127, 64)')).to.include({ red: 255, green: 127, blue: 64, alpha: 1});
-      expect(new ColorRGB().fromFuncString('rgb(  255,127 ,64 )')).to.include({ red: 255, green: 127, blue: 64, alpha: 1});
+      expect(new RGB().fromFuncString('rgb(255, 127, 64)')).to.include({ red: 255, green: 127, blue: 64, alpha: 1});
+      expect(new RGB().fromFuncString('rgb(  255,127 ,64 )')).to.include({ red: 255, green: 127, blue: 64, alpha: 1});
     });
 
     it('accepts standard RGB format with spaces', () => {
-      expect(new ColorRGB().fromFuncString('rgb(255 127   64)')).to.include({ red: 255, green: 127, blue: 64, alpha: 1});
+      expect(new RGB().fromFuncString('rgb(255 127   64)')).to.include({ red: 255, green: 127, blue: 64, alpha: 1});
     });
 
     it('accepts RGB with alpha format with commas', () => {
-      expect(new ColorRGB().fromFuncString('rgb(255, 127, 64, 0.5)')).to.include({ red: 255, green: 127, blue: 64, alpha: 0.5});
+      expect(new RGB().fromFuncString('rgb(255, 127, 64, 0.5)')).to.include({ red: 255, green: 127, blue: 64, alpha: 0.5});
     });
 
     it('accepts RGB with alpha format with space/slash', () => {
-      expect(new ColorRGB().fromFuncString('rgb(255 127 64 / 0.5)')).to.include({ red: 255, green: 127, blue: 64, alpha: 0.5});
+      expect(new RGB().fromFuncString('rgb(255 127 64 / 0.5)')).to.include({ red: 255, green: 127, blue: 64, alpha: 0.5});
     });
 
     it('doesn\'t care about rgb vs rgba', () => {
-      expect(new ColorRGB().fromFuncString('rgba(255, 127, 64)')).to.include({ red: 255, green: 127, blue: 64, alpha: 1});
-      expect(new ColorRGB().fromFuncString('rgba(255 127 64 / 0.5)')).to.include({ red: 255, green: 127, blue: 64, alpha: 0.5});
+      expect(new RGB().fromFuncString('rgba(255, 127, 64)')).to.include({ red: 255, green: 127, blue: 64, alpha: 1});
+      expect(new RGB().fromFuncString('rgba(255 127 64 / 0.5)')).to.include({ red: 255, green: 127, blue: 64, alpha: 0.5});
     });
 
     it('is case insensitive', () => {
-      expect(new ColorRGB().fromFuncString('RGB(255, 127, 64)')).to.include({ red: 255, green: 127, blue: 64, alpha: 1});
+      expect(new RGB().fromFuncString('RGB(255, 127, 64)')).to.include({ red: 255, green: 127, blue: 64, alpha: 1});
     });
 
     it('accepts the "none" keyword', () => {
-      expect(new ColorRGB().fromFuncString('RGB(255, none, 64)')).to.include({ red: 255, green: 0, blue: 64, alpha: 1});
+      expect(new RGB().fromFuncString('RGB(255, none, 64)')).to.include({ red: 255, green: 0, blue: 64, alpha: 1});
     });
 
     it('allows percentages', () => {
-      expect(new ColorRGB().fromFuncString('rgb(100%, 50%, 25% / 50%)')).to.include({ red: 255, green: 127, blue: 63, alpha: 0.5});
+      expect(new RGB().fromFuncString('rgb(100%, 50%, 25% / 50%)')).to.include({ red: 255, green: 127, blue: 63, alpha: 0.5});
     });
 
     it('throws on malformed strings', () => {
-      expect(() => (new ColorRGB().fromFuncString('bad string'))).to.throw();
+      expect(() => (new RGB().fromFuncString('bad string'))).to.throw();
     });
 
     it('throws on wrong function', () => {
-      expect(() => (new ColorRGB().fromFuncString('hsl(255, 127, 64)'))).to.throw();
+      expect(() => (new RGB().fromFuncString('hsl(255, 127, 64)'))).to.throw();
     });
   });
 
   describe('ColorRGB.fromString()', () => {
     it('accepts the "transparent" keyword', () => {
-      expect(new ColorRGB().fromString('transparent')).to.include({ red: 0, green: 0, blue: 0, alpha: 0 });
+      expect(new RGB().fromString('transparent')).to.include({ red: 0, green: 0, blue: 0, alpha: 0 });
     });
 
     it('accepts X11 named colors', () => {
-      expect(new ColorRGB().fromString('Gold')).to.include({ red: 255, green: 215, blue: 0, alpha: 1});
+      expect(new RGB().fromString('Gold')).to.include({ red: 255, green: 215, blue: 0, alpha: 1});
     });
 
     it('accepts hex strings', () => {
-      expect(new ColorRGB().fromString('#FF8840')).to.include({ red: 255, green: 136, blue: 64 });
+      expect(new RGB().fromString('#FF8840')).to.include({ red: 255, green: 136, blue: 64 });
     });
 
     it('accepts functional strings', () => {
-      expect(new ColorRGB().fromString('rgb(255, 127.5, 64, 50%)')).to.include({ red: 255, green: 127, blue: 64, alpha: 0.5 });
+      expect(new RGB().fromString('rgb(255, 127.5, 64, 50%)')).to.include({ red: 255, green: 127, blue: 64, alpha: 0.5 });
     });
 
     it('throws on un-parsables', () => {
-      expect(() => new ColorRGB().fromString('bad string')).to.throw();
+      expect(() => new RGB().fromString('bad string')).to.throw();
     });
   });
 
   describe('ColorRGB.fromArray()', () => {
     it('accepts an array of numbers for RGB', () => {
-      expect(new ColorRGB().fromArray([ 255, 127, 64 ])).to.include({ red: 255, green: 127, blue: 64 });
+      expect(new RGB().fromArray([ 255, 127, 64 ])).to.include({ red: 255, green: 127, blue: 64 });
     });
 
     it('accepts an array of numbers for RGBA', () => {
-      expect(new ColorRGB().fromArray([ 255, 127, 64, 0.5 ])).to.include({ red: 255, green: 127, blue: 64, alpha: 0.5 });
+      expect(new RGB().fromArray([ 255, 127, 64, 0.5 ])).to.include({ red: 255, green: 127, blue: 64, alpha: 0.5 });
     });
 
     it('accepts an array of strings for RGB', () => {
-      expect(new ColorRGB().fromArray([ '255', '100%', 'none' ])).to.include({ red: 255, green: 255, blue: 0 });
+      expect(new RGB().fromArray([ '255', '100%', 'none' ])).to.include({ red: 255, green: 255, blue: 0 });
     });
   });
 
   describe('ColorRGB.fromObject()', () => {
     it('works with objects of { r, g, b }', () => {
-      expect(new ColorRGB().fromObject({ r: 255, g: 127, b: 64, a: 0.5 }))
+      expect(new RGB().fromObject({ r: 255, g: 127, b: 64, a: 0.5 }))
         .to.include({ red: 255, green: 127, blue: 64, alpha: 0.5 });
     });
 
     it('works with long-named properties', () => {
-      expect(new ColorRGB().fromObject({ red: 255, green: 127, blue: 64, alpha: 0.5 }))
+      expect(new RGB().fromObject({ red: 255, green: 127, blue: 64, alpha: 0.5 }))
         .to.include({ red: 255, green: 127, blue: 64, alpha: 0.5 });
     });
 
     it('allows mixing properties and absense of some', () => {
-      expect(new ColorRGB().fromObject({ red: 255, g: 127, opacity: 0.5 }))
+      expect(new RGB().fromObject({ red: 255, g: 127, opacity: 0.5 }))
         .to.include({ red: 255, green: 127, blue: 0, alpha: 0.5 });
     });
 
     it('defaults missing components to 0 (or 1 for alpha)', () => {
-      expect(new ColorRGB().fromObject({})).to.include({ red: 0, green: 0, blue: 0, alpha: 1 });
+      expect(new RGB().fromObject({})).to.include({ red: 0, green: 0, blue: 0, alpha: 1 });
     });
 
     it('ignores other properties', () => {
-      expect(new ColorRGB().fromObject({ green: 255, other: 'str', props: 123 }))
+      expect(new RGB().fromObject({ green: 255, other: 'str', props: 123 }))
         .to.include({ red: 0, green: 255, blue: 0, alpha: 1 });
     });
   });
 
   describe('ColorRGB.parse()', () => {
     it('skips on no parameter or null/undefined', () => {
-      const clr = new ColorRGB().set(255, 127, 64);
+      const clr = new RGB().set(255, 127, 64);
       expect(clr.parse(null)).to.include({ red: 255, green: 127, blue: 64 });
       expect(clr.parse(undefined)).to.include({ red: 255, green: 127, blue: 64 });
     });
 
     it('accepts number arguments', () => {
-      expect(new ColorRGB().parse(0xFF8840)).to.include({ red: 255, green: 136, blue: 64, alpha: 1});
+      expect(new RGB().parse(0xFF8840)).to.include({ red: 255, green: 136, blue: 64, alpha: 1});
     });
 
     it('accepts hex-string arguments', () => {
-      expect(new ColorRGB().parse('FF8840')).to.include({ red: 255, green: 136, blue: 64, alpha: 1});
+      expect(new RGB().parse('FF8840')).to.include({ red: 255, green: 136, blue: 64, alpha: 1});
     });
 
     it('accepts func-string arguments', () => {
-      expect(new ColorRGB().parse('rgb(255, 136, 64)')).to.include({ red: 255, green: 136, blue: 64, alpha: 1});
+      expect(new RGB().parse('rgb(255, 136, 64)')).to.include({ red: 255, green: 136, blue: 64, alpha: 1});
     });
 
     it('accepts named color arguments', () => {
-      expect(new ColorRGB().parse('Gold')).to.include({ red: 255, green: 215, blue: 0, alpha: 1});
+      expect(new RGB().parse('Gold')).to.include({ red: 255, green: 215, blue: 0, alpha: 1});
     });
 
     it('accepts array of numbers arguments', () => {
-      expect(new ColorRGB().parse([ 255, 136.5, 64 ])).to.include({ red: 255, green: 136, blue: 64, alpha: 1});
+      expect(new RGB().parse([ 255, 136.5, 64 ])).to.include({ red: 255, green: 136, blue: 64, alpha: 1});
     });
 
     it('accepts array of string arguments', () => {
-      expect(new ColorRGB().parse([ '100%', '136', '6.4e1'])).to.include({ red: 255, green: 136, blue: 64, alpha: 1});
+      expect(new RGB().parse([ '100%', '136', '6.4e1'])).to.include({ red: 255, green: 136, blue: 64, alpha: 1});
     });
 
     it('accepts generic object arguments', () => {
-      expect(new ColorRGB().parse({ r: 255, g: 136, b: 64 })).to.include({ red: 255, green: 136, blue: 64, alpha: 1});
+      expect(new RGB().parse({ r: 255, g: 136, b: 64 })).to.include({ red: 255, green: 136, blue: 64, alpha: 1});
     });
 
     it('throws on invalid argument type', () => {
-      expect(() => (new ColorRGB().parse(true))).to.throw();
+      expect(() => (new RGB().parse(true))).to.throw();
     });
   });
 })
