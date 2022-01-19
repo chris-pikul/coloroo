@@ -2,6 +2,44 @@ import { expect } from 'chai';
 import RGB from '../src/RGB';
 
 describe('ColorRGB Class', () => {
+  describe('ColorRGB()', () => {
+    it('defaults to black', () => {
+      expect(new RGB()).to.include({ red: 0, green: 0, blue: 0, alpha: 1});
+    });
+
+    it('accepts 32-bit integers', () => {
+      expect(new RGB(0xFF7F40)).to.include({ red: 255, green: 127, blue: 64, alpha: 1});
+    });
+
+    it('accepts named colors', () => {
+      expect(new RGB('fuchsia')).to.include({ red: 255, green: 0, blue: 255 });
+    });
+
+    it('accepts hex strings', () => {
+      expect(new RGB('#FF7F40')).to.include({ red: 255, green: 127, blue: 64, alpha: 1});
+    });
+
+    it('accepts functional strings', () => {
+      expect(new RGB('rgb(255, 127, 64)')).to.include({ red: 255, green: 127, blue: 64, alpha: 1});
+    });
+
+    it('accepts arrays', () => {
+      expect(new RGB([ '100%', 127, '6.4e1' ])).to.include({ red: 255, green: 127, blue: 64, alpha: 1});
+    });
+
+    it('accepts objects', () => {
+      expect(new RGB({ r: 255, g: 127, b: 64 })).to.include({ red: 255, green: 127, blue: 64, alpha: 1});
+    });
+
+    it('accepts component values', () => {
+      expect(new RGB(255, 127, 64, 1.0)).to.include({ red: 255, green: 127, blue: 64, alpha: 1});
+    });
+
+    it('throws on bad single argument', () => {
+      expect(() => new RGB('bad string')).to.throw();
+    });
+  });
+
   describe('ColorRGB.toString()', () => {
     it('outputs functional by default', () => {
       expect(new RGB().toString()).to.eql('rgb(0, 0, 0)');

@@ -102,7 +102,56 @@ export class ColorRGB implements IColorClass {
    */
   #alpha = 1.0;
 
-  constructor() {
+  /**
+   * Creates a new Color in the RGB color-space.
+   * 
+   * Accepts variable amounts of arguments, and depending on the number,
+   * dictates how the color will be created.
+   * 
+   * If only a single argument is supplied it is ran through the
+   * {@link ColorRGB.parse} method. If an error occurs during parsing, this
+   * constructor will throw an `Error`. The following value types are accepted:
+   * 
+   * - `number`: Will be treated as a 32-bit integer.
+   * - `string`: Can be either a hexidecimal string (ex. "#FFAA88"), a
+   * functional-notation string such that CSS4 accepts (ex.
+   * `rgba(255, 127, 64)`), an X11 named color (ex. "gold"), or the keyword
+   * "transparent" for a fully-transparent black color.
+   * - `array`: An array of RGB(A) component values, either as numbers, or as
+   * strings that can be parsed into numbers (such as percentages, or the
+   * "none" keyword). It does not need to contain all the channels, any missing
+   * will be skipped and remain at their defaults.
+   * - `object`: Any object that has any of the following properties available:
+   *   - `r` or `red`: Byte value for red channel
+   *   - `g` or `green`: Byte value for green channel
+   *   - `b` or `blue`: Byte value for blue channel
+   *   - `a` or `alpha` or `opacity`: Unit number (0..1) for alpha channel
+   * 
+   * If multiple arguments are supplied they are treated as R, G, B, and A;
+   * exactly as the {@link ColorRGB.set} method does (as they are passed
+   * directly to it). Since `set()` does not throw errors, any issues in
+   * parsing are quietly ignored and will default to 0.
+   * 
+   * Examples of usage:
+   * ```
+   * new ColorRGB() // Default black color
+   * new ColorRGB(0xFFAA88)   // Color from integer
+   * new ColorRGB('gold')     // Color from X11 named color
+   * new ColorRGB('#FFAA88')  // Color from hexidecimal string
+   * new ColorRGB('rgb(255, 127, 64)')  // Color from functional-notation
+   * new ColorRGB([255, 127, 64, 0.5])  // Color from array of numbers
+   * new ColorRGB(['100%', '50%', 'none', '50%]) // Color from array of strings
+   * new ColorRGB({ r: 255, g: 127, b: 64}) // Color from object
+   * 
+   * new ColorRGB(255, 127, 64, 0.5) // Color from channels
+   * ```
+   */
+  constructor(
+    _arg1?:(number|string|Array<number|string>|Record<any, any>|ColorRGB),
+    _argG?:(number|string),
+    _argB?:(number|string),
+    _argA?:(number|string),
+  ) {
     // Bind methods
     this.toString = this.toString.bind(this);
     this.toInteger = this.toInteger.bind(this);
@@ -118,6 +167,19 @@ export class ColorRGB implements IColorClass {
     this.fromArray = this.fromArray.bind(this);
     this.fromObject = this.fromObject.bind(this);
     this.parse = this.parse.bind(this);
+
+    // Check if we have any arguments
+    if(arguments.length === 1) {
+      // For a single argument this can be passed to the parse function
+      try {
+        this.parse(arguments[0]);
+      } catch (err) {
+        throw new Error(`ColorRGB was constructed with an argument "${arguments[0]}" that cannot be parsed.`);
+      }
+    } else if(arguments.length > 1) {
+      // For multiple arguments, it is treated as setting the components
+      this.set(...arguments);
+    }
   }
 
   /**
