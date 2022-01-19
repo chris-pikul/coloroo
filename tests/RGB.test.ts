@@ -7,27 +7,38 @@ describe('ColorRGB Class', () => {
       expect(new RGB().toString()).to.eql('rgb(0, 0, 0)');
     });
 
-    /*
     it('outputs integer without alpha on opaque', () => {
       const clr = new RGB().set(255, 127, 64) as RGB;
-      expect(clr.toString(RGB.Formats.INTEGER)).to.eql((0xFF7FA4).toString());
+      expect(clr.toString(RGB.Formats.INTEGER)).to.eql((0xFF7F40).toString());
     });
 
     it('outputs integer with alpha on transparent', () => {
       const clr = new RGB().set(255, 127, 64, 0.5) as RGB;
-      expect(clr.toString(RGB.Formats.INTEGER)).to.eql((0xFF7FA47F).toString());
+      expect(clr.toString(RGB.Formats.INTEGER)).to.eql((0xFF7F407F).toString());
     });
 
     it('outputs integer with alpha forced', () => {
       const clr = new RGB().set(255, 127, 64) as RGB;
-      expect(clr.toString(RGB.Formats.INTEGER_ALPHA)).to.eql((0xFF7FA400).toString());
+      expect(clr.toString(RGB.Formats.INTEGER_ALPHA)).to.eql((0xFF7F40FF).toString());
     });
 
     it('outputs integer with alpha forced on transparent', () => {
       const clr = new RGB().set(255, 127, 64, 0.5) as RGB;
-      expect(clr.toString(RGB.Formats.INTEGER_ALPHA)).to.eql((0xFF7FA47F).toString());
+      expect(clr.toString(RGB.Formats.INTEGER_ALPHA)).to.eql((0xFF7F407F).toString());
     });
-    */
+
+    it('outputs hex string with alpha optional', () => {
+      const clr = new RGB().set(255, 127, 64) as RGB;
+      expect(clr.toString(RGB.Formats.HEX)).to.eql('#ff7f40');
+
+      clr.alpha = 0.5;
+      expect(clr.toString(RGB.Formats.HEX)).to.eql('#ff7f407f');
+    });
+
+    it('outputs hex string with alpha forced', () => {
+      const clr = new RGB().set(255, 127, 64) as RGB;
+      expect(clr.toString(RGB.Formats.HEX_ALPHA)).to.eql('#ff7f40ff');
+    });
   });
 
   describe('ColorRGB.toInteger()', () => {
@@ -49,6 +60,28 @@ describe('ColorRGB Class', () => {
     it('converts RGB to integer with alpha forced as MSB', () => {
       const clr = new RGB().set(255, 127, 64, 0.5) as RGB;
       expect(clr.toInteger(true, true)).to.eql(0x7FFF7F40);
+    });
+  });
+
+  describe('ColorRGB.toHexString()', () => {
+    it('converts RGB to hex without alpha if opaque', () => {
+      const clr = new RGB().set(255, 127, 64) as RGB;
+      expect(clr.toHexString()).to.eql('#ff7f40');
+    });
+
+    it('converts RGBA to hex with alpha if transparent', () => {
+      const clr = new RGB().set(255, 127, 64, 0.5) as RGB;
+      expect(clr.toHexString()).to.eql('#ff7f407f');
+    });
+
+    it('converts RGB to hex with alpha when forced', () => {
+      const clr = new RGB().set(255, 127, 64) as RGB;
+      expect(clr.toHexString(true)).to.eql('#ff7f40ff');
+    });
+
+    it('converts RGB to hex with alpha as MSB when forced', () => {
+      const clr = new RGB().set(255, 127, 64) as RGB;
+      expect(clr.toHexString(true, true)).to.eql('#ffff7f40');
     });
   });
 
