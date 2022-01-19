@@ -20,7 +20,7 @@ bytes (0..255) and will round/truncate on manipulation.
 ### Properties
 
 - [#alpha](RGB.ColorRGB.md##alpha)
-- [#components](RGB.ColorRGB.md##components)
+- [#rgb](RGB.ColorRGB.md##rgb)
 - [Formats](RGB.ColorRGB.md#formats)
 
 ### Accessors
@@ -50,11 +50,62 @@ bytes (0..255) and will round/truncate on manipulation.
 
 ### constructor
 
-• **new ColorRGB**()
+• **new ColorRGB**(`_arg1?`, `_argG?`, `_argB?`, `_argA?`)
+
+Creates a new Color in the RGB color-space.
+
+Accepts variable amounts of arguments, and depending on the number,
+dictates how the color will be created.
+
+If only a single argument is supplied it is ran through the
+[ColorRGB.parse](RGB.ColorRGB.md#parse) method. If an error occurs during parsing, this
+constructor will throw an `Error`. The following value types are accepted:
+
+- `number`: Will be treated as a 32-bit integer.
+- `string`: Can be either a hexidecimal string (ex. "#FFAA88"), a
+functional-notation string such that CSS4 accepts (ex.
+`rgba(255, 127, 64)`), an X11 named color (ex. "gold"), or the keyword
+"transparent" for a fully-transparent black color.
+- `array`: An array of RGB(A) component values, either as numbers, or as
+strings that can be parsed into numbers (such as percentages, or the
+"none" keyword). It does not need to contain all the channels, any missing
+will be skipped and remain at their defaults.
+- `object`: Any object that has any of the following properties available:
+  - `r` or `red`: Byte value for red channel
+  - `g` or `green`: Byte value for green channel
+  - `b` or `blue`: Byte value for blue channel
+  - `a` or `alpha` or `opacity`: Unit number (0..1) for alpha channel
+
+If multiple arguments are supplied they are treated as R, G, B, and A;
+exactly as the [ColorRGB.set](RGB.ColorRGB.md#set) method does (as they are passed
+directly to it). Since `set()` does not throw errors, any issues in
+parsing are quietly ignored and will default to 0.
+
+Examples of usage:
+```
+new ColorRGB() // Default black color
+new ColorRGB(255, 127, 64, 0.5) // Color from channels
+new ColorRGB(0xFFAA88)   // Color from integer
+new ColorRGB('gold')     // Color from X11 named color
+new ColorRGB('#FFAA88')  // Color from hexidecimal string
+new ColorRGB('rgb(255, 127, 64)')  // Color from functional-notation
+new ColorRGB([255, 127, 64, 0.5])  // Color from array of numbers
+new ColorRGB(['100%', '50%', 'none', '50%]) // Color from array of strings
+new ColorRGB({ r: 255, g: 127, b: 64}) // Color from object
+```
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `_arg1?` | `string` \| `number` \| `Record`<`any`, `any`\> \| [`ColorRGB`](RGB.ColorRGB.md) \| (`string` \| `number`)[] |
+| `_argG?` | `string` \| `number` |
+| `_argB?` | `string` \| `number` |
+| `_argA?` | `string` \| `number` |
 
 #### Defined in
 
-[RGB.ts:105](https://github.com/chris-pikul/coloroo/blob/37db15b/src/RGB.ts#L105)
+[RGB.ts:148](https://github.com/chris-pikul/coloroo/blob/a028301/src/RGB.ts#L148)
 
 ## Properties
 
@@ -67,19 +118,19 @@ public getter/setters.
 
 #### Defined in
 
-[RGB.ts:103](https://github.com/chris-pikul/coloroo/blob/37db15b/src/RGB.ts#L103)
+[RGB.ts:103](https://github.com/chris-pikul/coloroo/blob/a028301/src/RGB.ts#L103)
 
 ___
 
-### #components
+### #rgb
 
-• `Private` **#components**: [`RGBTuple`](../modules/RGB.md#rgbtuple)
+• `Private` **#rgb**: [`RGBTuple`](../modules/RGB.md#rgbtuple)
 
 Holds the RGB components as an tuple array
 
 #### Defined in
 
-[RGB.ts:93](https://github.com/chris-pikul/coloroo/blob/37db15b/src/RGB.ts#L93)
+[RGB.ts:93](https://github.com/chris-pikul/coloroo/blob/a028301/src/RGB.ts#L93)
 
 ___
 
@@ -87,11 +138,11 @@ ___
 
 ▪ `Static` `Readonly` **Formats**: [`StringEnum`](../interfaces/utils_types.StringEnum.md) = `RGBFormat`
 
-The accepted string formats for parsing and generation
+The accepted string formats for generating strings.
 
 #### Defined in
 
-[RGB.ts:88](https://github.com/chris-pikul/coloroo/blob/37db15b/src/RGB.ts#L88)
+[RGB.ts:88](https://github.com/chris-pikul/coloroo/blob/a028301/src/RGB.ts#L88)
 
 ## Accessors
 
@@ -107,7 +158,7 @@ The alpha, or opacity, of the color as a unit (0..1) float
 
 #### Defined in
 
-[RGB.ts:159](https://github.com/chris-pikul/coloroo/blob/37db15b/src/RGB.ts#L159)
+[RGB.ts:220](https://github.com/chris-pikul/coloroo/blob/a028301/src/RGB.ts#L220)
 
 • `set` **alpha**(`value`): `void`
 
@@ -125,7 +176,7 @@ The alpha, or opacity, of the color as a unit (0..1) float
 
 #### Defined in
 
-[RGB.ts:163](https://github.com/chris-pikul/coloroo/blob/37db15b/src/RGB.ts#L163)
+[RGB.ts:224](https://github.com/chris-pikul/coloroo/blob/a028301/src/RGB.ts#L224)
 
 ___
 
@@ -141,7 +192,7 @@ The blue component as a byte (0..255) integer
 
 #### Defined in
 
-[RGB.ts:148](https://github.com/chris-pikul/coloroo/blob/37db15b/src/RGB.ts#L148)
+[RGB.ts:209](https://github.com/chris-pikul/coloroo/blob/a028301/src/RGB.ts#L209)
 
 • `set` **blue**(`byteValue`): `void`
 
@@ -159,7 +210,7 @@ The blue component as a byte (0..255) integer
 
 #### Defined in
 
-[RGB.ts:152](https://github.com/chris-pikul/coloroo/blob/37db15b/src/RGB.ts#L152)
+[RGB.ts:213](https://github.com/chris-pikul/coloroo/blob/a028301/src/RGB.ts#L213)
 
 ___
 
@@ -175,7 +226,7 @@ The green component as a byte (0..255) integer
 
 #### Defined in
 
-[RGB.ts:137](https://github.com/chris-pikul/coloroo/blob/37db15b/src/RGB.ts#L137)
+[RGB.ts:198](https://github.com/chris-pikul/coloroo/blob/a028301/src/RGB.ts#L198)
 
 • `set` **green**(`byteValue`): `void`
 
@@ -193,7 +244,7 @@ The green component as a byte (0..255) integer
 
 #### Defined in
 
-[RGB.ts:141](https://github.com/chris-pikul/coloroo/blob/37db15b/src/RGB.ts#L141)
+[RGB.ts:202](https://github.com/chris-pikul/coloroo/blob/a028301/src/RGB.ts#L202)
 
 ___
 
@@ -209,7 +260,7 @@ The red component as a byte (0..255) integer
 
 #### Defined in
 
-[RGB.ts:126](https://github.com/chris-pikul/coloroo/blob/37db15b/src/RGB.ts#L126)
+[RGB.ts:187](https://github.com/chris-pikul/coloroo/blob/a028301/src/RGB.ts#L187)
 
 • `set` **red**(`byteValue`): `void`
 
@@ -227,7 +278,7 @@ The red component as a byte (0..255) integer
 
 #### Defined in
 
-[RGB.ts:130](https://github.com/chris-pikul/coloroo/blob/37db15b/src/RGB.ts#L130)
+[RGB.ts:191](https://github.com/chris-pikul/coloroo/blob/a028301/src/RGB.ts#L191)
 
 ## Methods
 
@@ -262,7 +313,7 @@ based on whatever type the value can be detected as.
 
 #### Defined in
 
-[RGB.ts:609](https://github.com/chris-pikul/coloroo/blob/37db15b/src/RGB.ts#L609)
+[RGB.ts:670](https://github.com/chris-pikul/coloroo/blob/a028301/src/RGB.ts#L670)
 
 ___
 
@@ -310,7 +361,7 @@ rgba(100% 50% 25% / 50%)
 
 #### Defined in
 
-[RGB.ts:497](https://github.com/chris-pikul/coloroo/blob/37db15b/src/RGB.ts#L497)
+[RGB.ts:558](https://github.com/chris-pikul/coloroo/blob/a028301/src/RGB.ts#L558)
 
 ___
 
@@ -347,7 +398,7 @@ Will be resized to the full-byte size 0..255.
 
 #### Defined in
 
-[RGB.ts:432](https://github.com/chris-pikul/coloroo/blob/37db15b/src/RGB.ts#L432)
+[RGB.ts:493](https://github.com/chris-pikul/coloroo/blob/a028301/src/RGB.ts#L493)
 
 ___
 
@@ -378,7 +429,7 @@ sets this `ColorRGB` components appropriately.
 
 #### Defined in
 
-[RGB.ts:386](https://github.com/chris-pikul/coloroo/blob/37db15b/src/RGB.ts#L386)
+[RGB.ts:447](https://github.com/chris-pikul/coloroo/blob/a028301/src/RGB.ts#L447)
 
 ___
 
@@ -414,7 +465,7 @@ Each color searches for a single-letter property, or the full-word name.
 
 #### Defined in
 
-[RGB.ts:627](https://github.com/chris-pikul/coloroo/blob/37db15b/src/RGB.ts#L627)
+[RGB.ts:688](https://github.com/chris-pikul/coloroo/blob/a028301/src/RGB.ts#L688)
 
 ___
 
@@ -488,7 +539,7 @@ rgb(200.5, 1.27e2, +64 / .5)
 
 #### Defined in
 
-[RGB.ts:561](https://github.com/chris-pikul/coloroo/blob/37db15b/src/RGB.ts#L561)
+[RGB.ts:622](https://github.com/chris-pikul/coloroo/blob/a028301/src/RGB.ts#L622)
 
 ___
 
@@ -521,7 +572,7 @@ or undefined object is supplied it will be quietly skipped.
 
 #### Defined in
 
-[RGB.ts:647](https://github.com/chris-pikul/coloroo/blob/37db15b/src/RGB.ts#L647)
+[RGB.ts:708](https://github.com/chris-pikul/coloroo/blob/a028301/src/RGB.ts#L708)
 
 ___
 
@@ -563,7 +614,7 @@ becomes an on/off of 0 or 1. In other words, no byte conversion is made.
 
 #### Defined in
 
-[RGB.ts:342](https://github.com/chris-pikul/coloroo/blob/37db15b/src/RGB.ts#L342)
+[RGB.ts:403](https://github.com/chris-pikul/coloroo/blob/a028301/src/RGB.ts#L403)
 
 ___
 
@@ -587,7 +638,7 @@ Array of component values
 
 #### Defined in
 
-[RGB.ts:319](https://github.com/chris-pikul/coloroo/blob/37db15b/src/RGB.ts#L319)
+[RGB.ts:380](https://github.com/chris-pikul/coloroo/blob/a028301/src/RGB.ts#L380)
 
 ___
 
@@ -622,7 +673,7 @@ Functional-notation string
 
 #### Defined in
 
-[RGB.ts:305](https://github.com/chris-pikul/coloroo/blob/37db15b/src/RGB.ts#L305)
+[RGB.ts:366](https://github.com/chris-pikul/coloroo/blob/a028301/src/RGB.ts#L366)
 
 ___
 
@@ -657,7 +708,7 @@ Hexidecimal string representation
 
 #### Defined in
 
-[RGB.ts:264](https://github.com/chris-pikul/coloroo/blob/37db15b/src/RGB.ts#L264)
+[RGB.ts:325](https://github.com/chris-pikul/coloroo/blob/a028301/src/RGB.ts#L325)
 
 ___
 
@@ -692,7 +743,7 @@ Integer number representation of the color.
 
 #### Defined in
 
-[RGB.ts:228](https://github.com/chris-pikul/coloroo/blob/37db15b/src/RGB.ts#L228)
+[RGB.ts:289](https://github.com/chris-pikul/coloroo/blob/a028301/src/RGB.ts#L289)
 
 ___
 
@@ -733,4 +784,4 @@ String representation
 
 #### Defined in
 
-[RGB.ts:186](https://github.com/chris-pikul/coloroo/blob/37db15b/src/RGB.ts#L186)
+[RGB.ts:247](https://github.com/chris-pikul/coloroo/blob/a028301/src/RGB.ts#L247)

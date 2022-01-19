@@ -32,7 +32,7 @@ TS type information for ColorSpace enum.
 
 #### Defined in
 
-[ColorSpace.ts:28](https://github.com/chris-pikul/coloroo/blob/37db15b/src/ColorSpace.ts#L28)
+[ColorSpace.ts:28](https://github.com/chris-pikul/coloroo/blob/a028301/src/ColorSpace.ts#L28)
 
 ## Variables
 
@@ -45,4 +45,4 @@ color-spaces.
 
 #### Defined in
 
-[ColorSpace.ts:19](https://github.com/chris-pikul/coloroo/blob/37db15b/src/ColorSpace.ts#L19)
+[ColorSpace.ts:19](https://github.com/chris-pikul/coloroo/blob/a028301/src/ColorSpace.ts#L19)

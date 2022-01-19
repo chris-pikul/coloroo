@@ -36,7 +36,7 @@ codes.
 
 #### Defined in
 
-[utils/regexp.ts:45](https://github.com/chris-pikul/coloroo/blob/37db15b/src/utils/regexp.ts#L45)
+[utils/regexp.ts:45](https://github.com/chris-pikul/coloroo/blob/a028301/src/utils/regexp.ts#L45)
 
 ___
 
@@ -48,7 +48,7 @@ Regular expression matching integers for testing
 
 #### Defined in
 
-[utils/regexp.ts:50](https://github.com/chris-pikul/coloroo/blob/37db15b/src/utils/regexp.ts#L50)
+[utils/regexp.ts:50](https://github.com/chris-pikul/coloroo/blob/a028301/src/utils/regexp.ts#L50)
 
 ___
 
@@ -60,7 +60,7 @@ Regular expression matching a valid number as of CSS4 standards
 
 #### Defined in
 
-[utils/regexp.ts:55](https://github.com/chris-pikul/coloroo/blob/37db15b/src/utils/regexp.ts#L55)
+[utils/regexp.ts:55](https://github.com/chris-pikul/coloroo/blob/a028301/src/utils/regexp.ts#L55)
 
 ___
 
@@ -72,7 +72,7 @@ Regular expression matching a percentage value
 
 #### Defined in
 
-[utils/regexp.ts:60](https://github.com/chris-pikul/coloroo/blob/37db15b/src/utils/regexp.ts#L60)
+[utils/regexp.ts:60](https://github.com/chris-pikul/coloroo/blob/a028301/src/utils/regexp.ts#L60)
 
 ___
 
@@ -87,7 +87,7 @@ additionally accepts the new "none" keyword.
 
 #### Defined in
 
-[utils/regexp.ts:68](https://github.com/chris-pikul/coloroo/blob/37db15b/src/utils/regexp.ts#L68)
+[utils/regexp.ts:68](https://github.com/chris-pikul/coloroo/blob/a028301/src/utils/regexp.ts#L68)
 
 ## Functions
 
@@ -114,7 +114,7 @@ Array of arrays containing strings or undefined objects
 
 #### Defined in
 
-[utils/regexp.ts:22](https://github.com/chris-pikul/coloroo/blob/37db15b/src/utils/regexp.ts#L22)
+[utils/regexp.ts:22](https://github.com/chris-pikul/coloroo/blob/a028301/src/utils/regexp.ts#L22)
 
 ___
 
@@ -141,4 +141,4 @@ Either null, or an array of the matches
 
 #### Defined in
 
-[utils/regexp.ts:36](https://github.com/chris-pikul/coloroo/blob/37db15b/src/utils/regexp.ts#L36)
+[utils/regexp.ts:36](https://github.com/chris-pikul/coloroo/blob/a028301/src/utils/regexp.ts#L36)

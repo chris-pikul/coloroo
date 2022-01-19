@@ -41,7 +41,7 @@ Interface for a generic color-space based class
 
 #### Defined in
 
-[IColorClass.ts:25](https://github.com/chris-pikul/coloroo/blob/37db15b/src/IColorClass.ts#L25)
+[IColorClass.ts:25](https://github.com/chris-pikul/coloroo/blob/a028301/src/IColorClass.ts#L25)
 
 ___
 
@@ -61,7 +61,7 @@ ___
 
 #### Defined in
 
-[IColorClass.ts:23](https://github.com/chris-pikul/coloroo/blob/37db15b/src/IColorClass.ts#L23)
+[IColorClass.ts:23](https://github.com/chris-pikul/coloroo/blob/a028301/src/IColorClass.ts#L23)
 
 ___
 
@@ -81,7 +81,7 @@ ___
 
 #### Defined in
 
-[IColorClass.ts:26](https://github.com/chris-pikul/coloroo/blob/37db15b/src/IColorClass.ts#L26)
+[IColorClass.ts:26](https://github.com/chris-pikul/coloroo/blob/a028301/src/IColorClass.ts#L26)
 
 ___
 
@@ -101,7 +101,7 @@ ___
 
 #### Defined in
 
-[IColorClass.ts:24](https://github.com/chris-pikul/coloroo/blob/37db15b/src/IColorClass.ts#L24)
+[IColorClass.ts:24](https://github.com/chris-pikul/coloroo/blob/a028301/src/IColorClass.ts#L24)
 
 ___
 
@@ -121,7 +121,7 @@ ___
 
 #### Defined in
 
-[IColorClass.ts:27](https://github.com/chris-pikul/coloroo/blob/37db15b/src/IColorClass.ts#L27)
+[IColorClass.ts:27](https://github.com/chris-pikul/coloroo/blob/a028301/src/IColorClass.ts#L27)
 
 ___
 
@@ -135,7 +135,7 @@ ___
 
 #### Defined in
 
-[IColorClass.ts:22](https://github.com/chris-pikul/coloroo/blob/37db15b/src/IColorClass.ts#L22)
+[IColorClass.ts:22](https://github.com/chris-pikul/coloroo/blob/a028301/src/IColorClass.ts#L22)
 
 ___
 
@@ -149,7 +149,7 @@ ___
 
 #### Defined in
 
-[IColorClass.ts:20](https://github.com/chris-pikul/coloroo/blob/37db15b/src/IColorClass.ts#L20)
+[IColorClass.ts:20](https://github.com/chris-pikul/coloroo/blob/a028301/src/IColorClass.ts#L20)
 
 ___
 
@@ -163,4 +163,4 @@ ___
 
 #### Defined in
 
-[IColorClass.ts:19](https://github.com/chris-pikul/coloroo/blob/37db15b/src/IColorClass.ts#L19)
+[IColorClass.ts:19](https://github.com/chris-pikul/coloroo/blob/a028301/src/IColorClass.ts#L19)

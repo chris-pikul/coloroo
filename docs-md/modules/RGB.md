@@ -41,7 +41,7 @@ Renames and re-exports [ColorRGB](../classes/RGB.ColorRGB.md)
 
 #### Defined in
 
-[RGB.ts:76](https://github.com/chris-pikul/coloroo/blob/37db15b/src/RGB.ts#L76)
+[RGB.ts:76](https://github.com/chris-pikul/coloroo/blob/a028301/src/RGB.ts#L76)
 
 ___
 
@@ -51,4 +51,4 @@ ___
 
 #### Defined in
 
-[RGB.ts:33](https://github.com/chris-pikul/coloroo/blob/37db15b/src/RGB.ts#L33)
+[RGB.ts:33](https://github.com/chris-pikul/coloroo/blob/a028301/src/RGB.ts#L33)
