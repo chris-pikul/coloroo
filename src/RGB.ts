@@ -81,7 +81,7 @@ export type ERGBStringFormat = typeof RGBFormat[string];
  */
 export class ColorRGB implements IColorClass {
   /**
-   * The accepted string formats for parsing and generation
+   * The accepted string formats for generating strings.
    * 
    * @enum
    */
@@ -90,7 +90,7 @@ export class ColorRGB implements IColorClass {
   /**
    * Holds the RGB components as an tuple array
    */
-  #components:RGBTuple = [
+  #rgb:RGBTuple = [
     0,
     0,
     0,
@@ -135,6 +135,7 @@ export class ColorRGB implements IColorClass {
    * Examples of usage:
    * ```
    * new ColorRGB() // Default black color
+   * new ColorRGB(255, 127, 64, 0.5) // Color from channels
    * new ColorRGB(0xFFAA88)   // Color from integer
    * new ColorRGB('gold')     // Color from X11 named color
    * new ColorRGB('#FFAA88')  // Color from hexidecimal string
@@ -142,8 +143,6 @@ export class ColorRGB implements IColorClass {
    * new ColorRGB([255, 127, 64, 0.5])  // Color from array of numbers
    * new ColorRGB(['100%', '50%', 'none', '50%]) // Color from array of strings
    * new ColorRGB({ r: 255, g: 127, b: 64}) // Color from object
-   * 
-   * new ColorRGB(255, 127, 64, 0.5) // Color from channels
    * ```
    */
   constructor(
@@ -186,33 +185,33 @@ export class ColorRGB implements IColorClass {
    * The red component as a byte (0..255) integer
    */
   get red():number {
-    return this.#components[0];
+    return this.#rgb[0];
   }
 
   set red(byteValue:number) {
-    this.#components[0] = clampByte(byteValue);
+    this.#rgb[0] = clampByte(byteValue);
   }
 
   /**
    * The green component as a byte (0..255) integer
    */
   get green():number {
-    return this.#components[1];
+    return this.#rgb[1];
   }
 
   set green(byteValue:number) {
-    this.#components[1] = clampByte(byteValue);
+    this.#rgb[1] = clampByte(byteValue);
   }
 
   /**
    * The blue component as a byte (0..255) integer
    */
   get blue():number {
-    return this.#components[2];
+    return this.#rgb[2];
   }
 
   set blue(byteValue:number) {
-    this.#components[2] = clampByte(byteValue);
+    this.#rgb[2] = clampByte(byteValue);
   }
 
   /**
@@ -247,17 +246,17 @@ export class ColorRGB implements IColorClass {
    */
   public toString(format:ERGBStringFormat = ColorRGB.Formats.FUNCTIONAL):string {
     switch(format) {
-      case 'INTEGER':
+      case ColorRGB.Formats.INTEGER:
         return this.toInteger().toString();
-      case 'INTEGER_ALPHA':
+      case ColorRGB.Formats.INTEGER_ALPHA:
         return this.toInteger(true).toString();
-      case 'HEX':
+      case ColorRGB.Formats.HEX:
         return this.toHexString();
-      case 'HEX_ALPHA':
+      case ColorRGB.Formats.HEX_ALPHA:
         return this.toHexString(true);
-      case 'FUNCTIONAL':
+      case ColorRGB.Formats.FUNCTIONAL:
         return this.toFuncString();
-      case 'FUNCTIONAL_ALPHA':
+      case ColorRGB.Formats.FUNCTIONAL_ALPHA:
         return this.toFuncString(true);
       default:
         console.warn(`ColorRGB.toString() was supplied a format "${format}" which is invalid, defaulting to "HEX".`);
@@ -379,7 +378,7 @@ export class ColorRGB implements IColorClass {
    * @returns {Array} Array of component values
    */
   public toArray():number[] {
-    return [ ...this.#components, this.#alpha ];
+    return [ ...this.#rgb, this.#alpha ];
   }
 
   /**
@@ -414,13 +413,13 @@ export class ColorRGB implements IColorClass {
       if(ind <= 2) {
         // Each type gets a treatment on RGB
         if(type === ParameterType.INTEGER)
-          this.#components[ind] = clamp(value, 0, 255);
+          this.#rgb[ind] = clamp(value, 0, 255);
         else if(type === ParameterType.FLOAT)
-          this.#components[ind] = clampByte(value);
+          this.#rgb[ind] = clampByte(value);
         else if(type === ParameterType.PERCENTAGE)
-          this.#components[ind] = clampByte(value * 255);
+          this.#rgb[ind] = clampByte(value * 255);
         else
-          this.#components[ind] = 0;
+          this.#rgb[ind] = 0;
       } else if(ind === 3) {
         // For alpha, we don't care on the type, just clamp its number
         this.#alpha = clamp(value);
@@ -462,13 +461,13 @@ export class ColorRGB implements IColorClass {
     }
 
     // Red component
-    this.#components[0] = (int >> 16) & 0xFF;
+    this.#rgb[0] = (int >> 16) & 0xFF;
     
     // Green component
-    this.#components[1] = (int >> 8) & 0xFF;
+    this.#rgb[1] = (int >> 8) & 0xFF;
 
     // Blue component
-    this.#components[2] = int & 0xFF;
+    this.#rgb[2] = int & 0xFF;
 
     return this;
   }
@@ -502,15 +501,15 @@ export class ColorRGB implements IColorClass {
 
       if(hex.length === 3) {
         // 3 length hex implies shorthand 4-bit colors (RGB)
-        this.#components[2] = htf(int & 0xF);
-        this.#components[1] = htf((int & 0xF0) >>> 4);
-        this.#components[0] = htf((int & 0xF00) >>> 8);
+        this.#rgb[2] = htf(int & 0xF);
+        this.#rgb[1] = htf((int & 0xF0) >>> 4);
+        this.#rgb[0] = htf((int & 0xF00) >>> 8);
       } else if(hex.length === 4) {
         // 4 length hex implies shorthand 4-bit colors (RGBA)
         this.#alpha = htf(int & 0xF) / 255.0;
-        this.#components[2] = htf((int & 0xF0) >>> 4);
-        this.#components[1] = htf((int & 0xF00) >>> 8);
-        this.#components[0] = htf((int & 0xF000) >>> 12);
+        this.#rgb[2] = htf((int & 0xF0) >>> 4);
+        this.#rgb[1] = htf((int & 0xF00) >>> 8);
+        this.#rgb[0] = htf((int & 0xF000) >>> 12);
       } else if(hex.length === 6) {
         // 6 length hex is opaque 8-bit colors (RRGGBB)
         this.fromInteger(int);
@@ -625,7 +624,7 @@ export class ColorRGB implements IColorClass {
 
     // Check for the special keyword "transparent"
     if(clnStr === 'transparent') {
-      this.#components = [
+      this.#rgb = [
         0,
         0,
         0,
