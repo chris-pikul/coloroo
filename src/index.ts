@@ -6,8 +6,4 @@
  * -----------------------------------------------------------------------------
  */
 
-import Color from './Color';
-
-export * from './ColorSpace';
-
-export default Color;
+export { ColorRGB } from './RGB';
