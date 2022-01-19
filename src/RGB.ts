@@ -108,7 +108,7 @@ export class ColorRGB implements IColorClass {
     this.set = this.set.bind(this);
     this.fromInteger = this.fromInteger.bind(this);
     this.fromString = this.fromString.bind(this);
-    this.fromFunctionalString = this.fromFunctionalString.bind(this);
+    this.fromFuncString = this.fromFuncString.bind(this);
     this.fromArray = this.fromArray.bind(this);
     this.fromObject = this.fromObject.bind(this);
     this.parse = this.parse.bind(this);
@@ -421,7 +421,7 @@ export class ColorRGB implements IColorClass {
    * - `#FFAA0088`: Long-form, byte values for the RGB and Alpha channels.
    * 
    * ### Functional-notation
-   * Uses the {@link ColorRGB.fromFunctionalString} method to parse as a
+   * Uses the {@link ColorRGB.fromFuncString} method to parse as a
    * functional notation string in the style of CSS4, with some forgiveness.
    * Will accept either 3-component for RGB, or 4-component for RGBA. Each
    * parameter can be either an integer, float, or percentage value which will
@@ -471,7 +471,7 @@ export class ColorRGB implements IColorClass {
 
     // Check if it is functional-notation (if it doesn't throw)
     try {
-      const funcRtn = this.fromFunctionalString(clnStr);
+      const funcRtn = this.fromFuncString(clnStr);
       if(funcRtn)
         return funcRtn;
     // eslint-disable-next-line no-empty
@@ -560,17 +560,17 @@ export class ColorRGB implements IColorClass {
    * @param str Input string to parse
    * @returns `this` for method-chaining
    */
-  public fromFunctionalString(str:string):ColorRGB {
+  public fromFuncString(str:string):ColorRGB {
     const clnStr = str.trim().toLowerCase();
 
     // Use the regular expression to match against functional notation for RGB
     const matches = captureFirst(regexpRGBFunc, clnStr);
     if(matches === null)
-      throw new TypeError(`ColorRGB.fromFunctionalString() failed to parse the string "${str}".`);
+      throw new TypeError(`ColorRGB.fromFuncString() failed to parse the string "${str}".`);
 
     // Ensure there are at least 3 components
     if(matches.length < 3)
-      throw new TypeError(`ColorRGB.fromFunctionalString() requires at least 3 parameter.`);
+      throw new TypeError(`ColorRGB.fromFuncString() requires at least 3 parameter.`);
 
     // Pass the remaining values off to this.set() since it converts strings
     return this.set(...matches) as ColorRGB;
