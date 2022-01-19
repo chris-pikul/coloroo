@@ -1,6 +1,6 @@
 {
   "name": "coloroo",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "TypeScript/JavaScript library for colors, color-space, conversion, and manipulation.",
   "main": "./lib/index.js",
   "repository": "https://github.com/chris-pikul/coloroo.git",
