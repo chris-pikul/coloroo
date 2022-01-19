@@ -107,8 +107,9 @@ export class ColorRGB implements IColorClass {
     
     this.set = this.set.bind(this);
     this.fromInteger = this.fromInteger.bind(this);
-    this.fromString = this.fromString.bind(this);
+    this.fromHexString = this.fromHexString.bind(this);
     this.fromFuncString = this.fromFuncString.bind(this);
+    this.fromString = this.fromString.bind(this);
     this.fromArray = this.fromArray.bind(this);
     this.fromObject = this.fromObject.bind(this);
     this.parse = this.parse.bind(this);
@@ -391,96 +392,6 @@ export class ColorRGB implements IColorClass {
   }
 
   /**
-   * Converts an incoming string to acceptable components and sets the channels
-   * of this ColorRGB object. Will attempt to parse as each format in order
-   * until one does not give an error. If none of the processes work then a
-   * `TypeError` is thrown specifying so.
-   * 
-   * Accepts the following formats with their specifications:
-   * 
-   * ### Named Colors (X11)
-   * Checks if the input string is a valid X11 color name as specified in the
-   * CSS4 color module. If there is a match, it is converted to hexidecimal and
-   * then processed.
-   * 
-   * The special named color "transparent" is accepted and will result in black
-   * with an alpha of 0 (fully transparent).
-   * 
-   * ### Hexidecimal
-   * Uses the {@link ColorRGB.fromHexString} method to parse as a hexidecimal
-   * string. This is case insensitive and accepts shortform and longform hex
-   * strings, with or without alpha channel. As with most hex strings if there
-   * is an alpha component it is the least-significant byte. Additionally, the
-   * prefix "#" is optional as well.
-   * 
-   * - `#FA0`: Short-form, half-byte values for each channel RGB. Will be
-   * resized to the full-byte size 0..255.
-   * - `#FA08`: Short-form, half-byte values for the RGB and Alpha channels. 
-   * Will be resized to the full-byte size 0..255.
-   * - `#FFAA00`: Long-form, byte values for the RGB channels.
-   * - `#FFAA0088`: Long-form, byte values for the RGB and Alpha channels.
-   * 
-   * ### Functional-notation
-   * Uses the {@link ColorRGB.fromFuncString} method to parse as a
-   * functional notation string in the style of CSS4, with some forgiveness.
-   * Will accept either 3-component for RGB, or 4-component for RGBA. Each
-   * parameter can be either an integer, float, or percentage value which will
-   * be converted as appropriate for the channel.
-   * 
-   * Example formats accepted.
-   * ```
-   * rgb(255, 127, 64)
-   * rgb(255 127 64)
-   * rgb(255, 127, 64, 0.5)
-   * rgb(255 127 64 / 0.5)
-   * rgba(100%, 50%, 25%)
-   * rgba(100% 50% 25% / 50%)
-   * 
-   * rgb(200.5, 1.27e2, +64 / .5)
-   * ```
-   * 
-   * @param str Input string
-   * @returns `this` for method-chaining
-   */
-  public fromString(str:string):IColorClass {
-    let clnStr = str.trim().toLowerCase();
-
-    // Check for the special keyword "transparent"
-    if(clnStr === 'transparent') {
-      this.#components = [
-        0,
-        0,
-        0,
-      ];
-      this.#alpha = 0.0;
-
-      return this;
-    }
-
-    // Check if it is a NamedColor and replace the string with it's hex
-    if(NamedColors[clnStr])
-      clnStr = NamedColors[clnStr];
-  
-    // Check if it counts as a valid Hex string (if it doesn't throw)
-    try {
-      const hexRtn = this.fromHexString(clnStr);
-      if(hexRtn)
-        return hexRtn;
-    // eslint-disable-next-line no-empty
-    } catch { }
-
-    // Check if it is functional-notation (if it doesn't throw)
-    try {
-      const funcRtn = this.fromFuncString(clnStr);
-      if(funcRtn)
-        return funcRtn;
-    // eslint-disable-next-line no-empty
-    } catch { }
-
-    throw new TypeError(`ColorRGB.fromString() failed to parse the input string "${str}".`);
-  }
-
-  /**
    * Parses the incoming string as a hexidecimal notation RGB(A) color. This is
    * case-insensitive, and the prefix "#" is optional. Accepts the following
    * formats:
@@ -574,6 +485,96 @@ export class ColorRGB implements IColorClass {
 
     // Pass the remaining values off to this.set() since it converts strings
     return this.set(...matches) as ColorRGB;
+  }
+
+  /**
+   * Converts an incoming string to acceptable components and sets the channels
+   * of this ColorRGB object. Will attempt to parse as each format in order
+   * until one does not give an error. If none of the processes work then a
+   * `TypeError` is thrown specifying so.
+   * 
+   * Accepts the following formats with their specifications:
+   * 
+   * ### Named Colors (X11)
+   * Checks if the input string is a valid X11 color name as specified in the
+   * CSS4 color module. If there is a match, it is converted to hexidecimal and
+   * then processed.
+   * 
+   * The special named color "transparent" is accepted and will result in black
+   * with an alpha of 0 (fully transparent).
+   * 
+   * ### Hexidecimal
+   * Uses the {@link ColorRGB.fromHexString} method to parse as a hexidecimal
+   * string. This is case insensitive and accepts shortform and longform hex
+   * strings, with or without alpha channel. As with most hex strings if there
+   * is an alpha component it is the least-significant byte. Additionally, the
+   * prefix "#" is optional as well.
+   * 
+   * - `#FA0`: Short-form, half-byte values for each channel RGB. Will be
+   * resized to the full-byte size 0..255.
+   * - `#FA08`: Short-form, half-byte values for the RGB and Alpha channels. 
+   * Will be resized to the full-byte size 0..255.
+   * - `#FFAA00`: Long-form, byte values for the RGB channels.
+   * - `#FFAA0088`: Long-form, byte values for the RGB and Alpha channels.
+   * 
+   * ### Functional-notation
+   * Uses the {@link ColorRGB.fromFuncString} method to parse as a
+   * functional notation string in the style of CSS4, with some forgiveness.
+   * Will accept either 3-component for RGB, or 4-component for RGBA. Each
+   * parameter can be either an integer, float, or percentage value which will
+   * be converted as appropriate for the channel.
+   * 
+   * Example formats accepted.
+   * ```
+   * rgb(255, 127, 64)
+   * rgb(255 127 64)
+   * rgb(255, 127, 64, 0.5)
+   * rgb(255 127 64 / 0.5)
+   * rgba(100%, 50%, 25%)
+   * rgba(100% 50% 25% / 50%)
+   * 
+   * rgb(200.5, 1.27e2, +64 / .5)
+   * ```
+   * 
+   * @param str Input string
+   * @returns `this` for method-chaining
+   */
+  public fromString(str:string):IColorClass {
+    let clnStr = str.trim().toLowerCase();
+
+    // Check for the special keyword "transparent"
+    if(clnStr === 'transparent') {
+      this.#components = [
+        0,
+        0,
+        0,
+      ];
+      this.#alpha = 0.0;
+
+      return this;
+    }
+
+    // Check if it is a NamedColor and replace the string with it's hex
+    if(NamedColors[clnStr])
+      clnStr = NamedColors[clnStr];
+  
+    // Check if it counts as a valid Hex string (if it doesn't throw)
+    try {
+      const hexRtn = this.fromHexString(clnStr);
+      if(hexRtn)
+        return hexRtn;
+    // eslint-disable-next-line no-empty
+    } catch { }
+
+    // Check if it is functional-notation (if it doesn't throw)
+    try {
+      const funcRtn = this.fromFuncString(clnStr);
+      if(funcRtn)
+        return funcRtn;
+    // eslint-disable-next-line no-empty
+    } catch { }
+
+    throw new TypeError(`ColorRGB.fromString() failed to parse the input string "${str}".`);
   }
 
   /**
