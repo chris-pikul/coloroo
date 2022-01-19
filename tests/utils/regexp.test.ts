@@ -15,5 +15,9 @@ describe('RegExp Utils', () => {
     it('grabs only the first group', () => {
       expect(captureFirst(reTest, 'foo bar foo bar')).to.eql([ 'bar' ]);
     });
+
+    it('returns null on no matches', () => {
+      expect(captureFirst(reTest, 'some other')).to.eql(null);
+    });
   });
 });
