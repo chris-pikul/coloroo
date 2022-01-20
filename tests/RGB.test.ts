@@ -166,6 +166,17 @@ describe('ColorRGB Class', () => {
     });
   });
 
+  describe('ColorRGB.toUnitArray()', () => {
+    it('makes an array of units', () => {
+      const clr = new RGB(255, 128, 64);
+      const arr = clr.toUnitArray();
+      expect(arr[0]).to.eql(1);
+      expect(arr[1]).to.be.closeTo(0.5, 0.01);
+      expect(arr[2]).to.be.closeTo(0.25, 0.01);
+      expect(arr[3]).to.eql(1);
+    });
+  });
+
   describe('ColorRGB.toYIQValue()', () => {
     it('calculates correctly', () => {
       expect(new RGB(255, 127, 64).toYIQValue()).to.be.closeTo(158.09, 0.001);
@@ -260,6 +271,12 @@ describe('ColorRGB Class', () => {
     it('accepts sci-notation', () => {
       const clr = new RGB();
       expect(clr.set('6.4e1')).to.include({ red: 64 });
+    });
+  });
+
+  describe('ColorRGB.setUnits()', () => {
+    it('sets all components appropriately', () => {
+      expect(new RGB().setUnits(1, 0.5, 0.25, 0.5, 2).toArray()).to.eql([255, 127, 63, 0.5]);
     });
   });
 
@@ -515,6 +532,12 @@ describe('ColorRGB Class', () => {
 
     it('inverts with alpha when asked', () => {
       expect(new RGB(255, 127, 64).invert(true).toArray()).to.eql([0, 128, 191, 0]);
+    });
+  });
+
+  describe('ColorRGB.desaturate()', () => {
+    it('calculates correctly', () => {
+      expect(new RGB(255, 127, 64).desaturate().toArray()).to.eql([158, 158, 158, 1]);
     });
   });
 

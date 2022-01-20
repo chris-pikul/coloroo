@@ -158,9 +158,18 @@ export class ColorRGB implements IColorClass {
     this.toHexString = this.toHexString.bind(this);
     this.toFuncString = this.toFuncString.bind(this);
     this.toArray = this.toArray.bind(this);
+    this.toUnitArray = this.toUnitArray.bind(this);
     this.toYIQValue = this.toYIQValue.bind(this);
     
     this.set = this.set.bind(this);
+    this.setUnits = this.setUnits.bind(this);
+    this.setRed = this.setRed.bind(this);
+    this.setRedUnit = this.setRedUnit.bind(this);
+    this.setGreen = this.setGreen.bind(this);
+    this.setGreenUnit = this.setGreenUnit.bind(this);
+    this.setBlue = this.setBlue.bind(this);
+    this.setBlueUnit = this.setBlueUnit.bind(this);
+    this.setAlpha = this.setAlpha.bind(this);
     this.fromInteger = this.fromInteger.bind(this);
     this.fromHexString = this.fromHexString.bind(this);
     this.fromFuncString = this.fromFuncString.bind(this);
@@ -235,6 +244,27 @@ export class ColorRGB implements IColorClass {
   set alpha(value:number) {
     this.#alpha = clamp(value);
   }
+
+  /**
+   * Gets the red component as a unit
+   * 
+   * @returns Unit value (0..1)
+   */
+  redUnit = ():number => (this.red / 255);
+
+  /**
+   * Gets the green component as a unit
+   * 
+   * @returns Unit value (0..1)
+   */
+  greenUnit = ():number => (this.green / 255);
+
+  /**
+   * Gets the blue component as a unit
+   * 
+   * @returns Unit value (0..1)
+   */
+  blueUnit = ():number => (this.blue / 255);
 
   /**
    * Returns the string representation of this color, with an optional formating
@@ -393,6 +423,21 @@ export class ColorRGB implements IColorClass {
   }
 
   /**
+   * Returns this color as an Array of unit numbers (0..1). The first 3 indices
+   * are the R, G, and B channels. The last indice is the alpha channel.
+   * 
+   * @returns Array of component values as units (0..1)
+   */
+  public toUnitArray():number[] {
+    return [
+      this.redUnit(),
+      this.greenUnit(),
+      this.blueUnit(),
+      this.#alpha,
+    ];
+  }
+
+  /**
    * Calculates the YIQ-color encoding value for this color
    * 
    * @see https://24ways.org/2010/calculating-color-contrast
@@ -450,6 +495,105 @@ export class ColorRGB implements IColorClass {
       }
     }
 
+    return this;
+  }
+
+  /**
+   * Sets the components of this RGB Color using variable arguments. The order
+   * of the variables is taken as `set(R, G, B, A)`. Any missing components are
+   * skipped.
+   * 
+   * Each value should be a unit (0..1).
+   * 
+   * @returns `this` for method-chaining
+   */
+  public setUnits(...components:number[]):IColorClass {
+    for(let ind = 0; ind < components.length; ind++) {
+      if(ind <= 2)
+        this.#rgb[ind] = Math.trunc(clamp(components[ind]) * 255);
+      else if(ind === 3)
+        this.#alpha = clamp(components[ind]);
+      else
+        break;
+    }
+
+    return this;
+  }
+
+  /**
+   * Sets the red component of this RGB color with a byte value (0..255)
+   * 
+   * @param byte Byte value (0..255)
+   * @returns `this` for method-chaining
+   */
+  public setRed(byte:number):ColorRGB {
+    this.red = byte;
+    return this;
+  }
+
+  /**
+   * Sets the red component of this RGB color with a unit value (0..1)
+   * 
+   * @param unit Unit value (0..1)
+   * @returns `this` for method-chaining
+   */
+  public setRedUnit(unit:number):ColorRGB {
+    this.red = clamp(unit) * 255;
+    return this;
+  }
+
+  /**
+   * Sets the green component of this RGB color with a byte value (0..255)
+   * 
+   * @param byte Byte value (0..255)
+   * @returns `this` for method-chaining
+   */
+  public setGreen(byte:number):ColorRGB {
+    this.green = byte;
+    return this;
+  }
+
+  /**
+   * Sets the green component of this RGB color with a unit value (0..1)
+   * 
+   * @param unit Unit value (0..1)
+   * @returns `this` for method-chaining
+   */
+  public setGreenUnit(unit:number):ColorRGB {
+    this.green = clamp(unit) * 255;
+    return this;
+  }
+
+  /**
+   * Sets the green component of this RGB color with a byte value (0..255)
+   * 
+   * @param byte Byte value (0..255)
+   * @returns `this` for method-chaining
+   */
+  public setBlue(byte:number):ColorRGB {
+    this.blue = byte;
+    return this;
+  }
+
+  /**
+   * Sets the blue component of this RGB color with a unit value (0..1)
+   * 
+   * @param unit Unit value (0..1)
+   * @returns `this` for method-chaining
+   */
+  public setBlueUnit(unit:number):ColorRGB {
+    this.blue = clamp(unit) * 255;
+    return this;
+  }
+
+  /**
+   * Sets the alpha component of this RGB color with a unit value (0..1)
+   * 
+   * @param unit Unit value (0..1)
+   * @returns `this` for method-chaining
+   */
+  public setAlpha(unit:number):ColorRGB {
+    this.alpha = unit;
     return this;
   }
 
@@ -849,16 +993,90 @@ export class ColorRGB implements IColorClass {
   /**
    * __Immutable__
    * 
+   * Converts this RGB color into a grayscale color using the "Weighted" method.
+   * 
+   * @see https://www.dynamsoft.com/blog/insights/image-processing/image-processing-101-color-space-conversion/
+   * @param perc Percentage of desaturation as a unit 0..1
+   * @returns New ColorRGB object
+   */
+  public desaturate():ColorRGB {
+    // The weighted "gray" color as a unit
+    const gray = (this.redUnit() * 0.299) + (this.greenUnit() * 0.587) + (this.blueUnit() * 0.114);
+
+    return new ColorRGB().setUnits(gray, gray, gray) as ColorRGB;
+  }
+
+  /**
+   * __Immutable__
+   * 
    * Linearly interpolates this RGB color, and an other RGB color, given a
    * delta weight.
    * 
-   * @param other 
-   * @param delta 
+   * @param other Other color to interpolate to
+   * @param delta Unit (0..1) weight between this and the other
+   * @returns New ColorRGB object
    */
   public lerp(other:ColorRGB, delta:number):ColorRGB {
     const otherArr = other.toArray();
     const arr = this.toArray().map((val, ind) => lerp(val, otherArr[ind], delta));
     return new ColorRGB(arr);
+  }
+
+  /**
+   * __Immutable__
+   * 
+   * Mixes this RGB color, with another RGB color, given a weight `delta`.
+   * 
+   * @param other Other color to mix to
+   * @param delta Unit (0..1) weight between this and the other
+   * @returns New Color object
+   */
+  public mix(other:ColorRGB, delta:number):ColorRGB {
+    // Adjust the weight from 0..1 to -1..1
+    const weight = (delta * 2) - 1;
+
+    // Delta change in alpha between this and the other
+    const alpha = this.alpha - other.alpha;
+
+    /* 
+     * If the combined weight and delta-alpha is equal to -1, then the pure
+     * weight is used. 
+     */
+    const tmp = (weight * alpha === -1) ? weight : ((weight + alpha) / ((weight * alpha) + 1));
+    const w1 = (tmp + 1) / 2;
+    const w2 = 1 - w1;
+
+    return new ColorRGB(
+      (this.red * w1) + (other.red * w2),
+      (this.green * w1) + (other.green * w2),
+      (this.blue * w1) + (other.blue * w2),
+      (this.alpha * delta) + (other.alpha * (1 - delta)),
+    );
+  }
+
+  /**
+   * __Immutable__
+   * 
+   * Blends this RGB color with another RGB color. The alpha of each color is
+   * used as the blending weight for the ammount.
+   * 
+   * @param other Other color
+   * @returns New ColorRGB object
+   */
+  public blend(other:ColorRGB):ColorRGB {
+    const alpha = 1 - ((1 - other.alpha) * (1 - this.alpha));
+
+    const comp = (bgc:number, bga:number, fgc:number, fga:number):number => {
+      const fg = (fgc * fga) / alpha;
+      const bg = ((bgc * bga) * (1 - fga)) / alpha;
+      return fg + bg;
+    };
+
+    return new ColorRGB().setUnits(
+      comp(this.red / 255, this.alpha, other.red / 255, other.alpha),
+      comp(this.green / 255, this.alpha, other.red / 255, other.alpha),
+      comp(this.blue / 255, this.alpha, other.red / 255, other.alpha),
+    ) as ColorRGB;
   }
 }
 export default ColorRGB;
