@@ -467,4 +467,18 @@ describe('ColorRGB Class', () => {
       expect(drk.contrast(lit)).to.be.closeTo(5.1456, 0.0001);
     });
   });
+
+  describe('ColorRGB.contrastLevel()', () => {
+    it('calculates a AAA level', () => {
+      expect(new RGB('#333').contrastLevel(new RGB('#EEE'))).to.eql('AAA');
+    });
+
+    it('calculates a AA level', () => {
+      expect(new RGB('#444').contrastLevel(new RGB('#BBB'))).to.eql('AA');
+    });
+
+    it('calculates an empty level', () => {
+      expect(new RGB('#888').contrastLevel(new RGB('#AAA'))).to.eql('');
+    });
+  });
 })

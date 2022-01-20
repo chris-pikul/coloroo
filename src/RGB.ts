@@ -169,6 +169,7 @@ export class ColorRGB implements IColorClass {
 
     this.luminosity = this.luminosity.bind(this);
     this.contrast = this.contrast.bind(this);
+    this.contrastLevel = this.contrastLevel.bind(this);
 
     // Check if we have any arguments
     if(arguments.length === 1) {
@@ -763,6 +764,29 @@ export class ColorRGB implements IColorClass {
     if(lumA > lumB)
       return (lumA + 0.05) / (lumB + 0.05);
     return (lumB + 0.05) / (lumA + 0.05);
+  }
+
+  /**
+   * Calculates the WCAG 2.0 Contrast level between this color and another.
+   * Returned as a string to represent the "grade" the contrast ratio
+   * represents.
+   * 
+   * Returned values:
+   * - `"AAA"`: Ratios over-or-equal to 7.1
+   * - `"AA"`: Ratios over-or-equal to 4.5
+   * - `""`: Ratios under 4.5
+   * 
+   * @param other The other color to compare this with
+   * @returns String value of either 'AAA', 'AA', or ''
+   */
+  public contrastLevel(other:ColorRGB):string {
+    const ratio = this.contrast(other);
+
+    if(ratio >= 7.1)
+      return 'AAA';
+    else if(ratio >= 4.5)
+      return 'AA';
+    return '';
   }
 }
 export default ColorRGB;
