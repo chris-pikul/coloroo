@@ -41,3 +41,19 @@ export const clampByte = (value:number):number => Math.trunc(clamp(value, 0, 255
 export function cleanFloatStr(value:number, precision = 4):string {
   return parseFloat(value.toFixed(precision)).toString();
 }
+
+/**
+ * Linearly interpolates two numbers with an alpha value.
+ * 
+ * With `alpha = 0` the start value is returned
+ * With `alpha = 1` the end value is returned
+ * With `alpha = 0.5` a value between start and end is returned
+ * 
+ * @param start Starting value
+ * @param end Ending value
+ * @param alpha Unit value 0..1 to mix betwen
+ * @returns Value interpolated
+ */
+export function lerp(start:number, end:number, alpha:number):number {
+  return (start * (1 - alpha)) + (end * alpha);
+}

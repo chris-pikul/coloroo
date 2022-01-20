@@ -1,7 +1,10 @@
-import { describe } from 'mocha';
 import { expect } from 'chai';
 
-import { clamp, clampByte } from '../../src/utils/math';
+import {
+  clamp,
+  clampByte,
+  lerp,
+} from '../../src/utils/math';
 
 describe('Math Utilities', () => {
   describe('clamp()', () => {
@@ -31,5 +34,13 @@ describe('Math Utilities', () => {
       expect(clampByte(-0.5)).to.equal(0);
       expect(clampByte(254.6)).to.equal(254);
     });
+  });
+
+  describe('lerp()', () => {
+    it('calculates correctly', () => {
+      expect(lerp(5, 10, 0)).to.eql(5);
+      expect(lerp(5, 10, 1)).to.eql(10);
+      expect(lerp(5, 10, 0.5)).to.eql(7.5);
+    })
   });
 });

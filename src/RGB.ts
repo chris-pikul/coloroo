@@ -17,6 +17,7 @@ import {
   clamp,
   clampByte,
   cleanFloatStr,
+  lerp,
 } from './utils/math';
 
 import {
@@ -158,8 +159,6 @@ export class ColorRGB implements IColorClass {
     this.toFuncString = this.toFuncString.bind(this);
     this.toArray = this.toArray.bind(this);
     this.toYIQValue = this.toYIQValue.bind(this);
-    this.isDark = this.isDark.bind(this);
-    this.isLight = this.isLight.bind(this);
     
     this.set = this.set.bind(this);
     this.fromInteger = this.fromInteger.bind(this);
@@ -173,7 +172,11 @@ export class ColorRGB implements IColorClass {
     this.luminosity = this.luminosity.bind(this);
     this.contrast = this.contrast.bind(this);
     this.contrastLevel = this.contrastLevel.bind(this);
+    this.isDark = this.isDark.bind(this);
+    this.isLight = this.isLight.bind(this);
+
     this.invert = this.invert.bind(this);
+    this.lerp = this.lerp.bind(this);
 
     // Check if we have any arguments
     if(arguments.length === 1) {
@@ -397,28 +400,6 @@ export class ColorRGB implements IColorClass {
    */
   public toYIQValue():number {
     return ((this.red * 299) + (this.green * 587) + (this.blue * 114)) / 1000;
-  }
-
-  /**
-   * Performs a YIQ conversion using {@link ColorRGB.toYIQValue} and then
-   * compares the output to a "half-way" point to decide if the color is
-   * considered "dark".
-   * 
-   * @returns Boolean true if this color is considered "dark"
-   */
-  public isDark():boolean {
-    return this.toYIQValue() < 128;
-  }
-
-  /**
-   * Performs a YIQ conversion using {@link ColorRGB.toYIQValue} and then
-   * compares the output to a "half-way" point to decide if the color is
-   * considered "light".
-   * 
-   * @returns Boolean true if this color is considered "light"
-   */
-  public isLight():boolean {
-    return this.toYIQValue() >= 128;
   }
 
   /**
@@ -826,6 +807,28 @@ export class ColorRGB implements IColorClass {
   }
 
   /**
+   * Performs a YIQ conversion using {@link ColorRGB.toYIQValue} and then
+   * compares the output to a "half-way" point to decide if the color is
+   * considered "dark".
+   * 
+   * @returns Boolean true if this color is considered "dark"
+   */
+  public isDark():boolean {
+    return this.toYIQValue() < 128;
+  }
+
+  /**
+   * Performs a YIQ conversion using {@link ColorRGB.toYIQValue} and then
+   * compares the output to a "half-way" point to decide if the color is
+   * considered "light".
+   * 
+   * @returns Boolean true if this color is considered "light"
+   */
+  public isLight():boolean {
+    return this.toYIQValue() >= 128;
+  }
+
+  /**
    * __Immutable__
    * 
    * Inverts this RGB colors values and returns a new color. Optionally will
@@ -841,6 +844,21 @@ export class ColorRGB implements IColorClass {
       255 - this.blue,
       alpha ? (1 - this.#alpha) : this.#alpha,
     );
+  }
+
+  /**
+   * __Immutable__
+   * 
+   * Linearly interpolates this RGB color, and an other RGB color, given a
+   * delta weight.
+   * 
+   * @param other 
+   * @param delta 
+   */
+  public lerp(other:ColorRGB, delta:number):ColorRGB {
+    const otherArr = other.toArray();
+    const arr = this.toArray().map((val, ind) => lerp(val, otherArr[ind], delta));
+    return new ColorRGB(arr);
   }
 }
 export default ColorRGB;

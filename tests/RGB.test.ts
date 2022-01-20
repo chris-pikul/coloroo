@@ -517,4 +517,14 @@ describe('ColorRGB Class', () => {
       expect(new RGB(255, 127, 64).invert(true).toArray()).to.eql([0, 128, 191, 0]);
     });
   });
+
+  describe('ColorRGB.lerp()', () => {
+    it('calculates correctly', () => {
+      const clrA = new RGB(0, 10, 20, 0.5);
+      const clrB = new RGB(255, 20, 40, 1);
+      expect(clrA.lerp(clrB, 0).toArray()).to.eql([ 0, 10, 20, 0.5 ]);
+      expect(clrA.lerp(clrB, 1).toArray()).to.eql([ 255, 20, 40, 1 ]);
+      expect(clrA.lerp(clrB, 0.5).toArray()).to.eql([ 127, 15, 30, 0.75 ]);
+    });
+  });
 })
