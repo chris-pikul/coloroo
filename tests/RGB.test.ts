@@ -507,4 +507,14 @@ describe('ColorRGB Class', () => {
       expect(new RGB('#888').contrastLevel(new RGB('#AAA'))).to.eql('');
     });
   });
+
+  describe('ColorRGB.invert()', () => {
+    it('inverts without alpha by default', () => {
+      expect(new RGB(255, 127, 64).invert().toArray()).to.eql([0, 128, 191, 1]);
+    });
+
+    it('inverts with alpha when asked', () => {
+      expect(new RGB(255, 127, 64).invert(true).toArray()).to.eql([0, 128, 191, 0]);
+    });
+  });
 })

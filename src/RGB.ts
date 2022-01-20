@@ -173,6 +173,7 @@ export class ColorRGB implements IColorClass {
     this.luminosity = this.luminosity.bind(this);
     this.contrast = this.contrast.bind(this);
     this.contrastLevel = this.contrastLevel.bind(this);
+    this.invert = this.invert.bind(this);
 
     // Check if we have any arguments
     if(arguments.length === 1) {
