@@ -168,6 +168,7 @@ export class ColorRGB implements IColorClass {
     this.parse = this.parse.bind(this);
 
     this.luminosity = this.luminosity.bind(this);
+    this.contrast = this.contrast.bind(this);
 
     // Check if we have any arguments
     if(arguments.length === 1) {
@@ -731,7 +732,7 @@ export class ColorRGB implements IColorClass {
   }
 
   /**
-   * Calculates the WCAG Luminosity value of this color.
+   * Calculates the WCAG 2.0 Luminosity value of this color.
    * 
    * @see https://www.w3.org/TR/WCAG20/#relativeluminancedef
    * @returns Floating-point unit luminosity value
@@ -746,6 +747,22 @@ export class ColorRGB implements IColorClass {
 
     // Perform the combination for the final luminosity
     return (lum[0] * 0.2126) + (lum[1] * 0.7152) + (lum[2] * 0.0722);
+  }
+
+  /**
+   * Calculates the WCAG 2.0 Contrast value between this color and another.
+   * 
+   * @see http://www.w3.org/TR/WCAG20/#contrast-ratiodef
+   * @param other The other color to compare this with
+   * @returns Numerical contrast value
+   */
+  public contrast(other:ColorRGB):number {
+    const lumA = this.luminosity();
+    const lumB = other.luminosity();
+
+    if(lumA > lumB)
+      return (lumA + 0.05) / (lumB + 0.05);
+    return (lumB + 0.05) / (lumA + 0.05);
   }
 }
 export default ColorRGB;

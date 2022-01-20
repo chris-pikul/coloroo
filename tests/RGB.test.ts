@@ -454,4 +454,17 @@ describe('ColorRGB Class', () => {
       expect(clr.luminosity()).to.be.closeTo(0.3680890926, 0.000001);
     });
   });
+
+  describe('ColorRGB.contrast()', () => {
+    const lit = new RGB(0xFF7F40);
+    const drk = new RGB(0x223344);
+
+    it('calculates correctly for a lighter->darker', () => {
+      expect(lit.contrast(drk)).to.be.closeTo(5.1456, 0.0001);
+    });
+
+    it('calculates correctly for a darker->lighter', () => {
+      expect(drk.contrast(lit)).to.be.closeTo(5.1456, 0.0001);
+    });
+  });
 })
