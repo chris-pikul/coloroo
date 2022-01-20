@@ -167,6 +167,8 @@ export class ColorRGB implements IColorClass {
     this.fromObject = this.fromObject.bind(this);
     this.parse = this.parse.bind(this);
 
+    this.luminosity = this.luminosity.bind(this);
+
     // Check if we have any arguments
     if(arguments.length === 1) {
       // For a single argument this can be passed to the parse function
@@ -726,6 +728,24 @@ export class ColorRGB implements IColorClass {
     }
 
     return this;
+  }
+
+  /**
+   * Calculates the WCAG Luminosity value of this color.
+   * 
+   * @see https://www.w3.org/TR/WCAG20/#relativeluminancedef
+   * @returns Floating-point unit luminosity value
+   */
+  public luminosity():number {
+    // Map each channel to it's calculated luminosity base
+    const lum = this.#rgb.map(chan => {
+      // We work in sRGB units
+      const unit = chan / 255.0;
+      return (unit < 0.03928) ? (unit / 12.92) : (((unit + 0.055) / 1.055) ** 2.4);
+    });
+
+    // Perform the combination for the final luminosity
+    return (lum[0] * 0.2126) + (lum[1] * 0.7152) + (lum[2] * 0.0722);
   }
 }
 export default ColorRGB;

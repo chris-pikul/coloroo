@@ -447,4 +447,11 @@ describe('ColorRGB Class', () => {
       expect(() => (new RGB().parse(true))).to.throw();
     });
   });
+
+  describe('ColorRGB.luminosity()', () => {
+    it('calculates correctly', () => {
+      const clr = new RGB(255, 127, 64);
+      expect(clr.luminosity()).to.be.closeTo(0.3680890926, 0.000001);
+    });
+  });
 })
