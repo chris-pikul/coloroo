@@ -157,6 +157,9 @@ export class ColorRGB implements IColorClass {
     this.toHexString = this.toHexString.bind(this);
     this.toFuncString = this.toFuncString.bind(this);
     this.toArray = this.toArray.bind(this);
+    this.toYIQValue = this.toYIQValue.bind(this);
+    this.isDark = this.isDark.bind(this);
+    this.isLight = this.isLight.bind(this);
     
     this.set = this.set.bind(this);
     this.fromInteger = this.fromInteger.bind(this);
@@ -383,6 +386,38 @@ export class ColorRGB implements IColorClass {
    */
   public toArray():number[] {
     return [ ...this.#rgb, this.#alpha ];
+  }
+
+  /**
+   * Calculates the YIQ-color encoding value for this color
+   * 
+   * @see https://24ways.org/2010/calculating-color-contrast
+   * @returns YIQ value
+   */
+  public toYIQValue():number {
+    return ((this.red * 299) + (this.green * 587) + (this.blue * 114)) / 1000;
+  }
+
+  /**
+   * Performs a YIQ conversion using {@link ColorRGB.toYIQValue} and then
+   * compares the output to a "half-way" point to decide if the color is
+   * considered "dark".
+   * 
+   * @returns Boolean true if this color is considered "dark"
+   */
+  public isDark():boolean {
+    return this.toYIQValue() < 128;
+  }
+
+  /**
+   * Performs a YIQ conversion using {@link ColorRGB.toYIQValue} and then
+   * compares the output to a "half-way" point to decide if the color is
+   * considered "light".
+   * 
+   * @returns Boolean true if this color is considered "light"
+   */
+  public isLight():boolean {
+    return this.toYIQValue() >= 128;
   }
 
   /**
@@ -787,6 +822,24 @@ export class ColorRGB implements IColorClass {
     else if(ratio >= 4.5)
       return 'AA';
     return '';
+  }
+
+  /**
+   * __Immutable__
+   * 
+   * Inverts this RGB colors values and returns a new color. Optionally will
+   * invert the alpha as well.
+   * 
+   * @param alpha (default false) If true, the alpha will be inverted as well
+   * @returns New ColorRGB object
+   */
+  public invert(alpha = false):ColorRGB {
+    return new ColorRGB(
+      255 - this.red,
+      255 - this.green,
+      255 - this.blue,
+      alpha ? (1 - this.#alpha) : this.#alpha,
+    );
   }
 }
 export default ColorRGB;

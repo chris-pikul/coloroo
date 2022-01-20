@@ -166,6 +166,32 @@ describe('ColorRGB Class', () => {
     });
   });
 
+  describe('ColorRGB.toYIQValue()', () => {
+    it('calculates correctly', () => {
+      expect(new RGB(255, 127, 64).toYIQValue()).to.be.closeTo(158.09, 0.001);
+    });
+  });
+
+  describe('ColorRGB.isDark()', () => {
+    it('calculates correctly for dark', () => {
+      expect(new RGB('#333').isDark()).to.be.true;
+    });
+
+    it('calculates correctly for light', () => {
+      expect(new RGB('#AAA').isDark()).to.be.false;
+    });
+  });
+
+  describe('ColorRGB.isLight()', () => {
+    it('calculates correctly for dark', () => {
+      expect(new RGB('#333').isLight()).to.be.false;
+    });
+
+    it('calculates correctly for light', () => {
+      expect(new RGB('#AAA').isLight()).to.be.true;
+    });
+  });
+
   describe('ColorRGB.set()', () => {
     it('accepts 3 number arguments', () => {
       const clr = new RGB();
