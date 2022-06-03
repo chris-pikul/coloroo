@@ -19,6 +19,13 @@ npm install --save coloroo
 yarn add coloroo
 ```
 
+## Usage
+
+Coloroo supports CommonJS, ES Modules, and browsers. The `package.json` should be accomidating for both CJS, and ESM. For the browser distributable, it is generated
+from `./lib/esm/` using ESBuild, and can be found in the `./dist` folder.
+
+For the remainder of these docs, ESM is assumed but you should be able to convert to CJS syntax if you need.
+
 ## Test Coverage
 
 Testing is provided by Mocha/Chai, with coverage reporting done by Istanbul/NYC.
