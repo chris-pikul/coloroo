@@ -26,6 +26,13 @@ from `./lib/esm/` using ESBuild, and can be found in the `./dist` folder.
 
 For the remainder of these docs, ESM is assumed but you should be able to convert to CJS syntax if you need.
 
+### Color Spaces
+
+| Color Space | Class Name | Quick Doc |
+| ----------- | ---------- | --------- |
+| Named Colors | [NamedColors](src/NamedColors.ts) | [](NamedColors.md) |
+| RGB | [ColorRGB](src/RGB.ts) | [](ColorRGB.md) |
+
 ## Test Coverage
 
 Testing is provided by Mocha/Chai, with coverage reporting done by Istanbul/NYC.
