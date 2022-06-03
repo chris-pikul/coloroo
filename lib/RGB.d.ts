@@ -16,12 +16,55 @@ export declare type ERGBStringFormat = typeof RGBFormat[string];
 export declare class ColorRGB implements IColorClass {
     #private;
     /**
-     * The accepted string formats for parsing and generation
+     * The accepted string formats for generating strings.
      *
      * @enum
      */
     static readonly Formats: StringEnum;
-    constructor();
+    /**
+     * Creates a new Color in the RGB color-space.
+     *
+     * Accepts variable amounts of arguments, and depending on the number,
+     * dictates how the color will be created.
+     *
+     * If only a single argument is supplied it is ran through the
+     * {@link ColorRGB.parse} method. If an error occurs during parsing, this
+     * constructor will throw an `Error`. The following value types are accepted:
+     *
+     * - `number`: Will be treated as a 32-bit integer.
+     * - `string`: Can be either a hexidecimal string (ex. "#FFAA88"), a
+     * functional-notation string such that CSS4 accepts (ex.
+     * `rgba(255, 127, 64)`), an X11 named color (ex. "gold"), or the keyword
+     * "transparent" for a fully-transparent black color.
+     * - `array`: An array of RGB(A) component values, either as numbers, or as
+     * strings that can be parsed into numbers (such as percentages, or the
+     * "none" keyword). It does not need to contain all the channels, any missing
+     * will be skipped and remain at their defaults.
+     * - `object`: Any object that has any of the following properties available:
+     *   - `r` or `red`: Byte value for red channel
+     *   - `g` or `green`: Byte value for green channel
+     *   - `b` or `blue`: Byte value for blue channel
+     *   - `a` or `alpha` or `opacity`: Unit number (0..1) for alpha channel
+     *
+     * If multiple arguments are supplied they are treated as R, G, B, and A;
+     * exactly as the {@link ColorRGB.set} method does (as they are passed
+     * directly to it). Since `set()` does not throw errors, any issues in
+     * parsing are quietly ignored and will default to 0.
+     *
+     * Examples of usage:
+     * ```
+     * new ColorRGB() // Default black color
+     * new ColorRGB(255, 127, 64, 0.5) // Color from channels
+     * new ColorRGB(0xFFAA88)   // Color from integer
+     * new ColorRGB('gold')     // Color from X11 named color
+     * new ColorRGB('#FFAA88')  // Color from hexidecimal string
+     * new ColorRGB('rgb(255, 127, 64)')  // Color from functional-notation
+     * new ColorRGB([255, 127, 64, 0.5])  // Color from array of numbers
+     * new ColorRGB(['100%', '50%', 'none', '50%']) // Color from array of strings
+     * new ColorRGB({ r: 255, g: 127, b: 64}) // Color from object
+     * ```
+     */
+    constructor(_arg1?: (number | string | Array<number | string> | Record<any, any> | ColorRGB), _argG?: (number | string), _argB?: (number | string), _argA?: (number | string));
     /**
      * The red component as a byte (0..255) integer
      */
@@ -42,6 +85,24 @@ export declare class ColorRGB implements IColorClass {
      */
     get alpha(): number;
     set alpha(value: number);
+    /**
+     * Gets the red component as a unit
+     *
+     * @returns Unit value (0..1)
+     */
+    redUnit: () => number;
+    /**
+     * Gets the green component as a unit
+     *
+     * @returns Unit value (0..1)
+     */
+    greenUnit: () => number;
+    /**
+     * Gets the blue component as a unit
+     *
+     * @returns Unit value (0..1)
+     */
+    blueUnit: () => number;
     /**
      * Returns the string representation of this color, with an optional formating
      * parameter.
@@ -138,6 +199,20 @@ export declare class ColorRGB implements IColorClass {
      */
     toArray(): number[];
     /**
+     * Returns this color as an Array of unit numbers (0..1). The first 3 indices
+     * are the R, G, and B channels. The last indice is the alpha channel.
+     *
+     * @returns Array of component values as units (0..1)
+     */
+    toUnitArray(): number[];
+    /**
+     * Calculates the YIQ-color encoding value for this color
+     *
+     * @see https://24ways.org/2010/calculating-color-contrast
+     * @returns YIQ value
+     */
+    toYIQValue(): number;
+    /**
      * Sets the components of this RGB Color using variable arguments. The order
      * of the variables is taken as `set(R, G, B, A)`. Any missing components are
      * skipped.
@@ -157,6 +232,65 @@ export declare class ColorRGB implements IColorClass {
      * @returns `this` for method-chaining
      */
     set(...components: (number | string)[]): IColorClass;
+    /**
+     * Sets the components of this RGB Color using variable arguments. The order
+     * of the variables is taken as `set(R, G, B, A)`. Any missing components are
+     * skipped.
+     *
+     * Each value should be a unit (0..1).
+     *
+     * @returns `this` for method-chaining
+     */
+    setUnits(...components: number[]): IColorClass;
+    /**
+     * Sets the red component of this RGB color with a byte value (0..255)
+     *
+     * @param byte Byte value (0..255)
+     * @returns `this` for method-chaining
+     */
+    setRed(byte: number): ColorRGB;
+    /**
+     * Sets the red component of this RGB color with a unit value (0..1)
+     *
+     * @param unit Unit value (0..1)
+     * @returns `this` for method-chaining
+     */
+    setRedUnit(unit: number): ColorRGB;
+    /**
+     * Sets the green component of this RGB color with a byte value (0..255)
+     *
+     * @param byte Byte value (0..255)
+     * @returns `this` for method-chaining
+     */
+    setGreen(byte: number): ColorRGB;
+    /**
+     * Sets the green component of this RGB color with a unit value (0..1)
+     *
+     * @param unit Unit value (0..1)
+     * @returns `this` for method-chaining
+     */
+    setGreenUnit(unit: number): ColorRGB;
+    /**
+     * Sets the green component of this RGB color with a byte value (0..255)
+     *
+     * @param byte Byte value (0..255)
+     * @returns `this` for method-chaining
+     */
+    setBlue(byte: number): ColorRGB;
+    /**
+     * Sets the blue component of this RGB color with a unit value (0..1)
+     *
+     * @param unit Unit value (0..1)
+     * @returns `this` for method-chaining
+     */
+    setBlueUnit(unit: number): ColorRGB;
+    /**
+     * Sets the alpha component of this RGB color with a unit value (0..1)
+     *
+     * @param unit Unit value (0..1)
+     * @returns `this` for method-chaining
+     */
+    setAlpha(unit: number): ColorRGB;
     /**
      * Converts an incoming integer number into it's RGB(A) channel values and
      * sets this `ColorRGB` components appropriately.
@@ -312,5 +446,81 @@ export declare class ColorRGB implements IColorClass {
      * @returns `this` for method-chaining
      */
     parse(arg: any): IColorClass;
+    /**
+     * Calculates the WCAG 2.0 Luminosity value of this color.
+     *
+     * @see https://www.w3.org/TR/WCAG20/#relativeluminancedef
+     * @returns Floating-point unit luminosity value
+     */
+    luminosity(): number;
+    /**
+     * Calculates the WCAG 2.0 Contrast value between this color and another.
+     *
+     * @see http://www.w3.org/TR/WCAG20/#contrast-ratiodef
+     * @param other The other color to compare this with
+     * @returns Numerical contrast value
+     */
+    contrast(other: ColorRGB): number;
+    /**
+     * Calculates the WCAG 2.0 Contrast level between this color and another.
+     * Returned as a string to represent the "grade" the contrast ratio
+     * represents.
+     *
+     * Returned values:
+     * - `"AAA"`: Ratios over-or-equal to 7.1
+     * - `"AA"`: Ratios over-or-equal to 4.5
+     * - `""`: Ratios under 4.5
+     *
+     * @param other The other color to compare this with
+     * @returns String value of either 'AAA', 'AA', or ''
+     */
+    contrastLevel(other: ColorRGB): string;
+    /**
+     * Performs a YIQ conversion using {@link ColorRGB.toYIQValue} and then
+     * compares the output to a "half-way" point to decide if the color is
+     * considered "dark".
+     *
+     * @returns Boolean true if this color is considered "dark"
+     */
+    isDark(): boolean;
+    /**
+     * Performs a YIQ conversion using {@link ColorRGB.toYIQValue} and then
+     * compares the output to a "half-way" point to decide if the color is
+     * considered "light".
+     *
+     * @returns Boolean true if this color is considered "light"
+     */
+    isLight(): boolean;
+    /**
+     * __Immutable__
+     *
+     * Inverts this RGB colors values and returns a new color. Optionally will
+     * invert the alpha as well.
+     *
+     * @param alpha (default false) If true, the alpha will be inverted as well
+     * @returns New ColorRGB object
+     */
+    invert(alpha?: boolean): ColorRGB;
+    /**
+     * __Immutable__
+     *
+     * Converts this RGB color into a grayscale color using the "Weighted" method.
+     *
+     * @see https://www.dynamsoft.com/blog/insights/image-processing/image-processing-101-color-space-conversion/
+     * @param perc Percentage of desaturation as a unit 0..1
+     * @returns New ColorRGB object
+     */
+    desaturate(): ColorRGB;
+    /**
+     * __Immutable__
+     *
+     * Linearly interpolates this RGB color, and an other RGB color, given a
+     * delta weight.
+     *
+     * @param other Other color to interpolate to
+     * @param delta Unit (0..1) weight between this and the other
+     * @returns New ColorRGB object
+     */
+    lerp(other: ColorRGB, delta: number): ColorRGB;
 }
 export default ColorRGB;

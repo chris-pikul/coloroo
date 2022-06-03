@@ -40,6 +40,64 @@ describe('ColorRGB Class', () => {
     });
   });
 
+  describe('ColorRGB GET/SET', () => {
+    const clr = new RGB();
+    it('clamps red to byte', () => {
+      clr.red = 512;
+      expect(clr.red).to.equal(255, 'expected value over to clamp down');
+
+      clr.red = 3.14;
+      expect(clr.red).to.equal(3, 'expected float to be truncated');
+
+      clr.red = -100;
+      expect(clr.red).to.equal(0, 'expected negative to clamp to 0');
+
+      expect(clr.setRed(300.123).red).to.equal(255, 'expected func to clamp over value');
+    });
+
+    it('clamps green to byte', () => {
+      clr.green = 512;
+      expect(clr.green).to.equal(255, 'expected value over to clamp down');
+
+      clr.green = 3.14;
+      expect(clr.green).to.equal(3, 'expected float to be truncated');
+
+      clr.green = -100;
+      expect(clr.green).to.equal(0, 'expected negative to clamp to 0');
+
+      expect(clr.setGreen(300.123).green).to.equal(255, 'expected func to clamp over value');
+    });
+
+    it('clamps blue to byte', () => {
+      clr.blue = 512;
+      expect(clr.blue).to.equal(255, 'expected value over to clamp down');
+
+      clr.blue = 3.14;
+      expect(clr.blue).to.equal(3, 'expected float to be truncated');
+
+      clr.blue = -100;
+      expect(clr.blue).to.equal(0, 'expected negative to clamp to 0');
+
+      expect(clr.setBlue(300.123).blue).to.equal(255, 'expected func to clamp over value');
+    });
+
+    it('clamps alpha to unit', () => {
+      clr.alpha = 255;
+      expect(clr.alpha).to.equal(1, 'expected value over to clamp down');
+
+      clr.alpha = -1;
+      expect(clr.alpha).to.equal(0, 'expected negative to clamp to 0');
+
+      expect(clr.setAlpha(300.123).alpha).to.equal(1, 'expected func to clamp over value');
+    });
+
+    it('sets unit values using funcs', () => {
+      expect(clr.setRedUnit(3.14).red).to.eql(255, 'clamps red unit to max');
+      expect(clr.setGreenUnit(3.14).green).to.eql(255, 'clamps green unit to max');
+      expect(clr.setBlueUnit(3.14).blue).to.eql(255, 'clamps blue unit to max');
+    });
+  });
+
   describe('ColorRGB.toString()', () => {
     it('outputs functional by default', () => {
       expect(new RGB().toString()).to.eql('rgb(0, 0, 0)');

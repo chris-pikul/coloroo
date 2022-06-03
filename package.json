@@ -2,6 +2,7 @@
   "name": "coloroo",
   "version": "0.2.0",
   "description": "TypeScript/JavaScript library for colors, color-space, conversion, and manipulation.",
+  "keywords": [ "color", "conversion", "utility", "design", "space", "rgb", "cmyk", "hsl", "hsb", "lab" ],
   "main": "./lib/index.js",
   "repository": "https://github.com/chris-pikul/coloroo.git",
   "author": "Chris Pikul <ChrisPikul510@gmail.com>",

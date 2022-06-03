@@ -34,3 +34,16 @@ export declare const clampByte: (value: number) => number;
  * @returns String of the number with trailing 0s removed
  */
 export declare function cleanFloatStr(value: number, precision?: number): string;
+/**
+ * Linearly interpolates two numbers with an alpha value.
+ *
+ * With `alpha = 0` the start value is returned
+ * With `alpha = 1` the end value is returned
+ * With `alpha = 0.5` a value between start and end is returned
+ *
+ * @param start Starting value
+ * @param end Ending value
+ * @param alpha Unit value 0..1 to mix betwen
+ * @returns Value interpolated
+ */
+export declare function lerp(start: number, end: number, alpha: number): number;

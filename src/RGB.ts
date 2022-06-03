@@ -30,7 +30,6 @@ import { convertParam, ParameterType } from './utils/params';
 import type { IColorClass } from './IColorClass';
 import type { StringEnum } from './utils/types';
 
-
 export type RGBTuple = [number, number, number];
 
 /**
@@ -142,7 +141,7 @@ export class ColorRGB implements IColorClass {
    * new ColorRGB('#FFAA88')  // Color from hexidecimal string
    * new ColorRGB('rgb(255, 127, 64)')  // Color from functional-notation
    * new ColorRGB([255, 127, 64, 0.5])  // Color from array of numbers
-   * new ColorRGB(['100%', '50%', 'none', '50%]) // Color from array of strings
+   * new ColorRGB(['100%', '50%', 'none', '50%']) // Color from array of strings
    * new ColorRGB({ r: 255, g: 127, b: 64}) // Color from object
    * ```
    */
