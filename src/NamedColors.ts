@@ -13,9 +13,14 @@
  * @module RGB
  */
 
-import { StringEnum } from './utils/types';
-
-export const NamedColors:StringEnum = {
+/**
+ * A key-value record of the known named colors (aka X11 Color Set) as defined
+ * by the CSS4 spec.
+ * 
+ * Each key is the string name given (ex. "gold"), matching to it's hexidecimal
+ * color notation as a string (ex. "#FFD700").
+ */
+export const NamedColors = {
   aliceblue: '#F0F8FF',
   antiquewhite: '#FAEBD7',
   aqua: '#00FFFF',
@@ -165,5 +170,7 @@ export const NamedColors:StringEnum = {
   yellow: '#FFFF00',
   yellowgreen: '#9ACD32',
 } as const;
+
+export type ENamedColor = keyof typeof NamedColors;
 
 export default NamedColors;

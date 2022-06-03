@@ -5,5 +5,15 @@
  * project root "LICENSE" for more information.
  * -----------------------------------------------------------------------------
  */
+export { NamedColors, ENamedColor } from './NamedColors';
 
-export { ColorRGB } from './RGB';
+export {
+  ColorRGB,
+  RGBFormat,
+  ERGBFormat,
+  RGBTuple,
+} from './RGB';
+
+export { ColorSpace, EColorSpace } from './ColorSpace';
+
+export type { IColorClass } from './IColorClass';

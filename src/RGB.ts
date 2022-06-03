@@ -11,7 +11,7 @@
  * 
  * @module RGB
  */
-import NamedColors from './NamedColors';
+import NamedColors, { ENamedColor } from './NamedColors';
 
 import {
   clamp,
@@ -38,7 +38,7 @@ export type RGBTuple = [number, number, number];
  * 
  * @enum
  */
-const RGBFormat:StringEnum = {
+export const RGBFormat:StringEnum = {
   /**
    * Format the color into a single integer value, with automatic alpha
    * detection.
@@ -73,7 +73,7 @@ const RGBFormat:StringEnum = {
    */
   FUNCTIONAL_ALPHA: 'FUNCTIONAL_ALPHA',
 } as const;
-export type ERGBStringFormat = typeof RGBFormat[string];
+export type ERGBFormat = keyof typeof RGBFormat;
 
 /**
  * RGB with Alpha color-space. The red, green, and blue channels are 8-bit
@@ -284,7 +284,7 @@ export class ColorRGB implements IColorClass {
    * @param format Optional enum for the output format. Defaults to functional.
    * @returns String representation
    */
-  public toString(format:ERGBStringFormat = ColorRGB.Formats.FUNCTIONAL):string {
+  public toString(format:ERGBFormat = ColorRGB.Formats.FUNCTIONAL):string {
     switch(format) {
       case ColorRGB.Formats.INTEGER:
         return this.toInteger().toString();
@@ -799,8 +799,8 @@ export class ColorRGB implements IColorClass {
     }
 
     // Check if it is a NamedColor and replace the string with it's hex
-    if(NamedColors[clnStr])
-      clnStr = NamedColors[clnStr];
+    if(Object.keys(NamedColors).includes(clnStr))
+      clnStr = NamedColors[clnStr as ENamedColor];
   
     // Check if it counts as a valid Hex string (if it doesn't throw)
     try {
