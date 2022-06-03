@@ -23,114 +23,151 @@ myFunc("foo"); // TS Error, not a known color name
 
 | Key Name | Color Value |
 | -------- | ----------- |
-| darkslategrey | `#2F4F4F` ![#2F4F4F](https://via.placeholder.com/15/2F4F4F/000000?text=+)|
-| darkturquoise | `#00CED1` ![#00CED1](https://via.placeholder.com/15/00CED1/000000?text=+)|
-| darkviolet | `#9400D3` ![#9400D3](https://via.placeholder.com/15/9400D3/000000?text=+)|
-| deeppink | `#FF1493` ![#FF1493](https://via.placeholder.com/15/FF1493/000000?text=+)|
-| deepskyblue | `#00BFFF` ![#00BFFF](https://via.placeholder.com/15/00BFFF/000000?text=+)|
-| dimgray | `#696969` ![#696969](https://via.placeholder.com/15/696969/000000?text=+)|
-| dimgrey | `#696969` ![#696969](https://via.placeholder.com/15/696969/000000?text=+)|
-| dodgerblue | `#1E90FF` ![#1E90FF](https://via.placeholder.com/15/1E90FF/000000?text=+)|
-| firebrick | `#B22222` ![#B22222](https://via.placeholder.com/15/B22222/000000?text=+)|
-| floralwhite | `#FFFAF0` ![#FFFAF0](https://via.placeholder.com/15/FFFAF0/000000?text=+)|
-| forestgreen | `#228B22` ![#228B22](https://via.placeholder.com/15/228B22/000000?text=+)|
-| fuchsia | `#FF00FF` ![#FF00FF](https://via.placeholder.com/15/FF00FF/000000?text=+)|
-| gainsboro | `#DCDCDC` ![#DCDCDC](https://via.placeholder.com/15/DCDCDC/000000?text=+)|
-| ghostwhite | `#F8F8FF` ![#F8F8FF](https://via.placeholder.com/15/F8F8FF/000000?text=+)|
-| gold | `#FFD700` ![#FFD700](https://via.placeholder.com/15/FFD700/000000?text=+)|
-| goldenrod | `#DAA520` ![#DAA520](https://via.placeholder.com/15/DAA520/000000?text=+)|
-| gray | `#808080` ![#808080](https://via.placeholder.com/15/808080/000000?text=+)|
-| green | `#008000` ![#008000](https://via.placeholder.com/15/008000/000000?text=+)|
-| greenyellow | `#ADFF2F` ![#ADFF2F](https://via.placeholder.com/15/ADFF2F/000000?text=+)|
-| grey | `#808080` ![#808080](https://via.placeholder.com/15/808080/000000?text=+)|
-| honeydew | `#F0FFF0` ![#F0FFF0](https://via.placeholder.com/15/F0FFF0/000000?text=+)|
-| hotpink | `#FF69B4` ![#FF69B4](https://via.placeholder.com/15/FF69B4/000000?text=+)|
-| indianred | `#CD5C5C` ![#CD5C5C](https://via.placeholder.com/15/CD5C5C/000000?text=+)|
-| indigo | `#4B0082` ![#4B0082](https://via.placeholder.com/15/4B0082/000000?text=+)|
-| ivory | `#FFFFF0` ![#FFFFF0](https://via.placeholder.com/15/FFFFF0/000000?text=+)|
-| khaki | `#F0E68C` ![#F0E68C](https://via.placeholder.com/15/F0E68C/000000?text=+)|
-| lavender | `#E6E6FA` ![#E6E6FA](https://via.placeholder.com/15/E6E6FA/000000?text=+)|
-| lavenderblush | `#FFF0F5` ![#FFF0F5](https://via.placeholder.com/15/FFF0F5/000000?text=+)|
-| lawngreen | `#7CFC00` ![#7CFC00](https://via.placeholder.com/15/7CFC00/000000?text=+)|
-| lemonchiffon | `#FFFACD` ![#FFFACD](https://via.placeholder.com/15/FFFACD/000000?text=+)|
-| lightblue | `#ADD8E6` ![#ADD8E6](https://via.placeholder.com/15/ADD8E6/000000?text=+)|
-| lightcoral | `#F08080` ![#F08080](https://via.placeholder.com/15/F08080/000000?text=+)|
-| lightcyan | `#E0FFFF` ![#E0FFFF](https://via.placeholder.com/15/E0FFFF/000000?text=+)|
-| lightgoldenrodyellow | `#FAFAD2` ![#FAFAD2](https://via.placeholder.com/15/FAFAD2/000000?text=+)|
-| lightgray | `#D3D3D3` ![#D3D3D3](https://via.placeholder.com/15/D3D3D3/000000?text=+)|
-| lightgreen | `#90EE90` ![#90EE90](https://via.placeholder.com/15/90EE90/000000?text=+)|
-| lightgrey | `#D3D3D3` ![#D3D3D3](https://via.placeholder.com/15/D3D3D3/000000?text=+)|
-| lightpink | `#FFB6C1` ![#FFB6C1](https://via.placeholder.com/15/FFB6C1/000000?text=+)|
-| lightsalmon | `#FFA07A` ![#FFA07A](https://via.placeholder.com/15/FFA07A/000000?text=+)|
-| lightseagreen | `#20B2AA` ![#20B2AA](https://via.placeholder.com/15/20B2AA/000000?text=+)|
-| lightskyblue | `#87CEFA` ![#87CEFA](https://via.placeholder.com/15/87CEFA/000000?text=+)|
-| lightslategray | `#778899` ![#778899](https://via.placeholder.com/15/778899/000000?text=+)|
-| lightslategrey | `#778899` ![#778899](https://via.placeholder.com/15/778899/000000?text=+)|
-| lightsteelblue | `#B0C4DE` ![#B0C4DE](https://via.placeholder.com/15/B0C4DE/000000?text=+)|
-| lightyellow | `#FFFFE0` ![#FFFFE0](https://via.placeholder.com/15/FFFFE0/000000?text=+)|
-| lime | `#00FF00` ![#00FF00](https://via.placeholder.com/15/00FF00/000000?text=+)|
-| limegreen | `#32CD32` ![#32CD32](https://via.placeholder.com/15/32CD32/000000?text=+)|
-| linen | `#FAF0E6` ![#FAF0E6](https://via.placeholder.com/15/FAF0E6/000000?text=+)|
-| magenta | `#FF00FF` ![#FF00FF](https://via.placeholder.com/15/FF00FF/000000?text=+)|
-| maroon | `#800000` ![#800000](https://via.placeholder.com/15/800000/000000?text=+)|
-| mediumaquamarine | `#66CDAA` ![#66CDAA](https://via.placeholder.com/15/66CDAA/000000?text=+)|
-| mediumblue | `#0000CD` ![#0000CD](https://via.placeholder.com/15/0000CD/000000?text=+)|
-| mediumorchid | `#BA55D3` ![#BA55D3](https://via.placeholder.com/15/BA55D3/000000?text=+)|
-| mediumpurple | `#9370DB` ![#9370DB](https://via.placeholder.com/15/9370DB/000000?text=+)|
-| mediumseagreen | `#3CB371` ![#3CB371](https://via.placeholder.com/15/3CB371/000000?text=+)|
-| mediumslateblue | `#7B68EE` ![#7B68EE](https://via.placeholder.com/15/7B68EE/000000?text=+)|
-| mediumspringgreen | `#00FA9A` ![#00FA9A](https://via.placeholder.com/15/00FA9A/000000?text=+)|
-| mediumturquoise | `#48D1CC` ![#48D1CC](https://via.placeholder.com/15/48D1CC/000000?text=+)|
-| mediumvioletred | `#C71585` ![#C71585](https://via.placeholder.com/15/C71585/000000?text=+)|
-| midnightblue | `#191970` ![#191970](https://via.placeholder.com/15/191970/000000?text=+)|
-| mintcream | `#F5FFFA` ![#F5FFFA](https://via.placeholder.com/15/F5FFFA/000000?text=+)|
-| mistyrose | `#FFE4E1` ![#FFE4E1](https://via.placeholder.com/15/FFE4E1/000000?text=+)|
-| moccasin | `#FFE4B5` ![#FFE4B5](https://via.placeholder.com/15/FFE4B5/000000?text=+)|
-| navajowhite | `#FFDEAD` ![#FFDEAD](https://via.placeholder.com/15/FFDEAD/000000?text=+)|
-| navy | `#000080` ![#000080](https://via.placeholder.com/15/000080/000000?text=+)|
-| oldlace | `#FDF5E6` ![#FDF5E6](https://via.placeholder.com/15/FDF5E6/000000?text=+)|
-| olive | `#808000` ![#808000](https://via.placeholder.com/15/808000/000000?text=+)|
-| olivedrab | `#6B8E23` ![#6B8E23](https://via.placeholder.com/15/6B8E23/000000?text=+)|
-| orange | `#FFA500` ![#FFA500](https://via.placeholder.com/15/FFA500/000000?text=+)|
-| orangered | `#FF4500` ![#FF4500](https://via.placeholder.com/15/FF4500/000000?text=+)|
-| orchid | `#DA70D6` ![#DA70D6](https://via.placeholder.com/15/DA70D6/000000?text=+)|
-| palegoldenrod | `#EEE8AA` ![#EEE8AA](https://via.placeholder.com/15/EEE8AA/000000?text=+)|
-| palegreen | `#98FB98` ![#98FB98](https://via.placeholder.com/15/98FB98/000000?text=+)|
-| paleturquoise | `#AFEEEE` ![#AFEEEE](https://via.placeholder.com/15/AFEEEE/000000?text=+)|
-| palevioletred | `#DB7093` ![#DB7093](https://via.placeholder.com/15/DB7093/000000?text=+)|
-| papayawhip | `#FFEFD5` ![#FFEFD5](https://via.placeholder.com/15/FFEFD5/000000?text=+)|
-| peachpuff | `#FFDAB9` ![#FFDAB9](https://via.placeholder.com/15/FFDAB9/000000?text=+)|
-| peru | `#CD853F` ![#CD853F](https://via.placeholder.com/15/CD853F/000000?text=+)|
-| pink | `#FFC0CB` ![#FFC0CB](https://via.placeholder.com/15/FFC0CB/000000?text=+)|
-| plum | `#DDA0DD` ![#DDA0DD](https://via.placeholder.com/15/DDA0DD/000000?text=+)|
-| powderblue | `#B0E0E6` ![#B0E0E6](https://via.placeholder.com/15/B0E0E6/000000?text=+)|
-| purple | `#800080` ![#800080](https://via.placeholder.com/15/800080/000000?text=+)|
-| rebeccapurple | `#663399` ![#663399](https://via.placeholder.com/15/663399/000000?text=+)|
-| red | `#FF0000` ![#FF0000](https://via.placeholder.com/15/FF0000/000000?text=+)|
-| rosybrown | `#BC8F8F` ![#BC8F8F](https://via.placeholder.com/15/BC8F8F/000000?text=+)|
-| royalblue | `#4169E1` ![#4169E1](https://via.placeholder.com/15/4169E1/000000?text=+)|
-| saddlebrown | `#8B4513` ![#8B4513](https://via.placeholder.com/15/8B4513/000000?text=+)|
-| salmon | `#FA8072` ![#FA8072](https://via.placeholder.com/15/FA8072/000000?text=+)|
-| sandybrown | `#F4A460` ![#F4A460](https://via.placeholder.com/15/F4A460/000000?text=+)|
-| seagreen | `#2E8B57` ![#2E8B57](https://via.placeholder.com/15/2E8B57/000000?text=+)|
-| seashell | `#FFF5EE` ![#FFF5EE](https://via.placeholder.com/15/FFF5EE/000000?text=+)|
-| sienna | `#A0522D` ![#A0522D](https://via.placeholder.com/15/A0522D/000000?text=+)|
-| silver | `#C0C0C0` ![#C0C0C0](https://via.placeholder.com/15/C0C0C0/000000?text=+)|
-| skyblue | `#87CEEB` ![#87CEEB](https://via.placeholder.com/15/87CEEB/000000?text=+)|
-| slateblue | `#6A5ACD` ![#6A5ACD](https://via.placeholder.com/15/6A5ACD/000000?text=+)|
-| slategray | `#708090` ![#708090](https://via.placeholder.com/15/708090/000000?text=+)|
-| slategrey | `#708090` ![#708090](https://via.placeholder.com/15/708090/000000?text=+)|
-| snow | `#FFFAFA` ![#FFFAFA](https://via.placeholder.com/15/FFFAFA/000000?text=+)|
-| springgreen | `#00FF7F` ![#00FF7F](https://via.placeholder.com/15/00FF7F/000000?text=+)|
-| steelblue | `#4682B4` ![#4682B4](https://via.placeholder.com/15/4682B4/000000?text=+)|
-| tan | `#D2B48C` ![#D2B48C](https://via.placeholder.com/15/D2B48C/000000?text=+)|
-| teal | `#008080` ![#008080](https://via.placeholder.com/15/008080/000000?text=+)|
-| thistle | `#D8BFD8` ![#D8BFD8](https://via.placeholder.com/15/D8BFD8/000000?text=+)|
-| tomato | `#FF6347` ![#FF6347](https://via.placeholder.com/15/FF6347/000000?text=+)|
-| turquoise | `#40E0D0` ![#40E0D0](https://via.placeholder.com/15/40E0D0/000000?text=+)|
-| violet | `#EE82EE` ![#EE82EE](https://via.placeholder.com/15/EE82EE/000000?text=+)|
-| wheat | `#F5DEB3` ![#F5DEB3](https://via.placeholder.com/15/F5DEB3/000000?text=+)|
-| white | `#FFFFFF` ![#FFFFFF](https://via.placeholder.com/15/FFFFFF/000000?text=+)|
-| whitesmoke | `#F5F5F5` ![#F5F5F5](https://via.placeholder.com/15/F5F5F5/000000?text=+)|
-| yellow | `#FFFF00` ![#FFFF00](https://via.placeholder.com/15/FFFF00/000000?text=+)|
-| yellowgreen | `#9ACD32` ![#9ACD32](https://via.placeholder.com/15/9ACD32/000000?text=+)|
+| aliceblue | `#F0F8FF` <img valign='middle' alt='aliceblue' src='https://readme-swatches.vercel.app/F0F8FF'/> |
+| antiquewhite | `#FAEBD7` <img valign='middle' alt='antiquewhite' src='https://readme-swatches.vercel.app/FAEBD7'/> |
+| aqua | `#00FFFF` <img valign='middle' alt='aqua' src='https://readme-swatches.vercel.app/00FFFF'/> |
+| aquamarine | `#7FFFD4` <img valign='middle' alt='aquamarine' src='https://readme-swatches.vercel.app/7FFFD4'/> |
+| azure | `#F0FFFF` <img valign='middle' alt='azure' src='https://readme-swatches.vercel.app/F0FFFF'/> |
+| beige | `#F5F5DC` <img valign='middle' alt='beige' src='https://readme-swatches.vercel.app/F5F5DC'/> |
+| bisque | `#FFE4C4` <img valign='middle' alt='bisque' src='https://readme-swatches.vercel.app/FFE4C4'/> |
+| black | `#000000` <img valign='middle' alt='black' src='https://readme-swatches.vercel.app/000000'/> |
+| blanchedalmond | `#FFEBCD` <img valign='middle' alt='blanchedalmond' src='https://readme-swatches.vercel.app/FFEBCD'/> |
+| blue | `#0000FF` <img valign='middle' alt='blue' src='https://readme-swatches.vercel.app/0000FF'/> |
+| blueviolet | `#8A2BE2` <img valign='middle' alt='blueviolet' src='https://readme-swatches.vercel.app/8A2BE2'/> |
+| brown | `#A52A2A` <img valign='middle' alt='brown' src='https://readme-swatches.vercel.app/A52A2A'/> |
+| burlywood | `#DEB887` <img valign='middle' alt='burlywood' src='https://readme-swatches.vercel.app/DEB887'/> |
+| cadetblue | `#5F9EA0` <img valign='middle' alt='cadetblue' src='https://readme-swatches.vercel.app/5F9EA0'/> |
+| chartreuse | `#7FFF00` <img valign='middle' alt='chartreuse' src='https://readme-swatches.vercel.app/7FFF00'/> |
+| chocolate | `#D2691E` <img valign='middle' alt='chocolate' src='https://readme-swatches.vercel.app/D2691E'/> |
+| coral | `#FF7F50` <img valign='middle' alt='coral' src='https://readme-swatches.vercel.app/FF7F50'/> |
+| cornflowerblue | `#6495ED` <img valign='middle' alt='cornflowerblue' src='https://readme-swatches.vercel.app/6495ED'/> |
+| cornsilk | `#FFF8DC` <img valign='middle' alt='cornsilk' src='https://readme-swatches.vercel.app/FFF8DC'/> |
+| crimson | `#DC143C` <img valign='middle' alt='crimson' src='https://readme-swatches.vercel.app/DC143C'/> |
+| cyan | `#00FFFF` <img valign='middle' alt='cyan' src='https://readme-swatches.vercel.app/00FFFF'/> |
+| darkblue | `#00008B` <img valign='middle' alt='darkblue' src='https://readme-swatches.vercel.app/00008B'/> |
+| darkcyan | `#008B8B` <img valign='middle' alt='darkcyan' src='https://readme-swatches.vercel.app/008B8B'/> |
+| darkgoldenrod | `#B8860B` <img valign='middle' alt='darkgoldenrod' src='https://readme-swatches.vercel.app/B8860B'/> |
+| darkgray | `#A9A9A9` <img valign='middle' alt='darkgray' src='https://readme-swatches.vercel.app/A9A9A9'/> |
+| darkgreen | `#006400` <img valign='middle' alt='darkgreen' src='https://readme-swatches.vercel.app/006400'/> |
+| darkgrey | `#A9A9A9` <img valign='middle' alt='darkgrey' src='https://readme-swatches.vercel.app/A9A9A9'/> |
+| darkkhaki | `#BDB76B` <img valign='middle' alt='darkkhaki' src='https://readme-swatches.vercel.app/BDB76B'/> |
+| darkmagenta | `#8B008B` <img valign='middle' alt='darkmagenta' src='https://readme-swatches.vercel.app/8B008B'/> |
+| darkolivegreen | `#556B2F` <img valign='middle' alt='darkolivegreen' src='https://readme-swatches.vercel.app/556B2F'/> |
+| darkorange | `#FF8C00` <img valign='middle' alt='darkorange' src='https://readme-swatches.vercel.app/FF8C00'/> |
+| darkorchid | `#9932CC` <img valign='middle' alt='darkorchid' src='https://readme-swatches.vercel.app/9932CC'/> |
+| darkred | `#8B0000` <img valign='middle' alt='darkred' src='https://readme-swatches.vercel.app/8B0000'/> |
+| darksalmon | `#E9967A` <img valign='middle' alt='darksalmon' src='https://readme-swatches.vercel.app/E9967A'/> |
+| darkseagreen | `#8FBC8F` <img valign='middle' alt='darkseagreen' src='https://readme-swatches.vercel.app/8FBC8F'/> |
+| darkslateblue | `#483D8B` <img valign='middle' alt='darkslateblue' src='https://readme-swatches.vercel.app/483D8B'/> |
+| darkslategray | `#2F4F4F` <img valign='middle' alt='darkslategray' src='https://readme-swatches.vercel.app/2F4F4F'/> |
+| darkslategrey | `#2F4F4F` <img valign='middle' alt='darkslategrey' src='https://readme-swatches.vercel.app/2F4F4F'/> |
+| darkturquoise | `#00CED1` <img valign='middle' alt='darkturquoise' src='https://readme-swatches.vercel.app/00CED1'/> |
+| darkviolet | `#9400D3` <img valign='middle' alt='darkviolet' src='https://readme-swatches.vercel.app/9400D3'/> |
+| deeppink | `#FF1493` <img valign='middle' alt='deeppink' src='https://readme-swatches.vercel.app/FF1493'/> |
+| deepskyblue | `#00BFFF` <img valign='middle' alt='deepskyblue' src='https://readme-swatches.vercel.app/00BFFF'/> |
+| dimgray | `#696969` <img valign='middle' alt='dimgray' src='https://readme-swatches.vercel.app/696969'/> |
+| dimgrey | `#696969` <img valign='middle' alt='dimgrey' src='https://readme-swatches.vercel.app/696969'/> |
+| dodgerblue | `#1E90FF` <img valign='middle' alt='dodgerblue' src='https://readme-swatches.vercel.app/1E90FF'/> |
+| firebrick | `#B22222` <img valign='middle' alt='firebrick' src='https://readme-swatches.vercel.app/B22222'/> |
+| floralwhite | `#FFFAF0` <img valign='middle' alt='floralwhite' src='https://readme-swatches.vercel.app/FFFAF0'/> |
+| forestgreen | `#228B22` <img valign='middle' alt='forestgreen' src='https://readme-swatches.vercel.app/228B22'/> |
+| fuchsia | `#FF00FF` <img valign='middle' alt='fuchsia' src='https://readme-swatches.vercel.app/FF00FF'/> |
+| gainsboro | `#DCDCDC` <img valign='middle' alt='gainsboro' src='https://readme-swatches.vercel.app/DCDCDC'/> |
+| ghostwhite | `#F8F8FF` <img valign='middle' alt='ghostwhite' src='https://readme-swatches.vercel.app/F8F8FF'/> |
+| gold | `#FFD700` <img valign='middle' alt='gold' src='https://readme-swatches.vercel.app/FFD700'/> |
+| goldenrod | `#DAA520` <img valign='middle' alt='goldenrod' src='https://readme-swatches.vercel.app/DAA520'/> |
+| gray | `#808080` <img valign='middle' alt='gray' src='https://readme-swatches.vercel.app/808080'/> |
+| green | `#008000` <img valign='middle' alt='green' src='https://readme-swatches.vercel.app/008000'/> |
+| greenyellow | `#ADFF2F` <img valign='middle' alt='greenyellow' src='https://readme-swatches.vercel.app/ADFF2F'/> |
+| grey | `#808080` <img valign='middle' alt='grey' src='https://readme-swatches.vercel.app/808080'/> |
+| honeydew | `#F0FFF0` <img valign='middle' alt='honeydew' src='https://readme-swatches.vercel.app/F0FFF0'/> |
+| hotpink | `#FF69B4` <img valign='middle' alt='hotpink' src='https://readme-swatches.vercel.app/FF69B4'/> |
+| indianred | `#CD5C5C` <img valign='middle' alt='indianred' src='https://readme-swatches.vercel.app/CD5C5C'/> |
+| indigo | `#4B0082` <img valign='middle' alt='indigo' src='https://readme-swatches.vercel.app/4B0082'/> |
+| ivory | `#FFFFF0` <img valign='middle' alt='ivory' src='https://readme-swatches.vercel.app/FFFFF0'/> |
+| khaki | `#F0E68C` <img valign='middle' alt='khaki' src='https://readme-swatches.vercel.app/F0E68C'/> |
+| lavender | `#E6E6FA` <img valign='middle' alt='lavender' src='https://readme-swatches.vercel.app/E6E6FA'/> |
+| lavenderblush | `#FFF0F5` <img valign='middle' alt='lavenderblush' src='https://readme-swatches.vercel.app/FFF0F5'/> |
+| lawngreen | `#7CFC00` <img valign='middle' alt='lawngreen' src='https://readme-swatches.vercel.app/7CFC00'/> |
+| lemonchiffon | `#FFFACD` <img valign='middle' alt='lemonchiffon' src='https://readme-swatches.vercel.app/FFFACD'/> |
+| lightblue | `#ADD8E6` <img valign='middle' alt='lightblue' src='https://readme-swatches.vercel.app/ADD8E6'/> |
+| lightcoral | `#F08080` <img valign='middle' alt='lightcoral' src='https://readme-swatches.vercel.app/F08080'/> |
+| lightcyan | `#E0FFFF` <img valign='middle' alt='lightcyan' src='https://readme-swatches.vercel.app/E0FFFF'/> |
+| lightgoldenrodyellow | `#FAFAD2` <img valign='middle' alt='lightgoldenrodyellow' src='https://readme-swatches.vercel.app/FAFAD2'/> |
+| lightgray | `#D3D3D3` <img valign='middle' alt='lightgray' src='https://readme-swatches.vercel.app/D3D3D3'/> |
+| lightgreen | `#90EE90` <img valign='middle' alt='lightgreen' src='https://readme-swatches.vercel.app/90EE90'/> |
+| lightgrey | `#D3D3D3` <img valign='middle' alt='lightgrey' src='https://readme-swatches.vercel.app/D3D3D3'/> |
+| lightpink | `#FFB6C1` <img valign='middle' alt='lightpink' src='https://readme-swatches.vercel.app/FFB6C1'/> |
+| lightsalmon | `#FFA07A` <img valign='middle' alt='lightsalmon' src='https://readme-swatches.vercel.app/FFA07A'/> |
+| lightseagreen | `#20B2AA` <img valign='middle' alt='lightseagreen' src='https://readme-swatches.vercel.app/20B2AA'/> |
+| lightskyblue | `#87CEFA` <img valign='middle' alt='lightskyblue' src='https://readme-swatches.vercel.app/87CEFA'/> |
+| lightslategray | `#778899` <img valign='middle' alt='lightslategray' src='https://readme-swatches.vercel.app/778899'/> |
+| lightslategrey | `#778899` <img valign='middle' alt='lightslategrey' src='https://readme-swatches.vercel.app/778899'/> |
+| lightsteelblue | `#B0C4DE` <img valign='middle' alt='lightsteelblue' src='https://readme-swatches.vercel.app/B0C4DE'/> |
+| lightyellow | `#FFFFE0` <img valign='middle' alt='lightyellow' src='https://readme-swatches.vercel.app/FFFFE0'/> |
+| lime | `#00FF00` <img valign='middle' alt='lime' src='https://readme-swatches.vercel.app/00FF00'/> |
+| limegreen | `#32CD32` <img valign='middle' alt='limegreen' src='https://readme-swatches.vercel.app/32CD32'/> |
+| linen | `#FAF0E6` <img valign='middle' alt='linen' src='https://readme-swatches.vercel.app/FAF0E6'/> |
+| magenta | `#FF00FF` <img valign='middle' alt='magenta' src='https://readme-swatches.vercel.app/FF00FF'/> |
+| maroon | `#800000` <img valign='middle' alt='maroon' src='https://readme-swatches.vercel.app/800000'/> |
+| mediumaquamarine | `#66CDAA` <img valign='middle' alt='mediumaquamarine' src='https://readme-swatches.vercel.app/66CDAA'/> |
+| mediumblue | `#0000CD` <img valign='middle' alt='mediumblue' src='https://readme-swatches.vercel.app/0000CD'/> |
+| mediumorchid | `#BA55D3` <img valign='middle' alt='mediumorchid' src='https://readme-swatches.vercel.app/BA55D3'/> |
+| mediumpurple | `#9370DB` <img valign='middle' alt='mediumpurple' src='https://readme-swatches.vercel.app/9370DB'/> |
+| mediumseagreen | `#3CB371` <img valign='middle' alt='mediumseagreen' src='https://readme-swatches.vercel.app/3CB371'/> |
+| mediumslateblue | `#7B68EE` <img valign='middle' alt='mediumslateblue' src='https://readme-swatches.vercel.app/7B68EE'/> |
+| mediumspringgreen | `#00FA9A` <img valign='middle' alt='mediumspringgreen' src='https://readme-swatches.vercel.app/00FA9A'/> |
+| mediumturquoise | `#48D1CC` <img valign='middle' alt='mediumturquoise' src='https://readme-swatches.vercel.app/48D1CC'/> |
+| mediumvioletred | `#C71585` <img valign='middle' alt='mediumvioletred' src='https://readme-swatches.vercel.app/C71585'/> |
+| midnightblue | `#191970` <img valign='middle' alt='midnightblue' src='https://readme-swatches.vercel.app/191970'/> |
+| mintcream | `#F5FFFA` <img valign='middle' alt='mintcream' src='https://readme-swatches.vercel.app/F5FFFA'/> |
+| mistyrose | `#FFE4E1` <img valign='middle' alt='mistyrose' src='https://readme-swatches.vercel.app/FFE4E1'/> |
+| moccasin | `#FFE4B5` <img valign='middle' alt='moccasin' src='https://readme-swatches.vercel.app/FFE4B5'/> |
+| navajowhite | `#FFDEAD` <img valign='middle' alt='navajowhite' src='https://readme-swatches.vercel.app/FFDEAD'/> |
+| navy | `#000080` <img valign='middle' alt='navy' src='https://readme-swatches.vercel.app/000080'/> |
+| oldlace | `#FDF5E6` <img valign='middle' alt='oldlace' src='https://readme-swatches.vercel.app/FDF5E6'/> |
+| olive | `#808000` <img valign='middle' alt='olive' src='https://readme-swatches.vercel.app/808000'/> |
+| olivedrab | `#6B8E23` <img valign='middle' alt='olivedrab' src='https://readme-swatches.vercel.app/6B8E23'/> |
+| orange | `#FFA500` <img valign='middle' alt='orange' src='https://readme-swatches.vercel.app/FFA500'/> |
+| orangered | `#FF4500` <img valign='middle' alt='orangered' src='https://readme-swatches.vercel.app/FF4500'/> |
+| orchid | `#DA70D6` <img valign='middle' alt='orchid' src='https://readme-swatches.vercel.app/DA70D6'/> |
+| palegoldenrod | `#EEE8AA` <img valign='middle' alt='palegoldenrod' src='https://readme-swatches.vercel.app/EEE8AA'/> |
+| palegreen | `#98FB98` <img valign='middle' alt='palegreen' src='https://readme-swatches.vercel.app/98FB98'/> |
+| paleturquoise | `#AFEEEE` <img valign='middle' alt='paleturquoise' src='https://readme-swatches.vercel.app/AFEEEE'/> |
+| palevioletred | `#DB7093` <img valign='middle' alt='palevioletred' src='https://readme-swatches.vercel.app/DB7093'/> |
+| papayawhip | `#FFEFD5` <img valign='middle' alt='papayawhip' src='https://readme-swatches.vercel.app/FFEFD5'/> |
+| peachpuff | `#FFDAB9` <img valign='middle' alt='peachpuff' src='https://readme-swatches.vercel.app/FFDAB9'/> |
+| peru | `#CD853F` <img valign='middle' alt='peru' src='https://readme-swatches.vercel.app/CD853F'/> |
+| pink | `#FFC0CB` <img valign='middle' alt='pink' src='https://readme-swatches.vercel.app/FFC0CB'/> |
+| plum | `#DDA0DD` <img valign='middle' alt='plum' src='https://readme-swatches.vercel.app/DDA0DD'/> |
+| powderblue | `#B0E0E6` <img valign='middle' alt='powderblue' src='https://readme-swatches.vercel.app/B0E0E6'/> |
+| purple | `#800080` <img valign='middle' alt='purple' src='https://readme-swatches.vercel.app/800080'/> |
+| rebeccapurple | `#663399` <img valign='middle' alt='rebeccapurple' src='https://readme-swatches.vercel.app/663399'/> |
+| red | `#FF0000` <img valign='middle' alt='red' src='https://readme-swatches.vercel.app/FF0000'/> |
+| rosybrown | `#BC8F8F` <img valign='middle' alt='rosybrown' src='https://readme-swatches.vercel.app/BC8F8F'/> |
+| royalblue | `#4169E1` <img valign='middle' alt='royalblue' src='https://readme-swatches.vercel.app/4169E1'/> |
+| saddlebrown | `#8B4513` <img valign='middle' alt='saddlebrown' src='https://readme-swatches.vercel.app/8B4513'/> |
+| salmon | `#FA8072` <img valign='middle' alt='salmon' src='https://readme-swatches.vercel.app/FA8072'/> |
+| sandybrown | `#F4A460` <img valign='middle' alt='sandybrown' src='https://readme-swatches.vercel.app/F4A460'/> |
+| seagreen | `#2E8B57` <img valign='middle' alt='seagreen' src='https://readme-swatches.vercel.app/2E8B57'/> |
+| seashell | `#FFF5EE` <img valign='middle' alt='seashell' src='https://readme-swatches.vercel.app/FFF5EE'/> |
+| sienna | `#A0522D` <img valign='middle' alt='sienna' src='https://readme-swatches.vercel.app/A0522D'/> |
+| silver | `#C0C0C0` <img valign='middle' alt='silver' src='https://readme-swatches.vercel.app/C0C0C0'/> |
+| skyblue | `#87CEEB` <img valign='middle' alt='skyblue' src='https://readme-swatches.vercel.app/87CEEB'/> |
+| slateblue | `#6A5ACD` <img valign='middle' alt='slateblue' src='https://readme-swatches.vercel.app/6A5ACD'/> |
+| slategray | `#708090` <img valign='middle' alt='slategray' src='https://readme-swatches.vercel.app/708090'/> |
+| slategrey | `#708090` <img valign='middle' alt='slategrey' src='https://readme-swatches.vercel.app/708090'/> |
+| snow | `#FFFAFA` <img valign='middle' alt='snow' src='https://readme-swatches.vercel.app/FFFAFA'/> |
+| springgreen | `#00FF7F` <img valign='middle' alt='springgreen' src='https://readme-swatches.vercel.app/00FF7F'/> |
+| steelblue | `#4682B4` <img valign='middle' alt='steelblue' src='https://readme-swatches.vercel.app/4682B4'/> |
+| tan | `#D2B48C` <img valign='middle' alt='tan' src='https://readme-swatches.vercel.app/D2B48C'/> |
+| teal | `#008080` <img valign='middle' alt='teal' src='https://readme-swatches.vercel.app/008080'/> |
+| thistle | `#D8BFD8` <img valign='middle' alt='thistle' src='https://readme-swatches.vercel.app/D8BFD8'/> |
+| tomato | `#FF6347` <img valign='middle' alt='tomato' src='https://readme-swatches.vercel.app/FF6347'/> |
+| turquoise | `#40E0D0` <img valign='middle' alt='turquoise' src='https://readme-swatches.vercel.app/40E0D0'/> |
+| violet | `#EE82EE` <img valign='middle' alt='violet' src='https://readme-swatches.vercel.app/EE82EE'/> |
+| wheat | `#F5DEB3` <img valign='middle' alt='wheat' src='https://readme-swatches.vercel.app/F5DEB3'/> |
+| white | `#FFFFFF` <img valign='middle' alt='white' src='https://readme-swatches.vercel.app/FFFFFF'/> |
+| whitesmoke | `#F5F5F5` <img valign='middle' alt='whitesmoke' src='https://readme-swatches.vercel.app/F5F5F5'/> |
+| yellow | `#FFFF00` <img valign='middle' alt='yellow' src='https://readme-swatches.vercel.app/FFFF00'/> |
+| yellowgreen | `#9ACD32` <img valign='middle' alt='yellowgreen' src='https://readme-swatches.vercel.app/9ACD32'/> |
