@@ -30,8 +30,8 @@ For the remainder of these docs, ESM is assumed but you should be able to conver
 
 | Color Space | Class Name | Quick Doc |
 | ----------- | ---------- | --------- |
-| Named Colors | [NamedColors](src/NamedColors.ts) | [](NamedColors.md) |
-| RGB | [ColorRGB](src/RGB.ts) | [](ColorRGB.md) |
+| Named Colors | [NamedColors](src/NamedColors.ts) | [Doc](NamedColors.md) |
+| RGB | [ColorRGB](src/RGB.ts) | [Doc](ColorRGB.md) |
 
 ## Test Coverage
 
