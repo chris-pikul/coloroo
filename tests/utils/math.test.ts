@@ -4,6 +4,7 @@ import {
   clamp,
   clampByte,
   lerp,
+  toByte,
 } from '../../src/utils/math';
 
 describe('Math Utilities', () => {
@@ -42,5 +43,19 @@ describe('Math Utilities', () => {
       expect(lerp(5, 10, 1)).to.eql(10);
       expect(lerp(5, 10, 0.5)).to.eql(7.5);
     })
+  });
+
+  describe('toByte()', () => {
+    it('re-scales appropriately', () => {
+      expect(toByte(0.5)).to.eql(127);
+    });
+
+    it('clamps negatives to 0', () => {
+      expect(toByte(-0.75)).to.eql(0);
+    });
+
+    it('clamps over 1 to 255', () => {
+      expect(toByte(2.1)).to.eql(255);
+    });
   });
 });

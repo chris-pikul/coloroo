@@ -57,3 +57,13 @@ export function cleanFloatStr(value:number, precision = 4):string {
 export function lerp(start:number, end:number, alpha:number):number {
   return (start * (1 - alpha)) + (end * alpha);
 }
+
+/**
+ * Re-scales and clamps a unit to a 0..255 byte integer
+ * 
+ * @param unit Unit float (0..1)
+ * @returns Byte integer (0..255)
+ */
+export function toByte(unit:number):number {
+  return clampByte(unit * 255);
+}
