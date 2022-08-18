@@ -8,7 +8,7 @@ export declare type RGBTuple = [number, number, number];
  * @enum
  */
 export declare const RGBFormat: StringEnum;
-export declare type ERGBStringFormat = typeof RGBFormat[string];
+export declare type ERGBFormat = keyof typeof RGBFormat;
 /**
  * RGB with Alpha color-space. The red, green, and blue channels are 8-bit
  * bytes (0..255) and will round/truncate on manipulation.
@@ -122,7 +122,7 @@ export declare class ColorRGB implements IColorClass {
      * @param format Optional enum for the output format. Defaults to functional.
      * @returns String representation
      */
-    toString(format?: ERGBStringFormat): string;
+    toString(format?: ERGBFormat): string;
     /**
      * Converts this RGB Color into it's integer representation.
      *

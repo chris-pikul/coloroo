@@ -18,5 +18,5 @@ export declare const ColorSpace: StringEnum;
 /**
  * TS type information for ColorSpace enum.
  */
-export declare type EColorSpace = typeof ColorSpace[string];
+export declare type EColorSpace = keyof typeof ColorSpace;
 export default ColorSpace;
