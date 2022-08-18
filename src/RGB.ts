@@ -28,52 +28,7 @@ import {
 import { convertParam, ParameterType } from './utils/params';
 
 import type { IColorClass } from './IColorClass';
-import type { StringEnum } from './utils/types';
-
-export type RGBTuple = [number, number, number];
-
-/**
- * Valid string enumerations for formating `ColorRGB` into either a string, or
- * an integer number.
- * 
- * @enum
- */
-export const RGBFormat:StringEnum = {
-  /**
-   * Format the color into a single integer value, with automatic alpha
-   * detection.
-   */
-  INTEGER: 'INTEGER',
-
-  /**
-   * Format the color into a single integer value, with FORCED alpha usage.
-   */
-  INTEGER_ALPHA: 'INTEGER_ALPHA',
-
-  /**
-   * Format the color into a hexidecimal string, with automatic alpha
-   * detection.
-   */
-  HEX: 'HEX',
-
-  /**
-   * Format the color into a hexidecimal string, with FORCED alpha usage.
-   */
-  HEX_ALPHA: 'HEX_ALPHA',
-
-  /**
-   * Format the color into it's functional notation string, with automatic
-   * alpha detection.
-   */
-  FUNCTIONAL: 'FUNCTIONAL',
-
-  /**
-   * Format the color into it's functional notation string, with FORCED alpha
-   * usage.
-   */
-  FUNCTIONAL_ALPHA: 'FUNCTIONAL_ALPHA',
-} as const;
-export type ERGBFormat = keyof typeof RGBFormat;
+import { RGBTuple, RGBFormat, ERGBFormat } from './RGBCommon';
 
 /**
  * RGB with Alpha color-space. The red, green, and blue channels are 8-bit
