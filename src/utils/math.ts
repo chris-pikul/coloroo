@@ -14,8 +14,8 @@
  * Clamps an incoming number to be within a minimum and maximum range.
  * 
  * @param value The given value to clamp
- * @param min Minimum value
- * @param max Maximum value
+ * @param min Minimum value (default: 0.0)
+ * @param max Maximum value (default: 1.0)
  * @returns Number within the given range
  */
 export function clamp(value:number, min = 0.0, max = 1.0):number {
