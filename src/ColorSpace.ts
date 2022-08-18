@@ -20,11 +20,11 @@ export const ColorSpace:StringEnum = {
   RGB: 'RGB',
   HSL: 'HSL',
   CMYK: 'CMYK',
-};
+} as const;
 
 /**
  * TS type information for ColorSpace enum.
  */
-export type EColorSpace = typeof ColorSpace[string];
+export type EColorSpace = keyof typeof ColorSpace;
 
 export default ColorSpace;
