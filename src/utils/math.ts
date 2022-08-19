@@ -67,3 +67,28 @@ export function lerp(start:number, end:number, alpha:number):number {
 export function toByte(unit:number):number {
   return clampByte(unit * 255);
 }
+
+/**
+ * Multiplies the value by 100 and then adds the % character
+ * 
+ * @param unit Unit float (0..1)
+ * @param round Whether to round to a whole integer percentage (default: false)
+ * @returns String with percentage postfix
+ */
+export function toPercent(unit:number, round = false):string {
+  const perc = unit * 100.0;
+  return `${round ? Math.round(perc) : perc}%`;
+}
+
+/**
+ * Ensures that the input results in a clamped unit, regardless of type. If the
+ * value type is not a number, null is returned.
+ * 
+ * @param value Any value
+ * @returns {number | null} Unit float (0..1) or null if NaN
+ */
+export function ensureUnit(value:any):(number | null) {
+  if(typeof value === 'number' && !Number.isNaN(value))
+    return clamp(value);
+  return null;
+}
