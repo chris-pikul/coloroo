@@ -7,11 +7,11 @@
  */
 export { NamedColors, ENamedColor } from './NamedColors';
 
+// RGB Color-space
 export {
   ColorRGB,
-  RGBFormat,
-  ERGBFormat,
   RGBTuple,
+  RGBObject,
 } from './RGB';
 
 export { ColorSpace, EColorSpace } from './ColorSpace';

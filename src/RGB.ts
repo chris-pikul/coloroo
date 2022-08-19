@@ -5,555 +5,102 @@
  * project root "LICENSE" for more information.
  * -----------------------------------------------------------------------------
  * 
- * Defines the implementation for the RGB color spectrum. This version of the
- * RGB color-space uses 8-bit channel values for R, G, and B. Alpha is present
- * as an optional unit float (0..1)
+ * Defines the implementation for the RGB color spectrum. The channels red,
+ * green, and blue are presented as unit floats (0..1) with byte integer
+ * interfaces.
  * 
  * @module RGB
  */
+import IColor from './IColor';
 import NamedColors, { ENamedColor } from './NamedColors';
 
 import {
   clamp,
-  clampByte,
-  cleanFloatStr,
+  ensureUnit,
   lerp,
+  toByte,
+  toPercent,
 } from './utils/math';
-
+import { objectMatchesPattern } from './utils/objects';
+import { convertParam, ParameterType } from './utils/params';
 import {
-  regexpHex,
   captureFirst,
+  regexpHex,
   regexpRGBFunc,
 } from './utils/regexp';
-import { convertParam, ParameterType } from './utils/params';
-
-import type { IColorClass } from './IColorClass';
-import { RGBTuple, RGBFormat, ERGBFormat } from './RGBCommon';
 
 /**
- * RGB with Alpha color-space. The red, green, and blue channels are 8-bit
- * bytes (0..255) and will round/truncate on manipulation.
+ * Tuple array holding the red, green, blue, and optionally alpha channels.
+ * Each value is considered a unit float (0..1)
  */
-export class ColorRGB implements IColorClass {
-  /**
-   * The accepted string formats for generating strings.
-   * 
-   * @enum
-   */
-  public static readonly Formats = RGBFormat;
+export type RGBTuple = [number, number, number, number?];
+
+/**
+ * Interface defining a shorthand RGB object capable of JSON serialization.
+ */
+export interface RGBObject extends Record<string, number> {
 
   /**
-   * Holds the RGB components as an tuple array
+   * Red channel, as a unit float (0..1)
    */
-  #rgb:RGBTuple = [
-    0,
-    0,
-    0,
-  ];
+  r:number;
 
   /**
-   * The alpha (opacity) of the color, clamped to a unit number 0..1 by the
-   * public getter/setters.
+   * Green channel, as a unit float (0..1)
    */
-  #alpha = 1.0;
+  g:number;
 
   /**
-   * Creates a new Color in the RGB color-space.
-   * 
-   * Accepts variable amounts of arguments, and depending on the number,
-   * dictates how the color will be created.
-   * 
-   * If only a single argument is supplied it is ran through the
-   * {@link ColorRGB.parse} method. If an error occurs during parsing, this
-   * constructor will throw an `Error`. The following value types are accepted:
-   * 
-   * - `number`: Will be treated as a 32-bit integer.
-   * - `string`: Can be either a hexidecimal string (ex. "#FFAA88"), a
-   * functional-notation string such that CSS4 accepts (ex.
-   * `rgba(255, 127, 64)`), an X11 named color (ex. "gold"), or the keyword
-   * "transparent" for a fully-transparent black color.
-   * - `array`: An array of RGB(A) component values, either as numbers, or as
-   * strings that can be parsed into numbers (such as percentages, or the
-   * "none" keyword). It does not need to contain all the channels, any missing
-   * will be skipped and remain at their defaults.
-   * - `object`: Any object that has any of the following properties available:
-   *   - `r` or `red`: Byte value for red channel
-   *   - `g` or `green`: Byte value for green channel
-   *   - `b` or `blue`: Byte value for blue channel
-   *   - `a` or `alpha` or `opacity`: Unit number (0..1) for alpha channel
-   * 
-   * If multiple arguments are supplied they are treated as R, G, B, and A;
-   * exactly as the {@link ColorRGB.set} method does (as they are passed
-   * directly to it). Since `set()` does not throw errors, any issues in
-   * parsing are quietly ignored and will default to 0.
-   * 
-   * Examples of usage:
-   * ```
-   * new ColorRGB() // Default black color
-   * new ColorRGB(255, 127, 64, 0.5) // Color from channels
-   * new ColorRGB(0xFFAA88)   // Color from integer
-   * new ColorRGB('gold')     // Color from X11 named color
-   * new ColorRGB('#FFAA88')  // Color from hexidecimal string
-   * new ColorRGB('rgb(255, 127, 64)')  // Color from functional-notation
-   * new ColorRGB([255, 127, 64, 0.5])  // Color from array of numbers
-   * new ColorRGB(['100%', '50%', 'none', '50%']) // Color from array of strings
-   * new ColorRGB({ r: 255, g: 127, b: 64}) // Color from object
-   * ```
+   * Blue channel, as a unit float (0..1)
    */
-  constructor(
-    _arg1?:(number|string|Array<number|string>|Record<any, any>|ColorRGB),
-    _argG?:(number|string),
-    _argB?:(number|string),
-    _argA?:(number|string),
-  ) {
-    // Bind methods
-    this.toString = this.toString.bind(this);
-    this.toInteger = this.toInteger.bind(this);
-    this.toHexString = this.toHexString.bind(this);
-    this.toFuncString = this.toFuncString.bind(this);
-    this.toArray = this.toArray.bind(this);
-    this.toUnitArray = this.toUnitArray.bind(this);
-    this.toYIQValue = this.toYIQValue.bind(this);
-    
-    this.set = this.set.bind(this);
-    this.setUnits = this.setUnits.bind(this);
-    this.setRed = this.setRed.bind(this);
-    this.setRedUnit = this.setRedUnit.bind(this);
-    this.setGreen = this.setGreen.bind(this);
-    this.setGreenUnit = this.setGreenUnit.bind(this);
-    this.setBlue = this.setBlue.bind(this);
-    this.setBlueUnit = this.setBlueUnit.bind(this);
-    this.setAlpha = this.setAlpha.bind(this);
-    this.fromInteger = this.fromInteger.bind(this);
-    this.fromHexString = this.fromHexString.bind(this);
-    this.fromFuncString = this.fromFuncString.bind(this);
-    this.fromString = this.fromString.bind(this);
-    this.fromArray = this.fromArray.bind(this);
-    this.fromObject = this.fromObject.bind(this);
-    this.parse = this.parse.bind(this);
-
-    this.luminosity = this.luminosity.bind(this);
-    this.contrast = this.contrast.bind(this);
-    this.contrastLevel = this.contrastLevel.bind(this);
-    this.isDark = this.isDark.bind(this);
-    this.isLight = this.isLight.bind(this);
-
-    this.invert = this.invert.bind(this);
-    this.lerp = this.lerp.bind(this);
-
-    // Check if we have any arguments
-    if(arguments.length === 1) {
-      // For a single argument this can be passed to the parse function
-      try {
-        this.parse(arguments[0]);
-      } catch (err) {
-        throw new Error(`ColorRGB was constructed with an argument "${arguments[0]}" that cannot be parsed.`);
-      }
-    } else if(arguments.length > 1) {
-      // For multiple arguments, it is treated as setting the components
-      this.set(...arguments);
-    }
-  }
+  b:number;
 
   /**
-   * The red component as a byte (0..255) integer
+   * Alpha channel, as a unit float (0..1)
    */
-  get red():number {
-    return this.#rgb[0];
-  }
+  a?:number;
+};
 
-  set red(byteValue:number) {
-    this.#rgb[0] = clampByte(byteValue);
-  }
+// Dummy object for use with objectMatchesPattern()
+const rgbPattern:RGBObject = {
+  r: 1,
+  g: 1,
+  b: 1,
+  a: 1,
+};
 
-  /**
-   * The green component as a byte (0..255) integer
-   */
-  get green():number {
-    return this.#rgb[1];
-  }
-
-  set green(byteValue:number) {
-    this.#rgb[1] = clampByte(byteValue);
-  }
-
-  /**
-   * The blue component as a byte (0..255) integer
-   */
-  get blue():number {
-    return this.#rgb[2];
-  }
-
-  set blue(byteValue:number) {
-    this.#rgb[2] = clampByte(byteValue);
-  }
-
-  /**
-   * The alpha, or opacity, of the color as a unit (0..1) float
-   */
-  get alpha():number {
-    return this.#alpha;
-  }
-
-  set alpha(value:number) {
-    this.#alpha = clamp(value);
-  }
-
-  /**
-   * Gets the red component as a unit
-   * 
-   * @returns Unit value (0..1)
-   */
-  redUnit = ():number => (this.red / 255);
-
-  /**
-   * Gets the green component as a unit
-   * 
-   * @returns Unit value (0..1)
-   */
-  greenUnit = ():number => (this.green / 255);
-
-  /**
-   * Gets the blue component as a unit
-   * 
-   * @returns Unit value (0..1)
-   */
-  blueUnit = ():number => (this.blue / 255);
-
-  /**
-   * Returns the string representation of this color, with an optional formating
-   * parameter.
-   * 
-   * The following enums are accepted for formats:
-   * - `INTEGER`: Integer representation including alpha as the LSB if it is not
-   * the default 1.0.
-   * - `INTEGER_ALPHA`: Integer representation with alpha included as the LSB.
-   * - `HEX`: Hexidecimal string representation, only includes alpha as the LSB
-   * if it is not the default opaque (1.0).
-   * - `HEX_ALPHA`: Hexidecimal string with the alpha as the LSB.
-   * - `FUNCTIONAL` (default): CSS-style functional notation. Only includes the
-   * alpha channel if it is not opaque (1.0).
-   * - `FUNCTIONAL_ALPHA`: CSS-style functional notation with the alpha
-   * channel. Uses the "rgba()" function style. 
-   * 
-   * @param format Optional enum for the output format. Defaults to functional.
-   * @returns String representation
-   */
-  public toString(format:ERGBFormat = ColorRGB.Formats.FUNCTIONAL):string {
-    switch(format) {
-      case ColorRGB.Formats.INTEGER:
-        return this.toInteger().toString();
-      case ColorRGB.Formats.INTEGER_ALPHA:
-        return this.toInteger(true).toString();
-      case ColorRGB.Formats.HEX:
-        return this.toHexString();
-      case ColorRGB.Formats.HEX_ALPHA:
-        return this.toHexString(true);
-      case ColorRGB.Formats.FUNCTIONAL:
-        return this.toFuncString();
-      case ColorRGB.Formats.FUNCTIONAL_ALPHA:
-        return this.toFuncString(true);
-      default:
-        console.warn(`ColorRGB.toString() was supplied a format "${format}" which is invalid, defaulting to "HEX".`);
-        return this.toHexString();
-    }
-  }
-
-  /**
-   * Converts this RGB Color into it's integer representation.
-   * 
-   * By default the alpha information is only included if the alpha value is
-   * not 1.0, or the `forceAlpha` flag is true (defaults to false). For
-   * serialization of colors it may be best to have this flag as true and
-   * manage the alpha channels byte position with the `alphaMSB` flag for more
-   * consistant byte arrangement.
-   * 
-   * Additionally the `alphaMSB` switch can be used to move the alpha
-   * information to the Most Significant Byte portion of the integer. Otherwise
-   * (default) it remains as the Least Significant Byte.
-   * 
-   * @param {boolean} [forceAlpha = false] If this flag is true, then
-   * regardless of whether or not the alpha channel is opaque (1), than the
-   * alpha information will be included in the results. This defaults to false
-   * which will only use the alpha information if it is not completely opaque. 
-   * @param {boolean} [alphaMSB = false] Instructs the alpha component to be the
-   * Most Significant Byte in the final result. If false (default) than it will
-   * be the Least Significant Byte. 
-   * @returns {number} Integer number representation of the color.
-   */
-  public toInteger(forceAlpha = false, alphaMSB = false):number {
-    let value = ((this.red & 0xFF) << 16) | ((this.green & 0xFF) << 8) | (this.blue & 0xFF);
-
-    if(forceAlpha || this.alpha !== 1) {
-      const alphaComp = Math.trunc(this.alpha * 255);
-      if(alphaMSB)
-        value |= (alphaComp & 0xFF) << 24;
-      else
-        value = (value << 8) | (alphaComp & 0xFF);
-    }
-
-    return value >>> 0;
-  };
-
-  /**
-   * Converts this RGB Color into it's hexidecimal string representation.
-   * 
-   * By default the alpha information is only included if the alpha value is
-   * not 1.0, or the `forceAlpha` flag is true (defaults to false). For
-   * serialization of colors it may be best to have this flag as true and
-   * manage the alpha channels byte position with the `alphaMSB` flag for more
-   * consistant byte arrangement.
-   * 
-   * Additionally the `alphaMSB` switch can be used to move the alpha
-   * information to the Most Significant Byte portion of the integer. Otherwise
-   * (default) it remains as the Least Significant Byte.
-   * 
-   * @param {boolean} [forceAlpha = false] If this flag is true, then
-   * regardless of whether or not the alpha channel is opaque (1), than the
-   * alpha information will be included in the results. This defaults to false
-   * which will only use the alpha information if it is not completely opaque. 
-   * @param {boolean} [alphaMSB = false] Instructs the alpha component to be the
-   * Most Significant Byte in the final result. If false (default) than it will
-   * be the Least Significant Byte. 
-   * @returns {string} Hexidecimal string representation
-   */
-  public toHexString(forceAlpha = false, alphaMSB = false):string {
-    // Helper function to convert the Hex with padding to make it 2-chars
-    const enc = (val:number):string => ((val & 0xFF).toString(16).padStart(2, '0'));
-    
-    // Build the RGB representation
-    const str = `#${enc(this.red)}${enc(this.green)}${enc(this.blue)}`;
-
-    // If we force the alpha, or if alpha is not fully-opaque (1) then add it
-    if(forceAlpha || this.#alpha !== 1) {
-      // With alphaMSB, the alpha component is first in the string
-      if(alphaMSB)
-        return `#${enc(this.#alpha * 255)}${str.substring(1)}`;
-
-      // Without alphaMSB, the alpha component is last
-      return str + enc(this.#alpha * 255);
-    }
-    
-    // Alpha was not needed, so return the original string
-    return str;
-  };
-
-  /**
-   * Converts this RGB Color into it's functional-notation string, as if it was
-   * being used with CSS.
-   * 
-   * By default the alpha information is only included if the alpha value is
-   * not 1.0, or the `forceAlpha` flag is true (defaults to false). Additionally
-   * it is truncated to 4 points of precision.
-   * 
-   * The output follows this format:
-   * ```
-   * rgb(255, 180, 127)
-   * rgba(255, 180, 127, 180)
-   * ```
-   * 
-   * @param {boolean} [forceAlpha = false] If this flag is true, then
-   * regardless of whether or not the alpha channel is opaque (1), than the
-   * alpha information will be included in the results. This defaults to false
-   * which will only use the alpha information if it is not completely opaque.
-   * @returns {string} Functional-notation string
-   */
-  public toFuncString(forceAlpha = false):string {
-    if(forceAlpha || this.#alpha !== 1)
-      return `rgba(${this.red}, ${this.green}, ${this.blue}, ${cleanFloatStr(this.#alpha)})`;
-
-    return `rgb(${this.red}, ${this.green}, ${this.blue})`;
-  }
-
-  /**
-   * Returns this color as an Array of numbers. The first 3 components are the
-   * RGB channels as byte integers (0..255). The last component is the alpha
-   * channel as it's unit-float (0..1).
-   * 
-   * @returns {Array} Array of component values
-   */
-  public toArray():number[] {
-    return [ ...this.#rgb, this.#alpha ];
-  }
-
-  /**
-   * Returns this color as an Array of unit numbers (0..1). The first 3 indices
-   * are the R, G, and B channels. The last indice is the alpha channel.
-   * 
-   * @returns Array of component values as units (0..1)
-   */
-  public toUnitArray():number[] {
-    return [
-      this.redUnit(),
-      this.greenUnit(),
-      this.blueUnit(),
-      this.#alpha,
-    ];
-  }
-
-  /**
-   * Calculates the YIQ-color encoding value for this color
-   * 
-   * @see https://24ways.org/2010/calculating-color-contrast
-   * @returns YIQ value
-   */
-  public toYIQValue():number {
-    return ((this.red * 299) + (this.green * 587) + (this.blue * 114)) / 1000;
-  }
-
-  /**
-   * Sets the components of this RGB Color using variable arguments. The order
-   * of the variables is taken as `set(R, G, B, A)`. Any missing components are
-   * skipped.
-   * 
-   * This will parse string values to the best of it's ability. This includes
-   * parameter detection, and then treatment depending on the type.
-   * 
-   * For the RGB components the following formats are accepted
-   * - Integer 0..255 = mapped directly to the component
-   * - Float 0..255 = truncates the decimal point and applied
-   * - Percentage 0..100% = applies to the range 0..255 and set.
-   * 
-   * For the alpha component, any value given is clamped to a unit 0..1. For
-   * floats and percentages this is straight forward, for integers it just
-   * becomes an on/off of 0 or 1. In other words, no byte conversion is made.
-   * 
-   * @returns `this` for method-chaining
-   */
-  public set(...components:(number|string)[]):IColorClass {
-    // Iterate through the arguments
-    for(let ind = 0; ind < components.length; ind++) {
-      const comp = components[ind];
-      if(comp === null || typeof comp === 'undefined')
-        continue;
-      
-      const { type, value } = convertParam(comp);
-
-      // Check if this is the first 3 arguments (R, G, B)
-      if(ind <= 2) {
-        // Each type gets a treatment on RGB
-        if(type === ParameterType.INTEGER)
-          this.#rgb[ind] = clamp(value, 0, 255);
-        else if(type === ParameterType.FLOAT)
-          this.#rgb[ind] = clampByte(value);
-        else if(type === ParameterType.PERCENTAGE)
-          this.#rgb[ind] = clampByte(value * 255);
-        else
-          this.#rgb[ind] = 0;
-      } else if(ind === 3) {
-        // For alpha, we don't care on the type, just clamp its number
-        this.#alpha = clamp(value);
-      } else {
-        // Break here since it's over 4 components
-        break;
+/**
+ * RGB Color-space. Holds each channel (red, green, blue, and alpha) as unit
+ * floats. Each channel is clamped to 0..1 regardless of manipulations.
+ * 
+ * @immutable
+ */
+export class ColorRGB implements IColor {
+  private static ensureRGB(clr:any):ColorRGB {
+    if(clr instanceof ColorRGB) {
+      return clr;
+    } else if(typeof clr === 'object') {
+      if(typeof clr.toRGB === 'function') {
+        return clr.toRGB();
+      } else if(objectMatchesPattern(clr, rgbPattern, true)) {
+        const obj = clr as any;
+        const red = ensureUnit(obj.r ?? obj.red) ?? 0.0;
+        const green = ensureUnit(obj.g ?? obj.green) ?? 0.0;
+        const blue = ensureUnit(obj.b ?? obj.blue) ?? 0.0;
+        const alpha = ensureUnit(obj.a ?? obj.alpha ?? obj.opacity) ?? 1.0;
+        return new ColorRGB(red, green, blue, alpha);
       }
     }
-
-    return this;
+    throw new TypeError(`given color cannot be implied or converted to ColorRGB. Missing "toRGB" method.`);
   }
 
-  /**
-   * Sets the components of this RGB Color using variable arguments. The order
-   * of the variables is taken as `set(R, G, B, A)`. Any missing components are
-   * skipped.
-   * 
-   * Each value should be a unit (0..1).
-   * 
-   * @returns `this` for method-chaining
-   */
-  public setUnits(...components:number[]):IColorClass {
-    for(let ind = 0; ind < components.length; ind++) {
-      if(ind <= 2)
-        this.#rgb[ind] = Math.trunc(clamp(components[ind]) * 255);
-      else if(ind === 3)
-        this.#alpha = clamp(components[ind]);
-      else
-        break;
-    }
-
-    return this;
-  }
-
-  /**
-   * Sets the red component of this RGB color with a byte value (0..255)
-   * 
-   * @param byte Byte value (0..255)
-   * @returns `this` for method-chaining
-   */
-  public setRed(byte:number):ColorRGB {
-    this.red = byte;
-    return this;
-  }
-
-  /**
-   * Sets the red component of this RGB color with a unit value (0..1)
-   * 
-   * @param unit Unit value (0..1)
-   * @returns `this` for method-chaining
-   */
-  public setRedUnit(unit:number):ColorRGB {
-    this.red = clamp(unit) * 255;
-    return this;
-  }
-
-  /**
-   * Sets the green component of this RGB color with a byte value (0..255)
-   * 
-   * @param byte Byte value (0..255)
-   * @returns `this` for method-chaining
-   */
-  public setGreen(byte:number):ColorRGB {
-    this.green = byte;
-    return this;
-  }
-
-  /**
-   * Sets the green component of this RGB color with a unit value (0..1)
-   * 
-   * @param unit Unit value (0..1)
-   * @returns `this` for method-chaining
-   */
-  public setGreenUnit(unit:number):ColorRGB {
-    this.green = clamp(unit) * 255;
-    return this;
-  }
-
-  /**
-   * Sets the green component of this RGB color with a byte value (0..255)
-   * 
-   * @param byte Byte value (0..255)
-   * @returns `this` for method-chaining
-   */
-  public setBlue(byte:number):ColorRGB {
-    this.blue = byte;
-    return this;
-  }
-
-  /**
-   * Sets the blue component of this RGB color with a unit value (0..1)
-   * 
-   * @param unit Unit value (0..1)
-   * @returns `this` for method-chaining
-   */
-  public setBlueUnit(unit:number):ColorRGB {
-    this.blue = clamp(unit) * 255;
-    return this;
-  }
-
-  /**
-   * Sets the alpha component of this RGB color with a unit value (0..1)
-   * 
-   * @param unit Unit value (0..1)
-   * @returns `this` for method-chaining
-   */
-  public setAlpha(unit:number):ColorRGB {
-    this.alpha = unit;
-    return this;
+  static fromRGB(rgb:ColorRGB):IColor {
+    return new ColorRGB(rgb);
   }
 
   /**
    * Converts an incoming integer number into it's RGB(A) channel values and
-   * sets this `ColorRGB` components appropriately.
+   * returns an appropriate ColorRGB object
    * 
    * @param value Incoming integer number to convert
    * @param useAlpha If true, then an alpha component is present on this value,
@@ -561,16 +108,21 @@ export class ColorRGB implements IColorClass {
    * @param alphaMSB When `useAlpha` is true, this flag sets whether the alpha
    * component is in the Most-Significant-Byte, or the Least-Significant-Byte.
    * Default is to treat alpha as the LSB.
-   * @returns `this` for method-chaining
+   * @returns {ColorRGB} new ColorRGB object
    */
-  public fromInteger(value:number, useAlpha = false, alphaMSB = false):IColorClass {
+  static fromInteger(value:number, useAlpha = false, alphaMSB = false):ColorRGB {
     // Convert the number to an integer
     let int = (value >>> 0);
 
+    // Prepare channels as bytes
+    let red = 0;
+    let green = 0;
+    let blue = 0;
+    let alpha = 255;
+
     if(useAlpha) {
       // Determine the alpha byte position and grab it
-      const alphaByte = alphaMSB ? ((int >> 24) & 0xFF) : (int & 0xFF);
-      this.#alpha = alphaByte / 255.0;
+      alpha = alphaMSB ? ((int >> 24) & 0xFF) : (int & 0xFF);
 
       // If the alpha was LSB then shift the remaining integer right by 8-bits
       if(alphaMSB)
@@ -579,16 +131,11 @@ export class ColorRGB implements IColorClass {
         int >>= 8;
     }
 
-    // Red component
-    this.#rgb[0] = (int >> 16) & 0xFF;
-    
-    // Green component
-    this.#rgb[1] = (int >> 8) & 0xFF;
+    red = (int >> 16) & 0xFF;
+    green = (int >> 8) & 0xFF;
+    blue = int & 0xFF;
 
-    // Blue component
-    this.#rgb[2] = int & 0xFF;
-
-    return this;
+    return new ColorRGB(red / 255, green / 255, blue / 255, alpha / 255);
   }
 
   /**
@@ -604,12 +151,12 @@ export class ColorRGB implements IColorClass {
    * - `#FFAA0088`: Long-form, byte values for the RGB and Alpha channels.
    * 
    * @param str Input string to parse
-   * @returns `this` for method-chaining
+   * @returns {ColorRGB} new ColorRGB object
    * 
    * @throws {TypeError} If the string is not parsable as a hex value
    * @throws {TypeError} If the string has too many or too little
    */
-  public fromHexString(str:string):ColorRGB {
+  static fromHex(str:string):ColorRGB {
     const hexMatch = str.match(regexpHex);
     if(hexMatch && hexMatch.length === 2) {
       const hex = hexMatch[1];
@@ -618,35 +165,41 @@ export class ColorRGB implements IColorClass {
       // Turns half-byte integers into full-byte
       const htf = (hb:number) => (hb | (hb << 4));
 
+      // Prepare channels as bytes
+      let red = 0;
+      let green = 0;
+      let blue = 0;
+      let alpha = 255;
+
       if(hex.length === 3) {
         // 3 length hex implies shorthand 4-bit colors (RGB)
-        this.#rgb[2] = htf(int & 0xF);
-        this.#rgb[1] = htf((int & 0xF0) >>> 4);
-        this.#rgb[0] = htf((int & 0xF00) >>> 8);
+        blue = htf(int & 0xF);
+        green = htf((int & 0xF0) >>> 4);
+        red = htf((int & 0xF00) >>> 8);
       } else if(hex.length === 4) {
         // 4 length hex implies shorthand 4-bit colors (RGBA)
-        this.#alpha = htf(int & 0xF) / 255.0;
-        this.#rgb[2] = htf((int & 0xF0) >>> 4);
-        this.#rgb[1] = htf((int & 0xF00) >>> 8);
-        this.#rgb[0] = htf((int & 0xF000) >>> 12);
+        alpha = htf(int & 0xF);
+        green = htf((int & 0xF0) >>> 4);
+        blue = htf((int & 0xF00) >>> 8);
+        red = htf((int & 0xF000) >>> 12);
       } else if(hex.length === 6) {
         // 6 length hex is opaque 8-bit colors (RRGGBB)
-        this.fromInteger(int);
+        return ColorRGB.fromInteger(int);
       } else if(hex.length === 8) {
         // 8 length hex is transparent 8-bit colors (RRGGBBAA)
-        this.fromInteger(int, true);
+        return ColorRGB.fromInteger(int, true);
       } else {
-        throw new Error(`ColorRGB.fromHexString() received malformed hexidecimal string. Expected length of 3, 6, or 8, but instead got "${hex.length}".`);
+        throw new Error(`ColorRGB.fromHex() received malformed hexidecimal string. Expected length of 3, 6, or 8, but instead got "${hex.length}".`);
       }
 
-      return this;
+      return new ColorRGB(red / 255, green / 255, blue / 255, alpha / 255);
     }
 
-    throw new TypeError(`ColorRGB.fromHexString() received malformed hexidecimal string. The value "${str}" cannot be parsed.`);
+    throw new TypeError(`ColorRGB.fromHex() received malformed hexidecimal string. The value "${str}" cannot be parsed.`);
   }
 
   /**
-   * Parses the input string as a CSS4 functional-notation color value. Only
+   * Parses the input string as a CSS3+ functional-notation color value. Only
    * accepts the `rgb()` and `rgba()` functions. Both the comma-separated and
    * space-separated formats are accepted. If the space-separated version is
    * used with an alpha channel, then a forward-slash delimiter is required
@@ -669,26 +222,26 @@ export class ColorRGB implements IColorClass {
    * ```
    * 
    * @param str Input string to parse
-   * @returns `this` for method-chaining
+   * @returns {ColorRGB} new ColorRGB object
    * 
    * @throws {TypeError} if the string cannot be parsed
    * @throws {TypeError} if the number of components is invalid
    */
-  public fromFuncString(str:string):ColorRGB {
+  static fromFunctional(str:string):ColorRGB {
     const clnStr = str.trim().toLowerCase();
 
     // Use the regular expression to match against functional notation for RGB
     const matches = captureFirst(regexpRGBFunc, clnStr);
     if(matches === null)
-      throw new TypeError(`ColorRGB.fromFuncString() failed to parse the string "${str}".`);
+      throw new TypeError(`ColorRGB.fromFunctional() failed to parse the string "${str}".`);
 
-    // Pass the remaining values off to this.set() since it converts strings
-    return this.set(...matches) as ColorRGB;
+    // Pass the remaining values off to constructor since it converts strings
+    return new ColorRGB(...matches);
   }
 
   /**
    * Converts an incoming string to acceptable components and sets the channels
-   * of this ColorRGB object. Will attempt to parse as each format in order
+   * of a new ColorRGB object. Will attempt to parse as each format in order
    * until one does not give an error. If none of the processes work then a
    * `TypeError` is thrown specifying so.
    * 
@@ -703,7 +256,7 @@ export class ColorRGB implements IColorClass {
    * with an alpha of 0 (fully transparent).
    * 
    * ### Hexidecimal
-   * Uses the {@link ColorRGB.fromHexString} method to parse as a hexidecimal
+   * Uses the {@link ColorRGB.fromHex} method to parse as a hexidecimal
    * string. This is case insensitive and accepts shortform and longform hex
    * strings, with or without alpha channel. As with most hex strings if there
    * is an alpha component it is the least-significant byte. Additionally, the
@@ -717,7 +270,7 @@ export class ColorRGB implements IColorClass {
    * - `#FFAA0088`: Long-form, byte values for the RGB and Alpha channels.
    * 
    * ### Functional-notation
-   * Uses the {@link ColorRGB.fromFuncString} method to parse as a
+   * Uses the {@link ColorRGB.fromFunctional} method to parse as a
    * functional notation string in the style of CSS4, with some forgiveness.
    * Will accept either 3-component for RGB, or 4-component for RGBA. Each
    * parameter can be either an integer, float, or percentage value which will
@@ -736,37 +289,29 @@ export class ColorRGB implements IColorClass {
    * ```
    * 
    * @param str Input string
-   * @returns `this` for method-chaining
+   * @returns {ColorRGB} new ColorRGB object
    */
-  public fromString(str:string):IColorClass {
+  static fromString(str:string):ColorRGB {
     let clnStr = str.trim().toLowerCase();
 
-    // Check for the special keyword "transparent"
-    if(clnStr === 'transparent') {
-      this.#rgb = [
-        0,
-        0,
-        0,
-      ];
-      this.#alpha = 0.0;
-
-      return this;
-    }
+    // Check for special keyword "transparent"
+    if(clnStr === 'transparent')
+      return new ColorRGB(0, 0, 0, 0);
 
     // Check if it is a NamedColor and replace the string with it's hex
     if(Object.keys(NamedColors).includes(clnStr))
       clnStr = NamedColors[clnStr as ENamedColor];
-  
+
     // Check if it counts as a valid Hex string (if it doesn't throw)
     try {
-      const hexRtn = this.fromHexString(clnStr);
+      const hexRtn = this.fromHex(clnStr);
       return hexRtn;
     // eslint-disable-next-line no-empty
     } catch { }
 
     // Check if it is functional-notation (if it doesn't throw)
     try {
-      const funcRtn = this.fromFuncString(clnStr);
+      const funcRtn = this.fromFunctional(clnStr);
       return funcRtn;
     // eslint-disable-next-line no-empty
     } catch { }
@@ -775,76 +320,397 @@ export class ColorRGB implements IColorClass {
   }
 
   /**
-   * Sets the components of this `ColorRGB` given an array. This is supplied
-   * for clarity of API, but really just shortcuts to spread operating the
-   * array into the `ColorRGB.set()` function.
+   * Sets the components of a new ColorRGB using variable arguments. The order
+   * of the variables is taken as `apply(R, G, B, A)`. Any missing components
+   * are skipped and will remain their defaults.
    * 
-   * Accepts both strings and numbers. Strings will attempt to be converted
-   * based on whatever type the value can be detected as.
+   * This will parse string values to the best of it's ability. This includes
+   * parameter detection, and then treatment depending on the type.
    * 
-   * @see {@link ColorRGB.set} for the underlying functionality.
-   * @param arr Input array
-   * @returns `this` for method-chaining
+   * If given a percentage string such as "50%", it will be converted into it's
+   * unit representation. Numeric values are treaded as unit floats (0..1) and
+   * will be clamped as such
+   * 
+   * @returns {ColorRGB} new ColorRGB object
    */
-  public fromArray(arr: (number|string)[]): IColorClass {
-    return this.set(...arr);
-  }
+  static apply(...components:Array<number | string>):ColorRGB {
+    // Prepare channels
+    const rgb:RGBTuple = [
+      0,
+      0,
+      0,
+      1.0,
+    ];
 
-  /**
-   * Attempts to set the components of this `ColorRGB` given potential
-   * properties of the supplied object. Any missing components will default to
-   * 0, except for alpha which defaults to 1 (opaque).
-   * 
-   * Each color searches for a single-letter property, or the full-word name.
-   * - Red: `obj.r` OR `obj.red` OR 0
-   * - Green: `obj.g` OR `obj.green` OR 0
-   * - Blue: `obj.b` OR `obj.blue` OR 0
-   * - Alpha: `obj.a` OR `obj.alpha` OR obj.opacity OR 1
-   * 
-   * @param obj Plain JS object
-   * @returns `this` for method-chaining
-   */
-  public fromObject(obj: Record<any, any>): IColorClass {
-    this.red = obj.r ?? obj.red ?? 0;
-    this.green = obj.g ?? obj.green ?? 0;
-    this.blue = obj.b ?? obj.blue ?? 0;
-    this.alpha = obj.a ?? obj.alpha ?? obj.opacity ?? 1;
+    // Iterate through the arguments
+    for(let ind = 0; ind < components.length; ind++) {
+      const comp = components[ind];
+      if(comp === null || typeof comp === 'undefined')
+        continue;
+      
+      const { type, value } = convertParam(comp);
 
-    return this;
-  }
-
-  /**
-   * Attempts to parse the incoming parameter as a ColorRGB object and sets the
-   * appropriate channels when found. Any missing components will use their
-   * defaults, which for RGB is 0.0, and for Alpha is 1.0.
-   * 
-   * Any failure to parse the object will throw an `Error` object. If a null, 
-   * or undefined object is supplied it will be quietly skipped.
-   * 
-   * @param arg The argument to attempt to parse.
-   * @returns `this` for method-chaining
-   */
-  public parse(arg:any):IColorClass {
-    // Check that we even have an argument first
-    if(arg) {
-      // Cache the typeof for the remaining if statements
-      const to = typeof arg;
-      if(to === 'number') {
-        return this.fromInteger(arg);
-      } else if(to === 'string') {
-        return this.fromString(arg);
-      } else if(to === 'object') {
-        if(Array.isArray(arg))
-          return this.fromArray(arg);
-        
-        // Default to object parsing, this doesn't throw errors
-        return this.fromObject(arg);
+      // Check if this is the first 3 arguments (R, G, B)
+      if(ind <= 3) {
+        // Each type gets a treatment on RGB
+        if(type === ParameterType.INTEGER)
+          rgb[ind] = clamp(value / 255);
+        else if(type === ParameterType.FLOAT)
+          rgb[ind] = clamp(value);
+        else if(type === ParameterType.PERCENTAGE)
+          rgb[ind] = value;
+      } else {
+        // Break here since it's over 4 components
+        break;
       }
-
-      throw new TypeError(`ColorRGB.parse() only accepts numbers, strings, arrays, and objects. Instead found "${typeof arg}".`);
     }
 
-    return this;
+    return new ColorRGB(...rgb);
+  }
+
+  /**
+   * The red channel, expressed as a unit float (0..1)
+   * 
+   * @readonly
+   */
+  readonly red:number = 0.0;
+
+  /**
+   * The green channel, expressed as a unit float (0..1)
+   * 
+   * @readonly
+   */
+  readonly green:number = 0.0;
+
+  /**
+   * The blue channel, expressed as a unit float (0..1)
+   * 
+   * @readonly
+   */
+  readonly blue:number = 0.0;
+
+  /**
+   * The alpha channel, expressed as a unit float (0..1)
+   */
+  readonly alpha:number = 1.0;
+
+  /**
+   * Creates a new color in the RGB color-space.
+   * 
+   * Accepts variable amounts of arguments, and depending on the number,
+   * dictates how the color will be created.
+   * 
+   * If only a single argument is supplied it is ran through type-checking
+   * assertions, and depending on the type will perform one of the following:
+   * - `number`: Will be treated as a 32-bit integer and use
+   * {@link ColorRGB.fromInteger}.
+   * - `string`: Can be either a hexidecimal string (ex. "#FFAA88"), a
+   * functional-notation string such that CSS4 accepts (ex.
+   * `rgba(255, 127, 64)`), an X11 named color (ex. "gold"), or the keyword
+   * "transparent" for a fully-transparent black color. Internally uses the
+   * {@link ColorRGB.fromString} function.
+   * - `array`: An array of RGB(A) component values, either as numbers, or as
+   * strings that can be parsed into numbers (such as percentages, or the
+   * "none" keyword). It does not need to contain all the channels, any missing
+   * will be skipped and remain at their defaults. Internally uses the
+   * {@link ColorRGB.apply} function.
+   * - `ColorRGB`: Each component will be copied as-is.
+   * - `IColor` or an object having `toRGB()`: Will use the `toRGB()` function
+   * and copy each channel component as-is.
+   * - `object`: Any object that has any of the following properties available:
+   *   - `r` or `red`: Byte value for red channel
+   *   - `g` or `green`: Byte value for green channel
+   *   - `b` or `blue`: Byte value for blue channel
+   *   - `a` or `alpha` or `opacity`: Unit number (0..1) for alpha channel
+   * 
+   * If multiple arguments are supplied they are treated as R, G, B, and A. If
+   * all the values are numbers they are clamped to 0..1 and applied as they
+   * are. Otherwise, mixed values use the {@link ColorRGB.apply} function.
+   * 
+   * Examples of usage:
+   * ```
+   * new ColorRGB() // Default black color
+   * new ColorRGB(1.0, 0.5, 0.25, 0.5) // Color from channels
+   * new ColorRGB(0xFFAA88)   // Color from integer
+   * new ColorRGB('gold')     // Color from X11 named color
+   * new ColorRGB('#FFAA88')  // Color from hexidecimal string
+   * new ColorRGB('rgb(255, 127, 64)')  // Color from functional-notation
+   * new ColorRGB([1.0, 0.5, 0.25, 0.5])  // Color from array of numbers
+   * new ColorRGB(['100%', '50%', 'none', '50%']) // Color from array of strings
+   * new ColorRGB({ r: 255, g: 127, b: 64}) // Color from object
+   * ```
+   */
+  constructor(
+    _arg1 ?: (IColor | RGBObject | Array<number | string> | number | string),
+    _arg2 ?: (number | string),
+    _arg3 ?: (number | string),
+    _arg4 ?: (number | string),
+  ) {
+    // Bind methods
+    this.toString = this.toString.bind(this);
+    this.toArray = this.toArray.bind(this);
+    this.toObject = this.toObject.bind(this);
+    this.toRGB = this.toRGB.bind(this);
+    this.toInteger = this.toInteger.bind(this);
+    this.toHex = this.toHex.bind(this);
+    this.toFunctional = this.toFunctional.bind(this);
+
+    this.toYIQValue = this.toYIQValue.bind(this);
+    this.luminosity = this.luminosity.bind(this);
+    this.contrast = this.contrast.bind(this);
+    this.isDark = this.isDark.bind(this);
+    this.isLight = this.isLight.bind(this);
+    this.invert = this.invert.bind(this);
+    this.desaturate = this.desaturate.bind(this);
+    this.lerp = this.lerp.bind(this);
+
+    // Handle construction
+    if(arguments.length) {
+      let rgb:ColorRGB = null;
+
+      if(arguments.length === 1) {
+        if(typeof _arg1 === 'number') {
+          rgb = ColorRGB.fromInteger(_arg1);
+        } else if(_arg1 instanceof ColorRGB) {
+          this.red = _arg1.red;
+          this.green = _arg1.green;
+          this.blue = _arg1.blue;
+          this.alpha = _arg1.alpha;
+        } else if(typeof _arg1 === 'object') {
+          if(Array.isArray(_arg1)) {
+            // Try to parse the elements of the array
+            try {
+              rgb = ColorRGB.apply.apply(null, _arg1);
+            } catch (err) {
+              throw new Error(`ColorRGB was constructed with an array argument "${_arg1.toString()}" that could not be parsed because: ${err.message ?? err}`);
+            }
+          } else {
+            // Try to coerce it into a ColorRGB object
+            try {
+              rgb = ColorRGB.ensureRGB(_arg1);
+            } catch (err) {
+              throw new Error(`ColorRGB was constructed with an object that could not be coerced into a valid ColorRGB object`);
+            }
+          }
+        } else if(typeof _arg1 === 'string') {
+          // Try to parse it as a string
+          try {
+            rgb = ColorRGB.fromString(_arg1);
+          } catch (err) {
+            throw new Error(`ColorRGB was constructed with a string argument "${_arg1}" that could not be parsed because: ${err.message ?? err}`);
+          }
+        }
+      } else if(arguments.length > 1) {
+        // If every value is a number, it's much easier
+        const args = [ ...arguments ];
+        if(args.every(val => typeof val === 'number')) {
+          const [
+            r = 0,
+            g = 0,
+            b = 0,
+            a = 1.0,
+          // eslint-disable-next-line array-bracket-newline
+          ]:Array<number> = args;
+
+          this.red = clamp(r);
+          this.green = clamp(g);
+          this.blue = clamp(b);
+          this.alpha = clamp(a);
+        } else {
+          rgb = ColorRGB.apply.apply(null, args);
+        }
+      }
+
+      // If some static method succeeded, use it's values
+      if(rgb) {
+        this.red = rgb.red;
+        this.green = rgb.green;
+        this.blue = rgb.blue;
+        this.alpha = rgb.alpha;
+      }
+    }
+  }
+
+  get redByte():number {
+    return toByte(this.red);
+  }
+
+  get greenByte():number {
+    return toByte(this.green);
+  }
+
+  get blueByte():number {
+    return toByte(this.blue);
+  }
+
+  get alphaByte():number {
+    return toByte(this.alpha);
+  }
+
+  toString():string {
+    return this.toFunctional();
+  }
+
+  toArray():RGBTuple {
+    return [
+      this.red,
+      this.green,
+      this.blue,
+      this.alpha,
+    ];
+  }
+
+  toObject():RGBObject {
+    const obj:RGBObject = {
+      r: this.red,
+      g: this.green,
+      b: this.blue,
+    };
+
+    if(this.alpha !== 1.0)
+      obj.a = this.alpha;
+
+    return obj;
+  }
+
+  /**
+   * Returns a copy of this color.
+   * 
+   * @returns New ColorRGB object
+   */
+  toRGB():ColorRGB {
+    return new ColorRGB(this);
+  }
+
+  /**
+   * Converts this RGB Color into it's integer representation. Note that this is
+   * a lossy conversion considering the channels are internally represented as
+   * unit floats (0..1), and this operation converts them into byte integers.
+   * 
+   * By default the alpha information is only included if the alpha value is
+   * not 1.0, or the `forceAlpha` flag is true (defaults to false). For
+   * serialization of colors it may be best to have this flag as true and
+   * manage the alpha channels byte position with the `alphaMSB` flag for more
+   * consistant byte arrangement.
+   * 
+   * Additionally the `alphaMSB` switch can be used to move the alpha
+   * information to the Most Significant Byte portion of the integer. Otherwise
+   * (default) it remains as the Least Significant Byte.
+   * 
+   * @param {boolean} [forceAlpha = false] If this flag is true, then
+   * regardless of whether or not the alpha channel is opaque (1), than the
+   * alpha information will be included in the results. This defaults to false
+   * which will only use the alpha information if it is not completely opaque. 
+   * @param {boolean} [alphaMSB = false] Instructs the alpha component to be the
+   * Most Significant Byte in the final result. If false (default) than it will
+   * be the Least Significant Byte. 
+   * @returns {number} Integer number representation of the color.
+   */
+  toInteger(forceAlpha = false, alphaMSB = false):number {
+    let value = ((this.redByte & 0xFF) << 16) | ((this.greenByte & 0xFF) << 8) | (this.blueByte & 0xFF);
+
+    // Check if we need to deal with alpha channel
+    if(forceAlpha || this.alpha !== 1) {
+      if(alphaMSB)
+        value |= (this.alphaByte & 0xFF) << 24;
+      else
+        value = (value << 8) | (this.alphaByte & 0xFF);
+    }
+
+    // Return integer, ensuring it's an integer
+    return value >>> 0;
+  }
+
+  /**
+   * Converts this RGB Color into it's hexidecimal string representation. Note
+   * that this is a lossy conversion considering the channels are internally
+   * represented as unit floats (0..1), and this operation converts them into
+   * byte integers.
+   * 
+   * By default the alpha information is only included if the alpha value is
+   * not 1.0, or the `forceAlpha` flag is true (defaults to false). For
+   * serialization of colors it may be best to have this flag as true and
+   * manage the alpha channels byte position with the `alphaMSB` flag for more
+   * consistant byte arrangement.
+   * 
+   * Additionally the `alphaMSB` switch can be used to move the alpha
+   * information to the Most Significant Byte portion of the integer. Otherwise
+   * (default) it remains as the Least Significant Byte.
+   * 
+   * @param {boolean} [forceAlpha = false] If this flag is true, then
+   * regardless of whether or not the alpha channel is opaque (1), than the
+   * alpha information will be included in the results. This defaults to false
+   * which will only use the alpha information if it is not completely opaque. 
+   * @param {boolean} [alphaMSB = false] Instructs the alpha component to be the
+   * Most Significant Byte in the final result. If false (default) than it will
+   * be the Least Significant Byte. 
+   * @returns {string} Hexidecimal string representation
+   */
+  toHex(forceAlpha = false, alphaMSB = false):string {
+    // Helper function to convert the Hex with padding to make it 2-chars
+    const enc = (val:number):string => ((val & 0xFF).toString(16).padStart(2, '0'));
+    
+    // Build the RGB representation
+    const str = `#${enc(this.redByte)}${enc(this.greenByte)}${enc(this.blueByte)}`;
+
+    // If we force the alpha, or if alpha is not fully-opaque (1) then add it
+    if(forceAlpha || this.alpha !== 1.0) {
+      // With alphaMSB, the alpha component is first in the string
+      if(alphaMSB)
+        return `#${enc(this.alphaByte)}${str.substring(1)}`;
+
+      // Without alphaMSB, the alpha component is last
+      return str + enc(this.alphaByte);
+    }
+    
+    // Alpha was not needed, so return the original string
+    return str;
+  }
+
+  /**
+   * Converts this RGB Color into it's functional-notation string, as if it was
+   * being used with CSS. Because the channels are internally held as unit
+   * floats, the resulting string will use percentages. It can optionally
+   * truncate the channels to whole percentages using the `whole` flag.
+   * 
+   * By default the alpha information is only included if the alpha value is
+   * not 1.0, or the `forceAlpha` flag is true (defaults to false). Additionally
+   * it is truncated to 4 points of precision.
+   * 
+   * The output follows this format:
+   * ```
+   * rgb(100%, 50%, 25%)
+   * rgba(100%, 50%, 25%, 0.75)
+   * ```
+   * 
+   * @param {boolean} [forceAlpha = false] If this flag is true, then
+   * regardless of whether or not the alpha channel is opaque (1), than the
+   * alpha information will be included in the results. This defaults to false
+   * which will only use the alpha information if it is not completely opaque.
+   * @param {boolean} [whole = false] If this flag is true, then the resulting
+   * RGB channel percentages will be rounded to whole numbers instead of the
+   * default which is to leave the decimal places remaining.
+   * @returns {string} Functional-notation string
+   */
+  toFunctional(forceAlpha = false, whole = false):string {
+    const red = toPercent(this.red, whole);
+    const green = toPercent(this.green, whole);
+    const blue = toPercent(this.blue, whole);
+
+    if(forceAlpha || this.alpha !== 1.0)
+      return `rgba(${red}, ${green}, ${blue}, ${this.alpha})`;
+
+    return `rgb(${red}, ${green}, ${blue})`;
+  }
+
+  /**
+   * Calculates the YIQ-color encoding value for this color
+   * 
+   * @see https://24ways.org/2010/calculating-color-contrast
+   * @returns YIQ value
+   */
+  toYIQValue():number {
+    return ((this.redByte * 299) + (this.greenByte * 587) + (this.blueByte * 114)) / 1000;
   }
 
   /**
@@ -853,13 +719,13 @@ export class ColorRGB implements IColorClass {
    * @see https://www.w3.org/TR/WCAG20/#relativeluminancedef
    * @returns Floating-point unit luminosity value
    */
-  public luminosity():number {
+  luminosity():number {
     // Map each channel to it's calculated luminosity base
-    const lum = this.#rgb.map(chan => {
-      // We work in sRGB units
-      const unit = chan / 255.0;
-      return (unit < 0.03928) ? (unit / 12.92) : (((unit + 0.055) / 1.055) ** 2.4);
-    });
+    const lum = ([
+      this.red,
+      this.green,
+      this.blue,
+    ]).map(chan => ((chan < 0.03928) ? (chan / 12.92) : (((chan + 0.055) / 1.055) ** 2.4)));
 
     // Perform the combination for the final luminosity
     return (lum[0] * 0.2126) + (lum[1] * 0.7152) + (lum[2] * 0.0722);
@@ -872,9 +738,11 @@ export class ColorRGB implements IColorClass {
    * @param other The other color to compare this with
    * @returns Numerical contrast value
    */
-  public contrast(other:ColorRGB):number {
+  contrast(other:IColor):number {
+    const clr = ColorRGB.ensureRGB(other);
+
     const lumA = this.luminosity();
-    const lumB = other.luminosity();
+    const lumB = clr.luminosity();
 
     if(lumA > lumB)
       return (lumA + 0.05) / (lumB + 0.05);
@@ -894,7 +762,7 @@ export class ColorRGB implements IColorClass {
    * @param other The other color to compare this with
    * @returns String value of either 'AAA', 'AA', or ''
    */
-  public contrastLevel(other:ColorRGB):string {
+  contrastLevel(other:IColor):string {
     const ratio = this.contrast(other);
 
     if(ratio >= 7.1)
@@ -911,7 +779,7 @@ export class ColorRGB implements IColorClass {
    * 
    * @returns Boolean true if this color is considered "dark"
    */
-  public isDark():boolean {
+  isDark():boolean {
     return this.toYIQValue() < 128;
   }
 
@@ -922,56 +790,54 @@ export class ColorRGB implements IColorClass {
    * 
    * @returns Boolean true if this color is considered "light"
    */
-  public isLight():boolean {
+  isLight():boolean {
     return this.toYIQValue() >= 128;
   }
 
   /**
-   * __Immutable__
-   * 
    * Inverts this RGB colors values and returns a new color. Optionally will
    * invert the alpha as well.
    * 
+   * @immutable
    * @param alpha (default false) If true, the alpha will be inverted as well
-   * @returns New ColorRGB object
+   * @returns {ColorRGB} new ColorRGB object
    */
-  public invert(alpha = false):ColorRGB {
+  invert(alpha = false):ColorRGB {
     return new ColorRGB(
-      255 - this.red,
-      255 - this.green,
-      255 - this.blue,
-      alpha ? (1 - this.#alpha) : this.#alpha,
+      1.0 - this.red,
+      1.0 - this.green,
+      1.0 - this.blue,
+      alpha ? (1.0 - this.alpha) : this.alpha,
     );
   }
 
   /**
-   * __Immutable__
-   * 
-   * Converts this RGB color into a grayscale color using the "Weighted" method.
+   * Converts this RGB color into a grayscale color using the "weighted" method.
    * 
    * @see https://www.dynamsoft.com/blog/insights/image-processing/image-processing-101-color-space-conversion/
+   * @immutable
    * @param perc Percentage of desaturation as a unit 0..1
-   * @returns New ColorRGB object
+   * @returns {ColorRGB} new ColorRGB object
    */
-  public desaturate():ColorRGB {
+  desaturate():ColorRGB {
     // The weighted "gray" color as a unit
-    const gray = (this.redUnit() * 0.299) + (this.greenUnit() * 0.587) + (this.blueUnit() * 0.114);
+    const gray = (this.red * 0.299) + (this.green * 0.587) + (this.blue * 0.114);
 
-    return new ColorRGB().setUnits(gray, gray, gray) as ColorRGB;
+    return new ColorRGB(gray, gray, gray, this.alpha);
   }
 
   /**
-   * __Immutable__
+   * Linearly interpolates this RGB color, and an other IColor that can be
+   * converted to RGB, given a `delta` weight.
    * 
-   * Linearly interpolates this RGB color, and an other RGB color, given a
-   * delta weight.
-   * 
-   * @param other Other color to interpolate to
-   * @param delta Unit (0..1) weight between this and the other
-   * @returns New ColorRGB object
+   * @immutable
+   * @param {IColor} other Other color to interpolate to
+   * @param {number} delta Unit float (0..1) weight between this and the other
+   * @returns {ColorRGB} new ColorRGB object
    */
-  public lerp(other:ColorRGB, delta:number):ColorRGB {
-    const otherArr = other.toArray();
+  lerp(other:IColor, delta:number):ColorRGB {
+    const clr = ColorRGB.ensureRGB(other);
+    const otherArr = clr.toArray();
     const arr = this.toArray().map((val, ind) => lerp(val, otherArr[ind], delta));
     return new ColorRGB(arr);
   }
