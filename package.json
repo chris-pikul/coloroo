@@ -1,6 +1,6 @@
 {
   "name": "coloroo",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "description": "TypeScript/JavaScript library for colors, color-space, conversion, and manipulation.",
   "keywords": [
     "color",
