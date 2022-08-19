@@ -106,7 +106,7 @@
     "func-style": ["error", "declaration", { "allowArrowFunctions": true }],
     "function-call-argument-newline": ["warn", "consistent"],
     "function-paren-newline": ["warn", "multiline"],
-    "id-length": ["warn", { "min": 2 }],
+    "id-length": "off",
     "implicit-arrow-linebreak": ["warn", "beside"],
     "indent": ["warn", 2, { "SwitchCase": 1 }],
     "key-spacing": [
