@@ -472,6 +472,8 @@ export class ColorRGB implements IColor {
 
     this.get = this.get.bind(this);
     this.set = this.set.bind(this);
+    this.setAlpha = this.setAlpha.bind(this);
+
     this.toYIQValue = this.toYIQValue.bind(this);
     this.luminosity = this.luminosity.bind(this);
     this.contrast = this.contrast.bind(this);
@@ -487,6 +489,8 @@ export class ColorRGB implements IColor {
     this.invert = this.invert.bind(this);
     this.desaturate = this.desaturate.bind(this);
     this.grayscale = this.grayscale.bind(this);
+    this.median = this.median.bind(this);
+    this.threshold = this.threshold.bind(this);
 
     // Handle construction
     if(arguments.length) {
@@ -776,6 +780,20 @@ export class ColorRGB implements IColor {
   }
 
   /**
+   * Adjust the opacity.
+   * 
+   * Creates a new RGB color using the channels from `this` and sets a new alpha
+   * using the one provided.
+   * 
+   * @immutable
+   * @param {number} alpha New alpha opacity, as a unit float (0..1).
+   * @returns {ColorRGB} new ColorRGB object
+   */
+  setAlpha(alpha:number):ColorRGB {
+    return new ColorRGB(this.red, this.green, this.blue, alpha);
+  }
+
+  /**
    * Calculates the YIQ-color encoding value for this color
    * 
    * @see https://24ways.org/2010/calculating-color-contrast
@@ -1024,6 +1042,39 @@ export class ColorRGB implements IColor {
   grayscale():ColorRGB {
     const gray = (this.red + this.green + this.blue) / 3.0;
     return new ColorRGB(gray, gray, gray, this.alpha);
+  }
+
+  /**
+   * Calculates the median, or "middle" value between the lowest channel, and
+   * the highest channel. This is the mid-point between where the minimum and
+   * maximum values across the RGB channels is.
+   * 
+   * @returns {number} Median, or mid-point, between RGB channels.
+   */
+  median():number {
+    const min = Math.min(this.red, this.green, this.blue);
+    const max = Math.max(this.red, this.green, this.blue);
+    return ((max - min) * 0.5) + min;
+  }
+
+  /**
+   * Performs a median-based thresholding of this color. Calculates the median
+   * value using {@link ColorRGB.median} and based on the results is compared
+   * against the given `level` argument to return one of the provided colors.
+   * 
+   * If the median is <= `level` then the `lowColor` is returned.
+   * If the median is > `level` then the `highColor` is returned.
+   * 
+   * @param {number} level Threshold level, as a unit float (0..1)
+   * @param {ColorRGB} lowColor Color to return if the value is equal-to or
+   * below the given level. Defaults to black.
+   * @param highColor Color to return if the value is over the given level.
+   * Defaults to white.
+   * @returns {ColorRGB} new ColorRGB object
+   */
+  threshold(level:number, lowColor:ColorRGB = ColorRGB.BLACK, highColor:ColorRGB = ColorRGB.WHITE):ColorRGB {
+    const median = this.median();
+    return median <= level ? lowColor : highColor;
   }
 }
 export default ColorRGB;
