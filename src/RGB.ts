@@ -369,6 +369,21 @@ export class ColorRGB implements IColor {
   }
 
   /**
+   * Static reference for a pure-black color.
+   */
+  static readonly BLACK = new ColorRGB(0, 0, 0);
+
+  /**
+   * Static reference for a mid-gray (50%) color.
+   */
+  static readonly GRAY = new ColorRGB(0.5, 0.5, 0.5);
+  
+  /**
+   * Static reference for a pure-white color.
+   */
+  static readonly WHITE = new ColorRGB(1, 1, 1);
+
+  /**
    * The red channel, expressed as a unit float (0..1)
    * 
    * @readonly
@@ -455,14 +470,23 @@ export class ColorRGB implements IColor {
     this.toHex = this.toHex.bind(this);
     this.toFunctional = this.toFunctional.bind(this);
 
+    this.get = this.get.bind(this);
+    this.set = this.set.bind(this);
     this.toYIQValue = this.toYIQValue.bind(this);
     this.luminosity = this.luminosity.bind(this);
     this.contrast = this.contrast.bind(this);
+    this.contrastLevel = this.contrastLevel.bind(this);
+    this.pickUsingContrast = this.pickUsingContrast.bind(this);
     this.isDark = this.isDark.bind(this);
     this.isLight = this.isLight.bind(this);
+
+    this.lerp = this.lerp.bind(this);
+    this.shade = this.shade.bind(this);
+    this.tint = this.tint.bind(this);
+    this.tone = this.tone.bind(this);
     this.invert = this.invert.bind(this);
     this.desaturate = this.desaturate.bind(this);
-    this.lerp = this.lerp.bind(this);
+    this.grayscale = this.grayscale.bind(this);
 
     // Handle construction
     if(arguments.length) {
@@ -704,6 +728,54 @@ export class ColorRGB implements IColor {
   }
 
   /**
+   * Returns the channel at the given index. The channels are in order as:
+   * 
+   * - 0: red
+   * - 1: green
+   * - 2: blue
+   * - 3: alpha
+   * 
+   * If the index is out-of-range, then 0 is returned
+   * 
+   * @param {number} index channel index
+   * @returns {number} channel value as unit float (0..1)
+   */
+  get(index:number):number {
+    switch(index) {
+      case 0: return this.red;
+      case 1: return this.green;
+      case 2: return this.blue;
+      case 3: return this.alpha;
+      default: return 0;
+    }
+  }
+
+  /**
+   * Sets each channel of this color and returns a new ColorRGB object. Each
+   * channel is mapped in order to variadic arguments: red, green, blue, alpha.
+   * In the event a channel is provided `null` or `undefined` it will use the
+   * same value present in `this` color. Additionally, any missing channels are
+   * also considered null/undefined.
+   * 
+   * Channels can be provided unit float numbers (0..1), or a percentage string
+   * such as "50%", or the "none" keyword implying 0.
+   * 
+   * @param {...(number | string)} args Variadic arguments matching each
+   * channel of red, green, blue, alpha in order. Each channel can be either a
+   * number (expects unit float 0..1), or a string that can be evaluated to a
+   * singular value such as "none", or a percentage (ie. "50%").
+   * @returns {ColorRGB} new ColorRGB object 
+   */
+  set(...channels:Array<undefined | null | number | string>):ColorRGB {
+    // Compile new channels, trimed to size
+    const newChans:Array<number | string> = channels.slice(0, 4)
+      .map((val, ind):(number | string) => (val ?? this.get(ind)));
+
+    // Use the apply static method to make a new RGB color
+    return ColorRGB.apply(...newChans);
+  }
+
+  /**
    * Calculates the YIQ-color encoding value for this color
    * 
    * @see https://24ways.org/2010/calculating-color-contrast
@@ -773,6 +845,39 @@ export class ColorRGB implements IColor {
   }
 
   /**
+   * Selects a color from the given array of colors that has the highest
+   * contrast ratio with `this` color.
+   * 
+   * Inspired by the CSS Color Module 5 `color-contrast()` function. Consider
+   * `this` to be the background color, and the supplied `options` to be options
+   * for foreground.
+   * 
+   * If no argument is provided, or is an empty array, it will default to using
+   * opaque black and white.
+   * 
+   * @note alpha is not considered during contrast calculation
+   * 
+   * @param {Array} options Array of IColor color-space objects, each object
+   * will be converted to this color-space for comparison. If the array is not
+   * provided, or is empty, the colors black and white will be used instead
+   * @returns {ColorRGB} new ColorRGB object
+   */
+  pickUsingContrast(options?:Array<IColor>):ColorRGB {
+    let colors:Array<ColorRGB>;
+    if(options && options.length > 0)
+      colors = options.map(ColorRGB.ensureRGB);
+    else
+      colors = [ new ColorRGB(0, 0, 0), new ColorRGB(1, 1, 1) ];
+
+    // Make tuple of color and it's contrast, then sort by contrast descending
+    const picks:[ColorRGB, number][] = colors.map((clr:ColorRGB):[ColorRGB, number] => ([ clr, this.contrast(clr) ]))
+      .sort((a:[ColorRGB, number], b:[ColorRGB, number]) => (b[1] - a[1]));
+
+    // Get the first object's original color from the sorted picks
+    return picks[0][0];
+  }
+
+  /**
    * Performs a YIQ conversion using {@link ColorRGB.toYIQValue} and then
    * compares the output to a "half-way" point to decide if the color is
    * considered "dark".
@@ -792,6 +897,82 @@ export class ColorRGB implements IColor {
    */
   isLight():boolean {
     return this.toYIQValue() >= 128;
+  }
+
+  /**
+   * Linearly interpolates this RGB color, and an other IColor that can be
+   * converted to RGB, given a `delta` weight.
+   * 
+   * @immutable
+   * @param {IColor} other Other color to interpolate to
+   * @param {number} delta Unit float (0..1) weight between this and the other
+   * @returns {ColorRGB} new ColorRGB object
+   */
+  lerp(other:IColor, delta:number):ColorRGB {
+    const clr = ColorRGB.ensureRGB(other);
+    const otherArr = clr.toArray();
+    const arr = this.toArray().map((val, ind) => lerp(val, otherArr[ind], delta));
+    return new ColorRGB(arr);
+  }
+
+  /**
+   * Shade, or darken.
+   * 
+   * Creates a "shade" of this color by interpolating it with black by the given
+   * fraction `delta`.
+   * 
+   * @param {number} frac Unit float (0..1) fraction for how much to shade the
+   * color. 0 results in none, 1 results in full black. 
+   */
+  shade(frac:number):ColorRGB {
+    return this.lerp(ColorRGB.BLACK, clamp(frac));
+  }
+
+  /**
+   * Darken this color and return a new color.
+   * 
+   * Alias for {@link ColorRGB.shade}
+   * 
+   * @param amount fractional unit float (0..1) for how much to darken. 
+   * @returns {ColorRGB} new ColorRGB object
+   */
+  readonly darken = (amount:number):ColorRGB => this.shade(amount);
+
+  /**
+   * Tint, or lighten.
+   * 
+   * Creates a "tint" of this color by interpolating it with white by the given
+   * fraction `delta`.
+   * 
+   * @param {number} frac Unit float (0..1) fraction for how much to shade the
+   * color. 0 results in none, 1 results in full white. 
+   */
+  tint(frac:number):ColorRGB {
+    return this.lerp(ColorRGB.WHITE, clamp(frac));
+  }
+
+  /**
+   * Lighten this color and return a new color.
+   * 
+   * Alias for {@link ColorRGB.tint}
+   * 
+   * @param amount fractional unit float (0..1) for how much to lighten. 
+   * @returns {ColorRGB} new ColorRGB object
+   */
+  readonly lighten = (amount:number):ColorRGB => this.tint(amount);
+
+  /**
+   * Tone, or saturate.
+   * 
+   * Creates a "tone" of this color by interpolating it with gray by the given
+   * fraction `delta`. The gray is 50% gray, and not the grayscale calculation
+   * of this color. For that, see {@link ColorRGB.desaturate}
+   * 
+   * @param {number} frac Unit float (0..1) fraction for how much to shade the
+   * color. 0 results in completely gray, 1 results in original color. 
+   */
+  tone(frac:number):ColorRGB {
+    return this.lerp(ColorRGB.GRAY, 1.0 - clamp(frac));
   }
 
   /**
@@ -815,31 +996,34 @@ export class ColorRGB implements IColor {
    * Converts this RGB color into a grayscale color using the "weighted" method.
    * 
    * @see https://www.dynamsoft.com/blog/insights/image-processing/image-processing-101-color-space-conversion/
+   * 
    * @immutable
-   * @param perc Percentage of desaturation as a unit 0..1
+   * @param {number} [frac = 1.0] Percentage of desaturation as a unit float
+   * (0..1), 0 resulting in no desaturation, and 1 resulting in completely gray.
+   * Default is 1.0 or completely desaturated.
    * @returns {ColorRGB} new ColorRGB object
    */
-  desaturate():ColorRGB {
+  desaturate(frac = 1.0):ColorRGB {
     // The weighted "gray" color as a unit
     const gray = (this.red * 0.299) + (this.green * 0.587) + (this.blue * 0.114);
 
-    return new ColorRGB(gray, gray, gray, this.alpha);
+    const grayClr = new ColorRGB(gray, gray, gray, this.alpha);
+    return this.lerp(grayClr, clamp(frac));
   }
 
   /**
-   * Linearly interpolates this RGB color, and an other IColor that can be
-   * converted to RGB, given a `delta` weight.
+   * Converts this RGB color into a grascale color using an "averaging" method
+   * in which an average of each color is calculated and then applied for each
+   * channel of a new color.
    * 
-   * @immutable
-   * @param {IColor} other Other color to interpolate to
-   * @param {number} delta Unit float (0..1) weight between this and the other
-   * @returns {ColorRGB} new ColorRGB object
+   * Alpha/opacity remains intact and is based on `this` colors alpha.
+   * 
+   * @see {@link ColorRGB.desaturate} for a weighted method.
+   * @returns {ColorRGB} new ColorRGB object  
    */
-  lerp(other:IColor, delta:number):ColorRGB {
-    const clr = ColorRGB.ensureRGB(other);
-    const otherArr = clr.toArray();
-    const arr = this.toArray().map((val, ind) => lerp(val, otherArr[ind], delta));
-    return new ColorRGB(arr);
+  grayscale():ColorRGB {
+    const gray = (this.red + this.green + this.blue) / 3.0;
+    return new ColorRGB(gray, gray, gray, this.alpha);
   }
 }
 export default ColorRGB;
