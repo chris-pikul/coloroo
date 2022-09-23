@@ -473,6 +473,8 @@ export class ColorRGB implements IColor {
     this.get = this.get.bind(this);
     this.set = this.set.bind(this);
     this.setAlpha = this.setAlpha.bind(this);
+    this.minChannel = this.minChannel.bind(this);
+    this.maxChannel = this.maxChannel.bind(this);
 
     this.toYIQValue = this.toYIQValue.bind(this);
     this.luminosity = this.luminosity.bind(this);
@@ -791,6 +793,58 @@ export class ColorRGB implements IColor {
    */
   setAlpha(alpha:number):ColorRGB {
     return new ColorRGB(this.red, this.green, this.blue, alpha);
+  }
+
+  /**
+   * Returns the minimum (smallest) value within the RGB channels. Optionally
+   * supports returning the channel index as well.
+   * 
+   * @param {boolean} [withIndex = false] If true, returns a tuple of `[value,
+   * index ]` where the value is the smallest channel, and the index is the
+   * index of the channel that was smallest. Otherwise false (default) only
+   * returns the value. If all channels are the same, red is returned.
+   * @returns {number|Array} Either a unit float (0..1) or a tuple depending on
+   * the `withIndex` parameter. 
+   */
+  minChannel(withIndex = false):(number | [number, number]) {
+    if(withIndex) {
+      if(this.red < this.green && this.red < this.blue)
+        return [ this.red, 0 ];
+      else if(this.green < this.red && this.green < this.blue)
+        return [ this.green, 1 ];
+      else if(this.blue < this.red && this.blue < this.green)
+        return [ this.blue, 2 ];
+      
+      return [ this.red, 0 ];
+    }
+
+    return Math.min(this.red, this.green, this.blue);
+  }
+
+  /**
+   * Returns the maximum (largest) value within the RGB channels. Optionally
+   * supports returning the channel index as well.
+   * 
+   * @param {boolean} [withIndex = false] If true, returns a tuple of `[value,
+   * index ]` where the value is the largest channel, and the index is the
+   * index of the channel that was largest. Otherwise false (default) only
+   * returns the value. If all channels are the same, red is returned.
+   * @returns {number|Array} Either a unit float (0..1) or a tuple depending on
+   * the `withIndex` parameter. 
+   */
+  maxChannel(withIndex = false):(number | [number, number]) {
+    if(withIndex) {
+      if(this.red > this.green && this.red > this.blue)
+        return [ this.red, 0 ];
+      else if(this.green > this.red && this.green > this.blue)
+        return [ this.green, 1 ];
+      else if(this.blue > this.red && this.blue > this.green)
+        return [ this.blue, 2 ];
+      
+      return [ this.red, 0 ];
+    }
+
+    return Math.max(this.red, this.green, this.blue);
   }
 
   /**
