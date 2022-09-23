@@ -1,18 +1,31 @@
 import { StringEnum } from './utils/types';
 
-export const BlendModes:StringEnum = {
+export const CompositeOperators:StringEnum = {
+  CLEAR: 'clear',
+  COPY: 'copy',
+  DESTINATION: 'destination',
+
   SOURCE_OVER: 'source-over',
-  SOURCE_IN: 'source-in',
-  SOURCE_OUT: 'source-out',
-  SOURCE_ATOP: 'source-atop',
   DESTINATION_OVER: 'destination-over',
+
+  SOURCE_IN: 'source-in',
   DESTINATION_IN: 'destination-in',
+
+  SOURCE_OUT: 'source-out',
   DESTINATION_OUT: 'destination-out',
+
+  SOURCE_ATOP: 'source-atop',
   DESTINATION_ATOP: 'destination-atop',
+  
   XOR: 'xor',
   LIGHTER: 'lighter',
-  COPY: 'copy',
-  
+  PLUS_DARKER: 'plus-darker',
+  PLUS_LIGHTER: 'plus-lighter',
+} as const;
+
+export type ECompositeOperator = typeof CompositeOperators[keyof typeof CompositeOperators];
+
+export const BlendModes:StringEnum = {
   MULTIPLY: 'multiply',
   SCREEN: 'screen',
   OVERLAY: 'overlay',

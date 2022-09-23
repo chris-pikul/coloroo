@@ -11,6 +11,7 @@
  * 
  * @module RGB
  */
+import { CompositeOperators, ECompositeOperator } from './BlendModes';
 import IColor from './IColor';
 import NamedColors, { ENamedColor } from './NamedColors';
 
@@ -366,6 +367,114 @@ export class ColorRGB implements IColor {
     }
 
     return new ColorRGB(...rgb);
+  }
+
+  /**
+   * Performs Porter-Duff compositing on the colors based on the source and 
+   * destination colors. The mode used is defined by the `op` parameter and 
+   * should be one of the following enumerations:
+   * 
+   * - `clear`
+   * - `copy`
+   * - `destination`
+   * - `source-over`
+   * - `destination-over`
+   * - `source-in`
+   * - `destination-in`
+   * - `source-out`
+   * - `destination-out`
+   * - `source-atop`
+   * - `destination-atop`
+   * - `xor`
+   * - `lighter`
+   * - `plus-darker`
+   * - `plus-lighter`
+   * 
+   * @see https://drafts.fxtf.org/compositing/#porterduffcompositingoperators
+   * 
+   * @param {ColorRGB} src Source color 
+   * @param {ColorRGB} dst Destination color
+   * @param {string} op Porter-Duff composite operator 
+   */
+  static composite(src:ColorRGB, dst:ColorRGB, op:ECompositeOperator):ColorRGB {
+    // Short composite function, pre-multiplies each channel and runs function
+    const comp = (chanFunc:(s:number, d:number)=>number, alpha:number) => new ColorRGB(
+      chanFunc(src.red * src.alpha, dst.red * dst.alpha),
+      chanFunc(src.green * src.alpha, dst.green * dst.alpha),
+      chanFunc(src.blue * src.alpha, dst.blue * dst.alpha),
+      alpha,
+    );
+    
+    switch(op) {
+      case CompositeOperators.CLEAR:
+        return new ColorRGB(0, 0, 0, 0);
+      case CompositeOperators.COPY:
+        return comp(s => s, src.alpha);
+      case CompositeOperators.DESTINATION:
+        return comp((_, d) => d, dst.alpha);
+      case CompositeOperators.SOURCE_OVER:
+        return comp(
+          (s, d) => (s + (d * (1 - src.alpha))),
+          (src.alpha + (dst.alpha * (1 - src.alpha))),
+        );
+      case CompositeOperators.DESTINATION_OVER:
+        return comp(
+          (s, d) => ((s * (1 - dst.alpha)) + d),
+          ((src.alpha * (1 - dst.alpha)) + dst.alpha),
+        );
+      case CompositeOperators.SOURCE_IN:
+        return comp(
+          s => (s * dst.alpha),
+          src.alpha * dst.alpha,
+        );
+      case CompositeOperators.DESTINATION_IN:
+        return comp(
+          (_, d) => (d * src.alpha),
+          dst.alpha * src.alpha,
+        );
+      case CompositeOperators.SOURCE_OUT:
+        return comp(
+          s => (s * (1 - dst.alpha)),
+          src.alpha * (1 - dst.alpha),
+        );
+      case CompositeOperators.DESTINATION_OUT:
+        return comp(
+          (_, d) => (d * (1 - src.alpha)),
+          dst.alpha * (1 - src.alpha),
+        );
+      case CompositeOperators.SOURCE_ATOP:
+        return comp(
+          (s, d) => ((s * dst.alpha) + (d * (1 - src.alpha))),
+          (src.alpha * dst.alpha) + (dst.alpha * (1 - src.alpha)),
+        );
+      case CompositeOperators.DESTINATION_ATOP:
+        return comp(
+          (s, d) => ((s * (1 - dst.alpha)) + (d * src.alpha)),
+          ((src.alpha * (1 - dst.alpha)) + (dst.alpha * src.alpha)),
+        );
+      case CompositeOperators.XOR:
+        return comp(
+          (s, d) => ((s * (1 - dst.alpha)) + (d * (1 - src.alpha))),
+          (src.alpha * (1 - dst.alpha)) + (dst.alpha * (1 - src.alpha)),
+        );
+      case CompositeOperators.LIGHTER:
+        return comp(
+          (s, d) => (s + d),
+          src.alpha + dst.alpha,
+        );
+      case CompositeOperators.PLUS_DARKER:
+        return comp(
+          (s, d) => Math.max(0, (1 - (s + 1)) - d),
+          Math.max(0, (1 - (src.alpha + 1)) - dst.alpha),
+        );
+      case CompositeOperators.PLUS_LIGHTER:
+        return comp(
+          (s, d) => Math.min(1, s + d),
+          Math.min(1, src.alpha + dst.alpha),
+        );
+      default:
+        throw new TypeError(`unsupported composite operator "${op}" supplied to ColorRGB.composite()`);
+    }
   }
 
   /**
