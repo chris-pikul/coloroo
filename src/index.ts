@@ -16,4 +16,4 @@ export {
 
 export { ColorSpace, EColorSpace } from './ColorSpace';
 
-export type { IColorClass } from './IColorClass';
+export type { IColor } from './IColor';
