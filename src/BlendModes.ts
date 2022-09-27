@@ -26,6 +26,7 @@ export const CompositeOperators:StringEnum = {
 export type ECompositeOperator = typeof CompositeOperators[keyof typeof CompositeOperators];
 
 export const BlendModes:StringEnum = {
+  NORMAL: 'normal',
   MULTIPLY: 'multiply',
   SCREEN: 'screen',
   OVERLAY: 'overlay',

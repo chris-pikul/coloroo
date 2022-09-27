@@ -11,9 +11,9 @@
  * 
  * @module RGB
  */
-import { CompositeOperators, ECompositeOperator } from './BlendModes';
 import IColor from './IColor';
 import NamedColors, { ENamedColor } from './NamedColors';
+import { NoOpMapCallback, ChannelMapCallback, AlphaMapCallback } from './mapping';
 
 import {
   clamp,
@@ -369,113 +369,12 @@ export class ColorRGB implements IColor {
     return new ColorRGB(...rgb);
   }
 
-  /**
-   * Performs Porter-Duff compositing on the colors based on the source and 
-   * destination colors. The mode used is defined by the `op` parameter and 
-   * should be one of the following enumerations:
-   * 
-   * - `clear`
-   * - `copy`
-   * - `destination`
-   * - `source-over`
-   * - `destination-over`
-   * - `source-in`
-   * - `destination-in`
-   * - `source-out`
-   * - `destination-out`
-   * - `source-atop`
-   * - `destination-atop`
-   * - `xor`
-   * - `lighter`
-   * - `plus-darker`
-   * - `plus-lighter`
-   * 
-   * @see https://drafts.fxtf.org/compositing/#porterduffcompositingoperators
-   * 
-   * @param {ColorRGB} src Source color 
-   * @param {ColorRGB} dst Destination color
-   * @param {string} op Porter-Duff composite operator 
-   */
-  static composite(src:ColorRGB, dst:ColorRGB, op:ECompositeOperator):ColorRGB {
-    // Short composite function, pre-multiplies each channel and runs function
-    const comp = (chanFunc:(s:number, d:number)=>number, alpha:number) => new ColorRGB(
-      chanFunc(src.red * src.alpha, dst.red * dst.alpha),
-      chanFunc(src.green * src.alpha, dst.green * dst.alpha),
-      chanFunc(src.blue * src.alpha, dst.blue * dst.alpha),
-      alpha,
-    );
-    
-    switch(op) {
-      case CompositeOperators.CLEAR:
-        return new ColorRGB(0, 0, 0, 0);
-      case CompositeOperators.COPY:
-        return comp(s => s, src.alpha);
-      case CompositeOperators.DESTINATION:
-        return comp((_, d) => d, dst.alpha);
-      case CompositeOperators.SOURCE_OVER:
-        return comp(
-          (s, d) => (s + (d * (1 - src.alpha))),
-          (src.alpha + (dst.alpha * (1 - src.alpha))),
-        );
-      case CompositeOperators.DESTINATION_OVER:
-        return comp(
-          (s, d) => ((s * (1 - dst.alpha)) + d),
-          ((src.alpha * (1 - dst.alpha)) + dst.alpha),
-        );
-      case CompositeOperators.SOURCE_IN:
-        return comp(
-          s => (s * dst.alpha),
-          src.alpha * dst.alpha,
-        );
-      case CompositeOperators.DESTINATION_IN:
-        return comp(
-          (_, d) => (d * src.alpha),
-          dst.alpha * src.alpha,
-        );
-      case CompositeOperators.SOURCE_OUT:
-        return comp(
-          s => (s * (1 - dst.alpha)),
-          src.alpha * (1 - dst.alpha),
-        );
-      case CompositeOperators.DESTINATION_OUT:
-        return comp(
-          (_, d) => (d * (1 - src.alpha)),
-          dst.alpha * (1 - src.alpha),
-        );
-      case CompositeOperators.SOURCE_ATOP:
-        return comp(
-          (s, d) => ((s * dst.alpha) + (d * (1 - src.alpha))),
-          (src.alpha * dst.alpha) + (dst.alpha * (1 - src.alpha)),
-        );
-      case CompositeOperators.DESTINATION_ATOP:
-        return comp(
-          (s, d) => ((s * (1 - dst.alpha)) + (d * src.alpha)),
-          ((src.alpha * (1 - dst.alpha)) + (dst.alpha * src.alpha)),
-        );
-      case CompositeOperators.XOR:
-        return comp(
-          (s, d) => ((s * (1 - dst.alpha)) + (d * (1 - src.alpha))),
-          (src.alpha * (1 - dst.alpha)) + (dst.alpha * (1 - src.alpha)),
-        );
-      case CompositeOperators.LIGHTER:
-        return comp(
-          (s, d) => (s + d),
-          src.alpha + dst.alpha,
-        );
-      case CompositeOperators.PLUS_DARKER:
-        return comp(
-          (s, d) => Math.max(0, (1 - (s + 1)) - d),
-          Math.max(0, (1 - (src.alpha + 1)) - dst.alpha),
-        );
-      case CompositeOperators.PLUS_LIGHTER:
-        return comp(
-          (s, d) => Math.min(1, s + d),
-          Math.min(1, src.alpha + dst.alpha),
-        );
-      default:
-        throw new TypeError(`unsupported composite operator "${op}" supplied to ColorRGB.composite()`);
-    }
-  }
+  static readonly Channels:Record<string, number> = {
+    RED: 0,
+    GREEN: 1,
+    BLUE: 2,
+    ALPHA: 3,
+  } as const;
 
   /**
    * Static reference for a pure-black color.
@@ -582,8 +481,10 @@ export class ColorRGB implements IColor {
     this.get = this.get.bind(this);
     this.set = this.set.bind(this);
     this.setAlpha = this.setAlpha.bind(this);
+    this.map = this.map.bind(this);
     this.minChannel = this.minChannel.bind(this);
     this.maxChannel = this.maxChannel.bind(this);
+    this.premultiplyAlpha = this.premultiplyAlpha.bind(this);
 
     this.toYIQValue = this.toYIQValue.bind(this);
     this.luminosity = this.luminosity.bind(this);
@@ -850,6 +751,9 @@ export class ColorRGB implements IColor {
    * - 2: blue
    * - 3: alpha
    * 
+   * For convienience {@link ColorRGB.Channels} contains an enum that maps this
+   * directly.
+   * 
    * If the index is out-of-range, then 0 is returned
    * 
    * @param {number} index channel index
@@ -857,10 +761,10 @@ export class ColorRGB implements IColor {
    */
   get(index:number):number {
     switch(index) {
-      case 0: return this.red;
-      case 1: return this.green;
-      case 2: return this.blue;
-      case 3: return this.alpha;
+      case ColorRGB.Channels.RED: return this.red;
+      case ColorRGB.Channels.GREEN: return this.green;
+      case ColorRGB.Channels.BLUE: return this.blue;
+      case ColorRGB.Channels.ALPHA: return this.alpha;
       default: return 0;
     }
   }
@@ -902,6 +806,39 @@ export class ColorRGB implements IColor {
    */
   setAlpha(alpha:number):ColorRGB {
     return new ColorRGB(this.red, this.green, this.blue, alpha);
+  }
+
+  /**
+   * Map the channels of this current color into a new color using the
+   * provided mapping callbacks.
+   * 
+   * Example:
+   * ```TypeScript
+   * // Invert all the channels
+   * const newColor = existingColor.map(
+   *    (val:number) => (1 - val),      // Called on RGB
+   *    (alpha:number) => (1 - alpha),  // Called on ALPHA only
+   * );
+   * ```
+   * 
+   * @immutable
+   * @param {Function} chanCB Callback following the signature
+   * `(chan:number, index:number, color:ColorRGB) => number` which is called on
+   * each color channel (excluding alpha) to map a new value given the current
+   * value.
+   * @param {Function} alphaCB Callback following the signature
+   * `(alpha:number, color:ColorRGB) => number` which is called on the alpha
+   * component to map a new value using the current value. By default, this is
+   * a non-op that leaves the alpha un-touched. 
+   * @returns {ColorRGB} new ColorRGB object
+   */
+  map(chanCB:ChannelMapCallback, alphaCB:AlphaMapCallback = NoOpMapCallback):ColorRGB {
+    return new ColorRGB(
+      chanCB(this.red, 0, this),
+      chanCB(this.green, 1, this),
+      chanCB(this.blue, 2, this),
+      alphaCB(this.alpha, this),
+    );
   }
 
   /**
@@ -954,6 +891,18 @@ export class ColorRGB implements IColor {
     }
 
     return Math.max(this.red, this.green, this.blue);
+  }
+
+  /**
+   * Returns a new `ColorRGB` object with each of the RGB channels multiplied
+   * with the alpha component of this color. The alpha channel returned is not
+   * modified and is passed-through.
+   * 
+   * @immutable
+   * @returns {ColorRGB} new ColorRGB object
+   */
+  premultiplyAlpha():ColorRGB {
+    return this.map((chan:number) => (chan * this.alpha));
   }
 
   /**
