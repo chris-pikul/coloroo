@@ -35,20 +35,10 @@ For the remainder of these docs, ESM is assumed but you should be able to conver
 
 ## Test Coverage
 
+**TESTING IS HAULTED**
+I'll write tests later (famous last words) when I've solidified the API.
+
 Testing is provided by Mocha/Chai, with coverage reporting done by Istanbul/NYC.
-
-Current test coverage is as follows:
-
-File             | % Stmts | % Branch | % Funcs | % Lines |
------------------|---------|----------|---------|---------|
-All files        |     100 |      100 |     100 |     100 |
- src             |     100 |      100 |     100 |     100 |
-  NamedColors.ts |     100 |      100 |     100 |     100 |
-  RGB.ts         |     100 |      100 |     100 |     100 |
- src/utils       |     100 |      100 |     100 |     100 |
-  math.ts        |     100 |      100 |     100 |     100 |
-  params.ts      |     100 |      100 |     100 |     100 |
-  regexp.ts      |     100 |      100 |     100 |     100 |
 
 ## Contibuting
 

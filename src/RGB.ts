@@ -67,11 +67,13 @@ export interface RGBObject extends Record<string, number> {
 };
 
 // Dummy object for use with objectMatchesPattern()
-const rgbPattern:RGBObject = {
+const rgbPattern:Record<string, any> = {
   r: 1,
+  red: 1,
   g: 1,
+  green: 1,
   b: 1,
-  a: 1,
+  blue: 1,
 };
 
 /**
@@ -783,6 +785,7 @@ export class ColorRGB implements IColor {
    * Channels can be provided unit float numbers (0..1), or a percentage string
    * such as "50%", or the "none" keyword implying 0.
    * 
+   * @immutable
    * @param {...(number | string)} args Variadic arguments matching each
    * channel of red, green, blue, alpha in order. Each channel can be either a
    * number (expects unit float 0..1), or a string that can be evaluated to a
