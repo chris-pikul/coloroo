@@ -13,7 +13,11 @@
  */
 import IColor from './IColor';
 import NamedColors, { ENamedColor } from './NamedColors';
-import { NoOpMapCallback, ChannelMapCallback, AlphaMapCallback } from './mapping';
+import {
+  NoOpMapCallback,
+  ChannelMapCallback,
+  AlphaMapCallback,
+} from './mapping';
 
 import {
   clamp,
