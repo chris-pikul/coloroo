@@ -20,7 +20,7 @@
 
 #### Defined in
 
-[utils/params.ts:59](https://github.com/chris-pikul/coloroo/blob/14d633e/src/utils/params.ts#L59)
+[utils/params.ts:59](https://github.com/chris-pikul/coloroo/blob/ffcd5a2/src/utils/params.ts#L59)
 
 ___
 
@@ -30,7 +30,7 @@ ___
 
 #### Defined in
 
-[utils/params.ts:60](https://github.com/chris-pikul/coloroo/blob/14d633e/src/utils/params.ts#L60)
+[utils/params.ts:60](https://github.com/chris-pikul/coloroo/blob/ffcd5a2/src/utils/params.ts#L60)
 
 ___
 
@@ -40,4 +40,4 @@ ___
 
 #### Defined in
 
-[utils/params.ts:61](https://github.com/chris-pikul/coloroo/blob/14d633e/src/utils/params.ts#L61)
+[utils/params.ts:61](https://github.com/chris-pikul/coloroo/blob/ffcd5a2/src/utils/params.ts#L61)

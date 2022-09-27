@@ -13,8 +13,8 @@
  * Clamps an incoming number to be within a minimum and maximum range.
  *
  * @param value The given value to clamp
- * @param min Minimum value
- * @param max Maximum value
+ * @param min Minimum value (default: 0.0)
+ * @param max Maximum value (default: 1.0)
  * @returns Number within the given range
  */
 export declare function clamp(value: number, min?: number, max?: number): number;
@@ -47,3 +47,26 @@ export declare function cleanFloatStr(value: number, precision?: number): string
  * @returns Value interpolated
  */
 export declare function lerp(start: number, end: number, alpha: number): number;
+/**
+ * Re-scales and clamps a unit to a 0..255 byte integer
+ *
+ * @param unit Unit float (0..1)
+ * @returns Byte integer (0..255)
+ */
+export declare function toByte(unit: number): number;
+/**
+ * Multiplies the value by 100 and then adds the % character
+ *
+ * @param unit Unit float (0..1)
+ * @param round Whether to round to a whole integer percentage (default: false)
+ * @returns String with percentage postfix
+ */
+export declare function toPercent(unit: number, round?: boolean): string;
+/**
+ * Ensures that the input results in a clamped unit, regardless of type. If the
+ * value type is not a number, null is returned.
+ *
+ * @param value Any value
+ * @returns {number | null} Unit float (0..1) or null if NaN
+ */
+export declare function ensureUnit(value: any): (number | null);

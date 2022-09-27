@@ -29,56 +29,56 @@ Provides common regular expressions for parsing and validation.
 
 ### regexpHex
 
-• **regexpHex**: `RegExp`
+• `Const` **regexpHex**: `RegExp`
 
 Regular expression matching (with capture groups) for hexidecimal color
 codes.
 
 #### Defined in
 
-[utils/regexp.ts:45](https://github.com/chris-pikul/coloroo/blob/14d633e/src/utils/regexp.ts#L45)
+[utils/regexp.ts:45](https://github.com/chris-pikul/coloroo/blob/ffcd5a2/src/utils/regexp.ts#L45)
 
 ___
 
 ### regexpInteger
 
-• **regexpInteger**: `RegExp`
+• `Const` **regexpInteger**: `RegExp`
 
 Regular expression matching integers for testing
 
 #### Defined in
 
-[utils/regexp.ts:50](https://github.com/chris-pikul/coloroo/blob/14d633e/src/utils/regexp.ts#L50)
+[utils/regexp.ts:50](https://github.com/chris-pikul/coloroo/blob/ffcd5a2/src/utils/regexp.ts#L50)
 
 ___
 
 ### regexpNumber
 
-• **regexpNumber**: `RegExp`
+• `Const` **regexpNumber**: `RegExp`
 
 Regular expression matching a valid number as of CSS4 standards
 
 #### Defined in
 
-[utils/regexp.ts:55](https://github.com/chris-pikul/coloroo/blob/14d633e/src/utils/regexp.ts#L55)
+[utils/regexp.ts:55](https://github.com/chris-pikul/coloroo/blob/ffcd5a2/src/utils/regexp.ts#L55)
 
 ___
 
 ### regexpPercent
 
-• **regexpPercent**: `RegExp`
+• `Const` **regexpPercent**: `RegExp`
 
 Regular expression matching a percentage value
 
 #### Defined in
 
-[utils/regexp.ts:60](https://github.com/chris-pikul/coloroo/blob/14d633e/src/utils/regexp.ts#L60)
+[utils/regexp.ts:60](https://github.com/chris-pikul/coloroo/blob/ffcd5a2/src/utils/regexp.ts#L60)
 
 ___
 
 ### regexpRGBFunc
 
-• **regexpRGBFunc**: `RegExp`
+• `Const` **regexpRGBFunc**: `RegExp`
 
 Regular expression matching the CSS4 definition of RGB(A) functional
 notation. Features named capture groups for the components. As defined with
@@ -87,7 +87,7 @@ additionally accepts the new "none" keyword.
 
 #### Defined in
 
-[utils/regexp.ts:68](https://github.com/chris-pikul/coloroo/blob/14d633e/src/utils/regexp.ts#L68)
+[utils/regexp.ts:68](https://github.com/chris-pikul/coloroo/blob/ffcd5a2/src/utils/regexp.ts#L68)
 
 ## Functions
 
@@ -114,7 +114,7 @@ Array of arrays containing strings or undefined objects
 
 #### Defined in
 
-[utils/regexp.ts:22](https://github.com/chris-pikul/coloroo/blob/14d633e/src/utils/regexp.ts#L22)
+[utils/regexp.ts:22](https://github.com/chris-pikul/coloroo/blob/ffcd5a2/src/utils/regexp.ts#L22)
 
 ___
 
@@ -141,4 +141,4 @@ Either null, or an array of the matches
 
 #### Defined in
 
-[utils/regexp.ts:36](https://github.com/chris-pikul/coloroo/blob/14d633e/src/utils/regexp.ts#L36)
+[utils/regexp.ts:36](https://github.com/chris-pikul/coloroo/blob/ffcd5a2/src/utils/regexp.ts#L36)

@@ -4,12 +4,14 @@
 
 [RGB](../modules/RGB.md).ColorRGB
 
-RGB with Alpha color-space. The red, green, and blue channels are 8-bit
-bytes (0..255) and will round/truncate on manipulation.
+RGB Color-space. Holds each channel (red, green, blue, and alpha) as unit
+floats. Each channel is clamped to 0..1 regardless of manipulations.
+
+**`immutable`**
 
 ## Implements
 
-- [`IColorClass`](../interfaces/IColorClass.IColorClass-1.md)
+- [`IColor`](../interfaces/RGB.IColor.md)
 
 ## Table of contents
 
@@ -19,98 +21,111 @@ bytes (0..255) and will round/truncate on manipulation.
 
 ### Properties
 
-- [#alpha](RGB.ColorRGB.md##alpha)
-- [#rgb](RGB.ColorRGB.md##rgb)
-- [Formats](RGB.ColorRGB.md#formats)
-
-### Accessors
-
 - [alpha](RGB.ColorRGB.md#alpha)
 - [blue](RGB.ColorRGB.md#blue)
 - [green](RGB.ColorRGB.md#green)
 - [red](RGB.ColorRGB.md#red)
+- [BLACK](RGB.ColorRGB.md#black)
+- [Channels](RGB.ColorRGB.md#channels)
+- [GRAY](RGB.ColorRGB.md#gray)
+- [WHITE](RGB.ColorRGB.md#white)
+
+### Accessors
+
+- [alphaByte](RGB.ColorRGB.md#alphabyte)
+- [blueByte](RGB.ColorRGB.md#bluebyte)
+- [greenByte](RGB.ColorRGB.md#greenbyte)
+- [redByte](RGB.ColorRGB.md#redbyte)
 
 ### Methods
 
-- [blueUnit](RGB.ColorRGB.md#blueunit)
 - [contrast](RGB.ColorRGB.md#contrast)
 - [contrastLevel](RGB.ColorRGB.md#contrastlevel)
+- [darken](RGB.ColorRGB.md#darken)
 - [desaturate](RGB.ColorRGB.md#desaturate)
-- [fromArray](RGB.ColorRGB.md#fromarray)
-- [fromFuncString](RGB.ColorRGB.md#fromfuncstring)
-- [fromHexString](RGB.ColorRGB.md#fromhexstring)
-- [fromInteger](RGB.ColorRGB.md#frominteger)
-- [fromObject](RGB.ColorRGB.md#fromobject)
-- [fromString](RGB.ColorRGB.md#fromstring)
-- [greenUnit](RGB.ColorRGB.md#greenunit)
+- [get](RGB.ColorRGB.md#get)
+- [grayscale](RGB.ColorRGB.md#grayscale)
 - [invert](RGB.ColorRGB.md#invert)
 - [isDark](RGB.ColorRGB.md#isdark)
 - [isLight](RGB.ColorRGB.md#islight)
 - [lerp](RGB.ColorRGB.md#lerp)
+- [lighten](RGB.ColorRGB.md#lighten)
 - [luminosity](RGB.ColorRGB.md#luminosity)
-- [parse](RGB.ColorRGB.md#parse)
-- [redUnit](RGB.ColorRGB.md#redunit)
+- [map](RGB.ColorRGB.md#map)
+- [maxChannel](RGB.ColorRGB.md#maxchannel)
+- [median](RGB.ColorRGB.md#median)
+- [minChannel](RGB.ColorRGB.md#minchannel)
+- [pickUsingContrast](RGB.ColorRGB.md#pickusingcontrast)
+- [premultiplyAlpha](RGB.ColorRGB.md#premultiplyalpha)
 - [set](RGB.ColorRGB.md#set)
 - [setAlpha](RGB.ColorRGB.md#setalpha)
-- [setBlue](RGB.ColorRGB.md#setblue)
-- [setBlueUnit](RGB.ColorRGB.md#setblueunit)
-- [setGreen](RGB.ColorRGB.md#setgreen)
-- [setGreenUnit](RGB.ColorRGB.md#setgreenunit)
-- [setRed](RGB.ColorRGB.md#setred)
-- [setRedUnit](RGB.ColorRGB.md#setredunit)
-- [setUnits](RGB.ColorRGB.md#setunits)
+- [shade](RGB.ColorRGB.md#shade)
+- [threshold](RGB.ColorRGB.md#threshold)
+- [tint](RGB.ColorRGB.md#tint)
 - [toArray](RGB.ColorRGB.md#toarray)
-- [toFuncString](RGB.ColorRGB.md#tofuncstring)
-- [toHexString](RGB.ColorRGB.md#tohexstring)
+- [toFunctional](RGB.ColorRGB.md#tofunctional)
+- [toHex](RGB.ColorRGB.md#tohex)
 - [toInteger](RGB.ColorRGB.md#tointeger)
+- [toObject](RGB.ColorRGB.md#toobject)
+- [toRGB](RGB.ColorRGB.md#torgb)
 - [toString](RGB.ColorRGB.md#tostring)
-- [toUnitArray](RGB.ColorRGB.md#tounitarray)
 - [toYIQValue](RGB.ColorRGB.md#toyiqvalue)
+- [tone](RGB.ColorRGB.md#tone)
+- [apply](RGB.ColorRGB.md#apply)
+- [ensureRGB](RGB.ColorRGB.md#ensurergb)
+- [fromFunctional](RGB.ColorRGB.md#fromfunctional)
+- [fromHex](RGB.ColorRGB.md#fromhex)
+- [fromInteger](RGB.ColorRGB.md#frominteger)
+- [fromRGB](RGB.ColorRGB.md#fromrgb)
+- [fromString](RGB.ColorRGB.md#fromstring)
 
 ## Constructors
 
 ### constructor
 
-• **new ColorRGB**(`_arg1?`, `_argG?`, `_argB?`, `_argA?`)
+• **new ColorRGB**(`_arg1?`, `_arg2?`, `_arg3?`, `_arg4?`)
 
-Creates a new Color in the RGB color-space.
+Creates a new color in the RGB color-space.
 
 Accepts variable amounts of arguments, and depending on the number,
 dictates how the color will be created.
 
-If only a single argument is supplied it is ran through the
-[ColorRGB.parse](RGB.ColorRGB.md#parse) method. If an error occurs during parsing, this
-constructor will throw an `Error`. The following value types are accepted:
-
-- `number`: Will be treated as a 32-bit integer.
+If only a single argument is supplied it is ran through type-checking
+assertions, and depending on the type will perform one of the following:
+- `number`: Will be treated as a 32-bit integer and use
+[ColorRGB.fromInteger](RGB.ColorRGB.md#frominteger).
 - `string`: Can be either a hexidecimal string (ex. "#FFAA88"), a
 functional-notation string such that CSS4 accepts (ex.
 `rgba(255, 127, 64)`), an X11 named color (ex. "gold"), or the keyword
-"transparent" for a fully-transparent black color.
+"transparent" for a fully-transparent black color. Internally uses the
+[ColorRGB.fromString](RGB.ColorRGB.md#fromstring) function.
 - `array`: An array of RGB(A) component values, either as numbers, or as
 strings that can be parsed into numbers (such as percentages, or the
 "none" keyword). It does not need to contain all the channels, any missing
-will be skipped and remain at their defaults.
+will be skipped and remain at their defaults. Internally uses the
+[ColorRGB.apply](RGB.ColorRGB.md#apply) function.
+- `ColorRGB`: Each component will be copied as-is.
+- `IColor` or an object having `toRGB()`: Will use the `toRGB()` function
+and copy each channel component as-is.
 - `object`: Any object that has any of the following properties available:
   - `r` or `red`: Byte value for red channel
   - `g` or `green`: Byte value for green channel
   - `b` or `blue`: Byte value for blue channel
   - `a` or `alpha` or `opacity`: Unit number (0..1) for alpha channel
 
-If multiple arguments are supplied they are treated as R, G, B, and A;
-exactly as the [ColorRGB.set](RGB.ColorRGB.md#set) method does (as they are passed
-directly to it). Since `set()` does not throw errors, any issues in
-parsing are quietly ignored and will default to 0.
+If multiple arguments are supplied they are treated as R, G, B, and A. If
+all the values are numbers they are clamped to 0..1 and applied as they
+are. Otherwise, mixed values use the [ColorRGB.apply](RGB.ColorRGB.md#apply) function.
 
 Examples of usage:
 ```
 new ColorRGB() // Default black color
-new ColorRGB(255, 127, 64, 0.5) // Color from channels
+new ColorRGB(1.0, 0.5, 0.25, 0.5) // Color from channels
 new ColorRGB(0xFFAA88)   // Color from integer
 new ColorRGB('gold')     // Color from X11 named color
 new ColorRGB('#FFAA88')  // Color from hexidecimal string
 new ColorRGB('rgb(255, 127, 64)')  // Color from functional-notation
-new ColorRGB([255, 127, 64, 0.5])  // Color from array of numbers
+new ColorRGB([1.0, 0.5, 0.25, 0.5])  // Color from array of numbers
 new ColorRGB(['100%', '50%', 'none', '50%']) // Color from array of strings
 new ColorRGB({ r: 255, g: 127, b: 64}) // Color from object
 ```
@@ -119,207 +134,176 @@ new ColorRGB({ r: 255, g: 127, b: 64}) // Color from object
 
 | Name | Type |
 | :------ | :------ |
-| `_arg1?` | `string` \| `number` \| `Record`<`any`, `any`\> \| [`ColorRGB`](RGB.ColorRGB.md) \| (`string` \| `number`)[] |
-| `_argG?` | `string` \| `number` |
-| `_argB?` | `string` \| `number` |
-| `_argA?` | `string` \| `number` |
+| `_arg1?` | `string` \| `number` \| (`string` \| `number`)[] \| [`IColor`](../interfaces/RGB.IColor.md) \| [`RGBObject`](../interfaces/RGB.RGBObject.md) |
+| `_arg2?` | `string` \| `number` |
+| `_arg3?` | `string` \| `number` |
+| `_arg4?` | `string` \| `number` |
 
 #### Defined in
 
-[RGB.ts:148](https://github.com/chris-pikul/coloroo/blob/14d633e/src/RGB.ts#L148)
+[RGB.ts:472](https://github.com/chris-pikul/coloroo/blob/ffcd5a2/src/RGB.ts#L472)
 
 ## Properties
 
-### #alpha
-
-• `Private` **#alpha**: `number` = `1.0`
-
-The alpha (opacity) of the color, clamped to a unit number 0..1 by the
-public getter/setters.
-
-#### Defined in
-
-[RGB.ts:103](https://github.com/chris-pikul/coloroo/blob/14d633e/src/RGB.ts#L103)
-
-___
-
-### #rgb
-
-• `Private` **#rgb**: [`RGBTuple`](../modules/RGB.md#rgbtuple)
-
-Holds the RGB components as an tuple array
-
-#### Defined in
-
-[RGB.ts:93](https://github.com/chris-pikul/coloroo/blob/14d633e/src/RGB.ts#L93)
-
-___
-
-### Formats
-
-▪ `Static` `Readonly` **Formats**: [`StringEnum`](../interfaces/utils_types.StringEnum.md) = `RGBFormat`
-
-The accepted string formats for generating strings.
-
-#### Defined in
-
-[RGB.ts:88](https://github.com/chris-pikul/coloroo/blob/14d633e/src/RGB.ts#L88)
-
-## Accessors
-
 ### alpha
 
-• `get` **alpha**(): `number`
+• `Readonly` **alpha**: `number` = `1.0`
 
-The alpha, or opacity, of the color as a unit (0..1) float
+The alpha channel, expressed as a unit float (0..1)
 
-#### Returns
+#### Implementation of
 
-`number`
-
-#### Defined in
-
-[RGB.ts:239](https://github.com/chris-pikul/coloroo/blob/14d633e/src/RGB.ts#L239)
-
-• `set` **alpha**(`value`): `void`
-
-The alpha, or opacity, of the color as a unit (0..1) float
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `value` | `number` |
-
-#### Returns
-
-`void`
+[IColor](../interfaces/RGB.IColor.md).[alpha](../interfaces/RGB.IColor.md#alpha)
 
 #### Defined in
 
-[RGB.ts:243](https://github.com/chris-pikul/coloroo/blob/14d633e/src/RGB.ts#L243)
+[RGB.ts:424](https://github.com/chris-pikul/coloroo/blob/ffcd5a2/src/RGB.ts#L424)
 
 ___
 
 ### blue
 
-• `get` **blue**(): `number`
+• `Readonly` **blue**: `number` = `0.0`
 
-The blue component as a byte (0..255) integer
+The blue channel, expressed as a unit float (0..1)
 
-#### Returns
-
-`number`
+**`readonly`**
 
 #### Defined in
 
-[RGB.ts:228](https://github.com/chris-pikul/coloroo/blob/14d633e/src/RGB.ts#L228)
-
-• `set` **blue**(`byteValue`): `void`
-
-The blue component as a byte (0..255) integer
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `byteValue` | `number` |
-
-#### Returns
-
-`void`
-
-#### Defined in
-
-[RGB.ts:232](https://github.com/chris-pikul/coloroo/blob/14d633e/src/RGB.ts#L232)
+[RGB.ts:419](https://github.com/chris-pikul/coloroo/blob/ffcd5a2/src/RGB.ts#L419)
 
 ___
 
 ### green
 
-• `get` **green**(): `number`
+• `Readonly` **green**: `number` = `0.0`
 
-The green component as a byte (0..255) integer
+The green channel, expressed as a unit float (0..1)
 
-#### Returns
-
-`number`
+**`readonly`**
 
 #### Defined in
 
-[RGB.ts:217](https://github.com/chris-pikul/coloroo/blob/14d633e/src/RGB.ts#L217)
-
-• `set` **green**(`byteValue`): `void`
-
-The green component as a byte (0..255) integer
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `byteValue` | `number` |
-
-#### Returns
-
-`void`
-
-#### Defined in
-
-[RGB.ts:221](https://github.com/chris-pikul/coloroo/blob/14d633e/src/RGB.ts#L221)
+[RGB.ts:412](https://github.com/chris-pikul/coloroo/blob/ffcd5a2/src/RGB.ts#L412)
 
 ___
 
 ### red
 
-• `get` **red**(): `number`
+• `Readonly` **red**: `number` = `0.0`
 
-The red component as a byte (0..255) integer
+The red channel, expressed as a unit float (0..1)
 
-#### Returns
-
-`number`
+**`readonly`**
 
 #### Defined in
 
-[RGB.ts:206](https://github.com/chris-pikul/coloroo/blob/14d633e/src/RGB.ts#L206)
-
-• `set` **red**(`byteValue`): `void`
-
-The red component as a byte (0..255) integer
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `byteValue` | `number` |
-
-#### Returns
-
-`void`
-
-#### Defined in
-
-[RGB.ts:210](https://github.com/chris-pikul/coloroo/blob/14d633e/src/RGB.ts#L210)
-
-## Methods
-
-### blueUnit
-
-▸ **blueUnit**(): `number`
-
-Gets the blue component as a unit
-
-#### Returns
-
-`number`
-
-Unit value (0..1)
-
-#### Defined in
-
-[RGB.ts:266](https://github.com/chris-pikul/coloroo/blob/14d633e/src/RGB.ts#L266)
+[RGB.ts:405](https://github.com/chris-pikul/coloroo/blob/ffcd5a2/src/RGB.ts#L405)
 
 ___
+
+### BLACK
+
+▪ `Static` `Readonly` **BLACK**: [`ColorRGB`](RGB.ColorRGB.md)
+
+Static reference for a pure-black color.
+
+#### Defined in
+
+[RGB.ts:388](https://github.com/chris-pikul/coloroo/blob/ffcd5a2/src/RGB.ts#L388)
+
+___
+
+### Channels
+
+▪ `Static` `Readonly` **Channels**: `Record`<`string`, `number`\>
+
+#### Defined in
+
+[RGB.ts:378](https://github.com/chris-pikul/coloroo/blob/ffcd5a2/src/RGB.ts#L378)
+
+___
+
+### GRAY
+
+▪ `Static` `Readonly` **GRAY**: [`ColorRGB`](RGB.ColorRGB.md)
+
+Static reference for a mid-gray (50%) color.
+
+#### Defined in
+
+[RGB.ts:393](https://github.com/chris-pikul/coloroo/blob/ffcd5a2/src/RGB.ts#L393)
+
+___
+
+### WHITE
+
+▪ `Static` `Readonly` **WHITE**: [`ColorRGB`](RGB.ColorRGB.md)
+
+Static reference for a pure-white color.
+
+#### Defined in
+
+[RGB.ts:398](https://github.com/chris-pikul/coloroo/blob/ffcd5a2/src/RGB.ts#L398)
+
+## Accessors
+
+### alphaByte
+
+• `get` **alphaByte**(): `number`
+
+#### Returns
+
+`number`
+
+#### Defined in
+
+[RGB.ts:592](https://github.com/chris-pikul/coloroo/blob/ffcd5a2/src/RGB.ts#L592)
+
+___
+
+### blueByte
+
+• `get` **blueByte**(): `number`
+
+#### Returns
+
+`number`
+
+#### Defined in
+
+[RGB.ts:588](https://github.com/chris-pikul/coloroo/blob/ffcd5a2/src/RGB.ts#L588)
+
+___
+
+### greenByte
+
+• `get` **greenByte**(): `number`
+
+#### Returns
+
+`number`
+
+#### Defined in
+
+[RGB.ts:584](https://github.com/chris-pikul/coloroo/blob/ffcd5a2/src/RGB.ts#L584)
+
+___
+
+### redByte
+
+• `get` **redByte**(): `number`
+
+#### Returns
+
+`number`
+
+#### Defined in
+
+[RGB.ts:580](https://github.com/chris-pikul/coloroo/blob/ffcd5a2/src/RGB.ts#L580)
+
+## Methods
 
 ### contrast
 
@@ -333,7 +317,7 @@ Calculates the WCAG 2.0 Contrast value between this color and another.
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `other` | [`ColorRGB`](RGB.ColorRGB.md) | The other color to compare this with |
+| `other` | [`IColor`](../interfaces/RGB.IColor.md) | The other color to compare this with |
 
 #### Returns
 
@@ -343,7 +327,7 @@ Numerical contrast value
 
 #### Defined in
 
-[RGB.ts:920](https://github.com/chris-pikul/coloroo/blob/14d633e/src/RGB.ts#L920)
+[RGB.ts:950](https://github.com/chris-pikul/coloroo/blob/ffcd5a2/src/RGB.ts#L950)
 
 ___
 
@@ -364,7 +348,7 @@ Returned values:
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `other` | [`ColorRGB`](RGB.ColorRGB.md) | The other color to compare this with |
+| `other` | [`IColor`](../interfaces/RGB.IColor.md) | The other color to compare this with |
 
 #### Returns
 
@@ -374,19 +358,733 @@ String value of either 'AAA', 'AA', or ''
 
 #### Defined in
 
-[RGB.ts:942](https://github.com/chris-pikul/coloroo/blob/14d633e/src/RGB.ts#L942)
+[RGB.ts:974](https://github.com/chris-pikul/coloroo/blob/ffcd5a2/src/RGB.ts#L974)
+
+___
+
+### darken
+
+▸ `Readonly` **darken**(`amount`): [`ColorRGB`](RGB.ColorRGB.md)
+
+Darken this color and return a new color.
+
+Alias for [ColorRGB.shade](RGB.ColorRGB.md#shade)
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `amount` | `number` | fractional unit float (0..1) for how much to darken. |
+
+#### Returns
+
+[`ColorRGB`](RGB.ColorRGB.md)
+
+new ColorRGB object
+
+#### Defined in
+
+[RGB.ts:1076](https://github.com/chris-pikul/coloroo/blob/ffcd5a2/src/RGB.ts#L1076)
 
 ___
 
 ### desaturate
 
-▸ **desaturate**(): [`ColorRGB`](RGB.ColorRGB.md)
+▸ **desaturate**(`frac?`): [`ColorRGB`](RGB.ColorRGB.md)
 
-__Immutable__
-
-Converts this RGB color into a grayscale color using the "Weighted" method.
+Converts this RGB color into a grayscale color using the "weighted" method.
 
 **`see`** https://www.dynamsoft.com/blog/insights/image-processing/image-processing-101-color-space-conversion/
+
+**`immutable`**
+
+#### Parameters
+
+| Name | Type | Default value |
+| :------ | :------ | :------ |
+| `frac` | `number` | `1.0` |
+
+#### Returns
+
+[`ColorRGB`](RGB.ColorRGB.md)
+
+new ColorRGB object
+
+#### Defined in
+
+[RGB.ts:1143](https://github.com/chris-pikul/coloroo/blob/ffcd5a2/src/RGB.ts#L1143)
+
+___
+
+### get
+
+▸ **get**(`index`): `number`
+
+Returns the channel at the given index. The channels are in order as:
+
+- 0: red
+- 1: green
+- 2: blue
+- 3: alpha
+
+For convienience [ColorRGB.Channels](RGB.ColorRGB.md#channels) contains an enum that maps this
+directly.
+
+If the index is out-of-range, then 0 is returned
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `index` | `number` | channel index |
+
+#### Returns
+
+`number`
+
+channel value as unit float (0..1)
+
+#### Defined in
+
+[RGB.ts:768](https://github.com/chris-pikul/coloroo/blob/ffcd5a2/src/RGB.ts#L768)
+
+___
+
+### grayscale
+
+▸ **grayscale**(): [`ColorRGB`](RGB.ColorRGB.md)
+
+Converts this RGB color into a grascale color using an "averaging" method
+in which an average of each color is calculated and then applied for each
+channel of a new color.
+
+Alpha/opacity remains intact and is based on `this` colors alpha.
+
+**`see`** [ColorRGB.desaturate](RGB.ColorRGB.md#desaturate) for a weighted method.
+
+#### Returns
+
+[`ColorRGB`](RGB.ColorRGB.md)
+
+new ColorRGB object
+
+#### Defined in
+
+[RGB.ts:1161](https://github.com/chris-pikul/coloroo/blob/ffcd5a2/src/RGB.ts#L1161)
+
+___
+
+### invert
+
+▸ **invert**(`alpha?`): [`ColorRGB`](RGB.ColorRGB.md)
+
+Inverts this RGB colors values and returns a new color. Optionally will
+invert the alpha as well.
+
+**`immutable`**
+
+#### Parameters
+
+| Name | Type | Default value | Description |
+| :------ | :------ | :------ | :------ |
+| `alpha` | `boolean` | `false` | (default false) If true, the alpha will be inverted as well |
+
+#### Returns
+
+[`ColorRGB`](RGB.ColorRGB.md)
+
+new ColorRGB object
+
+#### Defined in
+
+[RGB.ts:1123](https://github.com/chris-pikul/coloroo/blob/ffcd5a2/src/RGB.ts#L1123)
+
+___
+
+### isDark
+
+▸ **isDark**(): `boolean`
+
+Performs a YIQ conversion using [ColorRGB.toYIQValue](RGB.ColorRGB.md#toyiqvalue) and then
+compares the output to a "half-way" point to decide if the color is
+considered "dark".
+
+#### Returns
+
+`boolean`
+
+Boolean true if this color is considered "dark"
+
+#### Defined in
+
+[RGB.ts:1024](https://github.com/chris-pikul/coloroo/blob/ffcd5a2/src/RGB.ts#L1024)
+
+___
+
+### isLight
+
+▸ **isLight**(): `boolean`
+
+Performs a YIQ conversion using [ColorRGB.toYIQValue](RGB.ColorRGB.md#toyiqvalue) and then
+compares the output to a "half-way" point to decide if the color is
+considered "light".
+
+#### Returns
+
+`boolean`
+
+Boolean true if this color is considered "light"
+
+#### Defined in
+
+[RGB.ts:1035](https://github.com/chris-pikul/coloroo/blob/ffcd5a2/src/RGB.ts#L1035)
+
+___
+
+### lerp
+
+▸ **lerp**(`other`, `delta`): [`ColorRGB`](RGB.ColorRGB.md)
+
+Linearly interpolates this RGB color, and an other IColor that can be
+converted to RGB, given a `delta` weight.
+
+**`immutable`**
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `other` | [`IColor`](../interfaces/RGB.IColor.md) | Other color to interpolate to |
+| `delta` | `number` | Unit float (0..1) weight between this and the other |
+
+#### Returns
+
+[`ColorRGB`](RGB.ColorRGB.md)
+
+new ColorRGB object
+
+#### Defined in
+
+[RGB.ts:1048](https://github.com/chris-pikul/coloroo/blob/ffcd5a2/src/RGB.ts#L1048)
+
+___
+
+### lighten
+
+▸ `Readonly` **lighten**(`amount`): [`ColorRGB`](RGB.ColorRGB.md)
+
+Lighten this color and return a new color.
+
+Alias for [ColorRGB.tint](RGB.ColorRGB.md#tint)
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `amount` | `number` | fractional unit float (0..1) for how much to lighten. |
+
+#### Returns
+
+[`ColorRGB`](RGB.ColorRGB.md)
+
+new ColorRGB object
+
+#### Defined in
+
+[RGB.ts:1099](https://github.com/chris-pikul/coloroo/blob/ffcd5a2/src/RGB.ts#L1099)
+
+___
+
+### luminosity
+
+▸ **luminosity**(): `number`
+
+Calculates the WCAG 2.0 Luminosity value of this color.
+
+**`see`** https://www.w3.org/TR/WCAG20/#relativeluminancedef
+
+#### Returns
+
+`number`
+
+Floating-point unit luminosity value
+
+#### Defined in
+
+[RGB.ts:931](https://github.com/chris-pikul/coloroo/blob/ffcd5a2/src/RGB.ts#L931)
+
+___
+
+### map
+
+▸ **map**(`chanCB`, `alphaCB?`): [`ColorRGB`](RGB.ColorRGB.md)
+
+Map the channels of this current color into a new color using the
+provided mapping callbacks.
+
+Example:
+```TypeScript
+// Invert all the channels
+const newColor = existingColor.map(
+   (val:number) => (1 - val),      // Called on RGB
+   (alpha:number) => (1 - alpha),  // Called on ALPHA only
+);
+```
+
+**`immutable`**
+
+#### Parameters
+
+| Name | Type | Default value | Description |
+| :------ | :------ | :------ | :------ |
+| `chanCB` | [`ChannelMapCallback`](../modules/mapping.md#channelmapcallback)<[`IColor`](../interfaces/RGB.IColor.md)\> | `undefined` | Callback following the signature `(chan:number, index:number, color:ColorRGB) => number` which is called on each color channel (excluding alpha) to map a new value given the current value. |
+| `alphaCB` | [`AlphaMapCallback`](../modules/mapping.md#alphamapcallback)<[`IColor`](../interfaces/RGB.IColor.md)\> | `NoOpMapCallback` | Callback following the signature `(alpha:number, color:ColorRGB) => number` which is called on the alpha component to map a new value using the current value. By default, this is a non-op that leaves the alpha un-touched. |
+
+#### Returns
+
+[`ColorRGB`](RGB.ColorRGB.md)
+
+new ColorRGB object
+
+#### Defined in
+
+[RGB.ts:842](https://github.com/chris-pikul/coloroo/blob/ffcd5a2/src/RGB.ts#L842)
+
+___
+
+### maxChannel
+
+▸ **maxChannel**(`withIndex?`): `number` \| [`number`, `number`]
+
+Returns the maximum (largest) value within the RGB channels. Optionally
+supports returning the channel index as well.
+
+#### Parameters
+
+| Name | Type | Default value |
+| :------ | :------ | :------ |
+| `withIndex` | `boolean` | `false` |
+
+#### Returns
+
+`number` \| [`number`, `number`]
+
+Either a unit float (0..1) or a tuple depending on
+the `withIndex` parameter.
+
+#### Defined in
+
+[RGB.ts:888](https://github.com/chris-pikul/coloroo/blob/ffcd5a2/src/RGB.ts#L888)
+
+___
+
+### median
+
+▸ **median**(): `number`
+
+Calculates the median, or "middle" value between the lowest channel, and
+the highest channel. This is the mid-point between where the minimum and
+maximum values across the RGB channels is.
+
+#### Returns
+
+`number`
+
+Median, or mid-point, between RGB channels.
+
+#### Defined in
+
+[RGB.ts:1173](https://github.com/chris-pikul/coloroo/blob/ffcd5a2/src/RGB.ts#L1173)
+
+___
+
+### minChannel
+
+▸ **minChannel**(`withIndex?`): `number` \| [`number`, `number`]
+
+Returns the minimum (smallest) value within the RGB channels. Optionally
+supports returning the channel index as well.
+
+#### Parameters
+
+| Name | Type | Default value |
+| :------ | :------ | :------ |
+| `withIndex` | `boolean` | `false` |
+
+#### Returns
+
+`number` \| [`number`, `number`]
+
+Either a unit float (0..1) or a tuple depending on
+the `withIndex` parameter.
+
+#### Defined in
+
+[RGB.ts:862](https://github.com/chris-pikul/coloroo/blob/ffcd5a2/src/RGB.ts#L862)
+
+___
+
+### pickUsingContrast
+
+▸ **pickUsingContrast**(`options?`): [`ColorRGB`](RGB.ColorRGB.md)
+
+Selects a color from the given array of colors that has the highest
+contrast ratio with `this` color.
+
+Inspired by the CSS Color Module 5 `color-contrast()` function. Consider
+`this` to be the background color, and the supplied `options` to be options
+for foreground.
+
+If no argument is provided, or is an empty array, it will default to using
+opaque black and white.
+
+**`note`** alpha is not considered during contrast calculation
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `options?` | [`IColor`](../interfaces/RGB.IColor.md)[] | Array of IColor color-space objects, each object will be converted to this color-space for comparison. If the array is not provided, or is empty, the colors black and white will be used instead |
+
+#### Returns
+
+[`ColorRGB`](RGB.ColorRGB.md)
+
+new ColorRGB object
+
+#### Defined in
+
+[RGB.ts:1002](https://github.com/chris-pikul/coloroo/blob/ffcd5a2/src/RGB.ts#L1002)
+
+___
+
+### premultiplyAlpha
+
+▸ **premultiplyAlpha**(): [`ColorRGB`](RGB.ColorRGB.md)
+
+Returns a new `ColorRGB` object with each of the RGB channels multiplied
+with the alpha component of this color. The alpha channel returned is not
+modified and is passed-through.
+
+**`immutable`**
+
+#### Returns
+
+[`ColorRGB`](RGB.ColorRGB.md)
+
+new ColorRGB object
+
+#### Defined in
+
+[RGB.ts:911](https://github.com/chris-pikul/coloroo/blob/ffcd5a2/src/RGB.ts#L911)
+
+___
+
+### set
+
+▸ **set**(...`channels`): [`ColorRGB`](RGB.ColorRGB.md)
+
+Sets each channel of this color and returns a new ColorRGB object. Each
+channel is mapped in order to variadic arguments: red, green, blue, alpha.
+In the event a channel is provided `null` or `undefined` it will use the
+same value present in `this` color. Additionally, any missing channels are
+also considered null/undefined.
+
+Channels can be provided unit float numbers (0..1), or a percentage string
+such as "50%", or the "none" keyword implying 0.
+
+**`immutable`**
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `...channels` | (`string` \| `number`)[] |
+
+#### Returns
+
+[`ColorRGB`](RGB.ColorRGB.md)
+
+new ColorRGB object
+
+#### Defined in
+
+[RGB.ts:795](https://github.com/chris-pikul/coloroo/blob/ffcd5a2/src/RGB.ts#L795)
+
+___
+
+### setAlpha
+
+▸ **setAlpha**(`alpha`): [`ColorRGB`](RGB.ColorRGB.md)
+
+Adjust the opacity.
+
+Creates a new RGB color using the channels from `this` and sets a new alpha
+using the one provided.
+
+**`immutable`**
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `alpha` | `number` | New alpha opacity, as a unit float (0..1). |
+
+#### Returns
+
+[`ColorRGB`](RGB.ColorRGB.md)
+
+new ColorRGB object
+
+#### Defined in
+
+[RGB.ts:814](https://github.com/chris-pikul/coloroo/blob/ffcd5a2/src/RGB.ts#L814)
+
+___
+
+### shade
+
+▸ **shade**(`frac`): [`ColorRGB`](RGB.ColorRGB.md)
+
+Shade, or darken.
+
+Creates a "shade" of this color by interpolating it with black by the given
+fraction `delta`.
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `frac` | `number` | Unit float (0..1) fraction for how much to shade the color. 0 results in none, 1 results in full black. |
+
+#### Returns
+
+[`ColorRGB`](RGB.ColorRGB.md)
+
+#### Defined in
+
+[RGB.ts:1064](https://github.com/chris-pikul/coloroo/blob/ffcd5a2/src/RGB.ts#L1064)
+
+___
+
+### threshold
+
+▸ **threshold**(`level`, `lowColor?`, `highColor?`): [`ColorRGB`](RGB.ColorRGB.md)
+
+Performs a median-based thresholding of this color. Calculates the median
+value using [ColorRGB.median](RGB.ColorRGB.md#median) and based on the results is compared
+against the given `level` argument to return one of the provided colors.
+
+If the median is <= `level` then the `lowColor` is returned.
+If the median is > `level` then the `highColor` is returned.
+
+#### Parameters
+
+| Name | Type | Default value | Description |
+| :------ | :------ | :------ | :------ |
+| `level` | `number` | `undefined` | Threshold level, as a unit float (0..1) |
+| `lowColor` | [`ColorRGB`](RGB.ColorRGB.md) | `ColorRGB.BLACK` | Color to return if the value is equal-to or below the given level. Defaults to black. |
+| `highColor` | [`ColorRGB`](RGB.ColorRGB.md) | `ColorRGB.WHITE` | Color to return if the value is over the given level. Defaults to white. |
+
+#### Returns
+
+[`ColorRGB`](RGB.ColorRGB.md)
+
+new ColorRGB object
+
+#### Defined in
+
+[RGB.ts:1194](https://github.com/chris-pikul/coloroo/blob/ffcd5a2/src/RGB.ts#L1194)
+
+___
+
+### tint
+
+▸ **tint**(`frac`): [`ColorRGB`](RGB.ColorRGB.md)
+
+Tint, or lighten.
+
+Creates a "tint" of this color by interpolating it with white by the given
+fraction `delta`.
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `frac` | `number` | Unit float (0..1) fraction for how much to shade the color. 0 results in none, 1 results in full white. |
+
+#### Returns
+
+[`ColorRGB`](RGB.ColorRGB.md)
+
+#### Defined in
+
+[RGB.ts:1087](https://github.com/chris-pikul/coloroo/blob/ffcd5a2/src/RGB.ts#L1087)
+
+___
+
+### toArray
+
+▸ **toArray**(): [`RGBTuple`](../modules/RGB.md#rgbtuple)
+
+Get the channels of this color as an array of values
+
+#### Returns
+
+[`RGBTuple`](../modules/RGB.md#rgbtuple)
+
+#### Implementation of
+
+[IColor](../interfaces/RGB.IColor.md).[toArray](../interfaces/RGB.IColor.md#toarray)
+
+#### Defined in
+
+[RGB.ts:600](https://github.com/chris-pikul/coloroo/blob/ffcd5a2/src/RGB.ts#L600)
+
+___
+
+### toFunctional
+
+▸ **toFunctional**(`forceAlpha?`, `whole?`): `string`
+
+Converts this RGB Color into it's functional-notation string, as if it was
+being used with CSS. Because the channels are internally held as unit
+floats, the resulting string will use percentages. It can optionally
+truncate the channels to whole percentages using the `whole` flag.
+
+By default the alpha information is only included if the alpha value is
+not 1.0, or the `forceAlpha` flag is true (defaults to false). Additionally
+it is truncated to 4 points of precision.
+
+The output follows this format:
+```
+rgb(100%, 50%, 25%)
+rgba(100%, 50%, 25%, 0.75)
+```
+
+#### Parameters
+
+| Name | Type | Default value |
+| :------ | :------ | :------ |
+| `forceAlpha` | `boolean` | `false` |
+| `whole` | `boolean` | `false` |
+
+#### Returns
+
+`string`
+
+Functional-notation string
+
+#### Implementation of
+
+[IColor](../interfaces/RGB.IColor.md).[toFunctional](../interfaces/RGB.IColor.md#tofunctional)
+
+#### Defined in
+
+[RGB.ts:741](https://github.com/chris-pikul/coloroo/blob/ffcd5a2/src/RGB.ts#L741)
+
+___
+
+### toHex
+
+▸ **toHex**(`forceAlpha?`, `alphaMSB?`): `string`
+
+Converts this RGB Color into it's hexidecimal string representation. Note
+that this is a lossy conversion considering the channels are internally
+represented as unit floats (0..1), and this operation converts them into
+byte integers.
+
+By default the alpha information is only included if the alpha value is
+not 1.0, or the `forceAlpha` flag is true (defaults to false). For
+serialization of colors it may be best to have this flag as true and
+manage the alpha channels byte position with the `alphaMSB` flag for more
+consistant byte arrangement.
+
+Additionally the `alphaMSB` switch can be used to move the alpha
+information to the Most Significant Byte portion of the integer. Otherwise
+(default) it remains as the Least Significant Byte.
+
+#### Parameters
+
+| Name | Type | Default value |
+| :------ | :------ | :------ |
+| `forceAlpha` | `boolean` | `false` |
+| `alphaMSB` | `boolean` | `false` |
+
+#### Returns
+
+`string`
+
+Hexidecimal string representation
+
+#### Defined in
+
+[RGB.ts:695](https://github.com/chris-pikul/coloroo/blob/ffcd5a2/src/RGB.ts#L695)
+
+___
+
+### toInteger
+
+▸ **toInteger**(`forceAlpha?`, `alphaMSB?`): `number`
+
+Converts this RGB Color into it's integer representation. Note that this is
+a lossy conversion considering the channels are internally represented as
+unit floats (0..1), and this operation converts them into byte integers.
+
+By default the alpha information is only included if the alpha value is
+not 1.0, or the `forceAlpha` flag is true (defaults to false). For
+serialization of colors it may be best to have this flag as true and
+manage the alpha channels byte position with the `alphaMSB` flag for more
+consistant byte arrangement.
+
+Additionally the `alphaMSB` switch can be used to move the alpha
+information to the Most Significant Byte portion of the integer. Otherwise
+(default) it remains as the Least Significant Byte.
+
+#### Parameters
+
+| Name | Type | Default value |
+| :------ | :------ | :------ |
+| `forceAlpha` | `boolean` | `false` |
+| `alphaMSB` | `boolean` | `false` |
+
+#### Returns
+
+`number`
+
+Integer number representation of the color.
+
+#### Defined in
+
+[RGB.ts:655](https://github.com/chris-pikul/coloroo/blob/ffcd5a2/src/RGB.ts#L655)
+
+___
+
+### toObject
+
+▸ **toObject**(): [`RGBObject`](../interfaces/RGB.RGBObject.md)
+
+Get an object (JSON acceptable) representation of this color
+
+#### Returns
+
+[`RGBObject`](../interfaces/RGB.RGBObject.md)
+
+#### Implementation of
+
+[IColor](../interfaces/RGB.IColor.md).[toObject](../interfaces/RGB.IColor.md#toobject)
+
+#### Defined in
+
+[RGB.ts:609](https://github.com/chris-pikul/coloroo/blob/ffcd5a2/src/RGB.ts#L609)
+
+___
+
+### toRGB
+
+▸ **toRGB**(): [`ColorRGB`](RGB.ColorRGB.md)
+
+Returns a copy of this color.
 
 #### Returns
 
@@ -394,52 +1092,141 @@ Converts this RGB color into a grayscale color using the "Weighted" method.
 
 New ColorRGB object
 
+#### Implementation of
+
+[IColor](../interfaces/RGB.IColor.md).[toRGB](../interfaces/RGB.IColor.md#torgb)
+
 #### Defined in
 
-[RGB.ts:1001](https://github.com/chris-pikul/coloroo/blob/14d633e/src/RGB.ts#L1001)
+[RGB.ts:627](https://github.com/chris-pikul/coloroo/blob/ffcd5a2/src/RGB.ts#L627)
 
 ___
 
-### fromArray
+### toString
 
-▸ **fromArray**(`arr`): [`IColorClass`](../interfaces/IColorClass.IColorClass-1.md)
+▸ **toString**(): `string`
 
-Sets the components of this `ColorRGB` given an array. This is supplied
-for clarity of API, but really just shortcuts to spread operating the
-array into the `ColorRGB.set()` function.
+Convert the color to a string representation. In general this results in a
+CSS3 compatible functional-notation string.
 
-Accepts both strings and numbers. Strings will attempt to be converted
-based on whatever type the value can be detected as.
+#### Returns
 
-**`see`** [ColorRGB.set](RGB.ColorRGB.md#set) for the underlying functionality.
+`string`
+
+#### Implementation of
+
+[IColor](../interfaces/RGB.IColor.md).[toString](../interfaces/RGB.IColor.md#tostring)
+
+#### Defined in
+
+[RGB.ts:596](https://github.com/chris-pikul/coloroo/blob/ffcd5a2/src/RGB.ts#L596)
+
+___
+
+### toYIQValue
+
+▸ **toYIQValue**(): `number`
+
+Calculates the YIQ-color encoding value for this color
+
+**`see`** https://24ways.org/2010/calculating-color-contrast
+
+#### Returns
+
+`number`
+
+YIQ value
+
+#### Defined in
+
+[RGB.ts:921](https://github.com/chris-pikul/coloroo/blob/ffcd5a2/src/RGB.ts#L921)
+
+___
+
+### tone
+
+▸ **tone**(`frac`): [`ColorRGB`](RGB.ColorRGB.md)
+
+Tone, or saturate.
+
+Creates a "tone" of this color by interpolating it with gray by the given
+fraction `delta`. The gray is 50% gray, and not the grayscale calculation
+of this color. For that, see [ColorRGB.desaturate](RGB.ColorRGB.md#desaturate)
 
 #### Parameters
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `arr` | (`string` \| `number`)[] | Input array |
+| `frac` | `number` | Unit float (0..1) fraction for how much to shade the color. 0 results in completely gray, 1 results in original color. |
 
 #### Returns
 
-[`IColorClass`](../interfaces/IColorClass.IColorClass-1.md)
-
-`this` for method-chaining
-
-#### Implementation of
-
-[IColorClass](../interfaces/IColorClass.IColorClass-1.md).[fromArray](../interfaces/IColorClass.IColorClass-1.md#fromarray)
+[`ColorRGB`](RGB.ColorRGB.md)
 
 #### Defined in
 
-[RGB.ts:834](https://github.com/chris-pikul/coloroo/blob/14d633e/src/RGB.ts#L834)
+[RGB.ts:1111](https://github.com/chris-pikul/coloroo/blob/ffcd5a2/src/RGB.ts#L1111)
 
 ___
 
-### fromFuncString
+### apply
 
-▸ **fromFuncString**(`str`): [`ColorRGB`](RGB.ColorRGB.md)
+▸ `Static` **apply**(...`components`): [`ColorRGB`](RGB.ColorRGB.md)
 
-Parses the input string as a CSS4 functional-notation color value. Only
+Sets the components of a new ColorRGB using variable arguments. The order
+of the variables is taken as `apply(R, G, B, A)`. Any missing components
+are skipped and will remain their defaults.
+
+This will parse string values to the best of it's ability. This includes
+parameter detection, and then treatment depending on the type.
+
+If given a percentage string such as "50%", it will be converted into it's
+unit representation. Numeric values are treaded as unit floats (0..1) and
+will be clamped as such
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `...components` | (`string` \| `number`)[] |
+
+#### Returns
+
+[`ColorRGB`](RGB.ColorRGB.md)
+
+new ColorRGB object
+
+#### Defined in
+
+[RGB.ts:343](https://github.com/chris-pikul/coloroo/blob/ffcd5a2/src/RGB.ts#L343)
+
+___
+
+### ensureRGB
+
+▸ `Static` `Private` **ensureRGB**(`clr`): [`ColorRGB`](RGB.ColorRGB.md)
+
+#### Parameters
+
+| Name | Type |
+| :------ | :------ |
+| `clr` | `any` |
+
+#### Returns
+
+[`ColorRGB`](RGB.ColorRGB.md)
+
+#### Defined in
+
+[RGB.ts:86](https://github.com/chris-pikul/coloroo/blob/ffcd5a2/src/RGB.ts#L86)
+
+___
+
+### fromFunctional
+
+▸ `Static` **fromFunctional**(`str`): [`ColorRGB`](RGB.ColorRGB.md)
+
+Parses the input string as a CSS3+ functional-notation color value. Only
 accepts the `rgb()` and `rgba()` functions. Both the comma-separated and
 space-separated formats are accepted. If the space-separated version is
 used with an alpha channel, then a forward-slash delimiter is required
@@ -475,17 +1262,17 @@ rgba(100% 50% 25% / 50%)
 
 [`ColorRGB`](RGB.ColorRGB.md)
 
-`this` for method-chaining
+new ColorRGB object
 
 #### Defined in
 
-[RGB.ts:722](https://github.com/chris-pikul/coloroo/blob/14d633e/src/RGB.ts#L722)
+[RGB.ts:237](https://github.com/chris-pikul/coloroo/blob/ffcd5a2/src/RGB.ts#L237)
 
 ___
 
-### fromHexString
+### fromHex
 
-▸ **fromHexString**(`str`): [`ColorRGB`](RGB.ColorRGB.md)
+▸ `Static` **fromHex**(`str`): [`ColorRGB`](RGB.ColorRGB.md)
 
 Parses the incoming string as a hexidecimal notation RGB(A) color. This is
 case-insensitive, and the prefix "#" is optional. Accepts the following
@@ -512,20 +1299,20 @@ Will be resized to the full-byte size 0..255.
 
 [`ColorRGB`](RGB.ColorRGB.md)
 
-`this` for method-chaining
+new ColorRGB object
 
 #### Defined in
 
-[RGB.ts:657](https://github.com/chris-pikul/coloroo/blob/14d633e/src/RGB.ts#L657)
+[RGB.ts:166](https://github.com/chris-pikul/coloroo/blob/ffcd5a2/src/RGB.ts#L166)
 
 ___
 
 ### fromInteger
 
-▸ **fromInteger**(`value`, `useAlpha?`, `alphaMSB?`): [`IColorClass`](../interfaces/IColorClass.IColorClass-1.md)
+▸ `Static` **fromInteger**(`value`, `useAlpha?`, `alphaMSB?`): [`ColorRGB`](RGB.ColorRGB.md)
 
 Converts an incoming integer number into it's RGB(A) channel values and
-sets this `ColorRGB` components appropriately.
+returns an appropriate ColorRGB object
 
 #### Parameters
 
@@ -537,62 +1324,42 @@ sets this `ColorRGB` components appropriately.
 
 #### Returns
 
-[`IColorClass`](../interfaces/IColorClass.IColorClass-1.md)
+[`ColorRGB`](RGB.ColorRGB.md)
 
-`this` for method-chaining
-
-#### Implementation of
-
-[IColorClass](../interfaces/IColorClass.IColorClass-1.md).[fromInteger](../interfaces/IColorClass.IColorClass-1.md#frominteger)
+new ColorRGB object
 
 #### Defined in
 
-[RGB.ts:611](https://github.com/chris-pikul/coloroo/blob/14d633e/src/RGB.ts#L611)
+[RGB.ts:120](https://github.com/chris-pikul/coloroo/blob/ffcd5a2/src/RGB.ts#L120)
 
 ___
 
-### fromObject
+### fromRGB
 
-▸ **fromObject**(`obj`): [`IColorClass`](../interfaces/IColorClass.IColorClass-1.md)
-
-Attempts to set the components of this `ColorRGB` given potential
-properties of the supplied object. Any missing components will default to
-0, except for alpha which defaults to 1 (opaque).
-
-Each color searches for a single-letter property, or the full-word name.
-- Red: `obj.r` OR `obj.red` OR 0
-- Green: `obj.g` OR `obj.green` OR 0
-- Blue: `obj.b` OR `obj.blue` OR 0
-- Alpha: `obj.a` OR `obj.alpha` OR obj.opacity OR 1
+▸ `Static` **fromRGB**(`rgb`): [`IColor`](../interfaces/RGB.IColor.md)
 
 #### Parameters
 
-| Name | Type | Description |
-| :------ | :------ | :------ |
-| `obj` | `Record`<`any`, `any`\> | Plain JS object |
+| Name | Type |
+| :------ | :------ |
+| `rgb` | [`ColorRGB`](RGB.ColorRGB.md) |
 
 #### Returns
 
-[`IColorClass`](../interfaces/IColorClass.IColorClass-1.md)
-
-`this` for method-chaining
-
-#### Implementation of
-
-[IColorClass](../interfaces/IColorClass.IColorClass-1.md).[fromObject](../interfaces/IColorClass.IColorClass-1.md#fromobject)
+[`IColor`](../interfaces/RGB.IColor.md)
 
 #### Defined in
 
-[RGB.ts:852](https://github.com/chris-pikul/coloroo/blob/14d633e/src/RGB.ts#L852)
+[RGB.ts:104](https://github.com/chris-pikul/coloroo/blob/ffcd5a2/src/RGB.ts#L104)
 
 ___
 
 ### fromString
 
-▸ **fromString**(`str`): [`IColorClass`](../interfaces/IColorClass.IColorClass-1.md)
+▸ `Static` **fromString**(`str`): [`ColorRGB`](RGB.ColorRGB.md)
 
 Converts an incoming string to acceptable components and sets the channels
-of this ColorRGB object. Will attempt to parse as each format in order
+of a new ColorRGB object. Will attempt to parse as each format in order
 until one does not give an error. If none of the processes work then a
 `TypeError` is thrown specifying so.
 
@@ -607,7 +1374,7 @@ The special named color "transparent" is accepted and will result in black
 with an alpha of 0 (fully transparent).
 
 ### Hexidecimal
-Uses the [ColorRGB.fromHexString](RGB.ColorRGB.md#fromhexstring) method to parse as a hexidecimal
+Uses the [ColorRGB.fromHex](RGB.ColorRGB.md#fromhex) method to parse as a hexidecimal
 string. This is case insensitive and accepts shortform and longform hex
 strings, with or without alpha channel. As with most hex strings if there
 is an alpha component it is the least-significant byte. Additionally, the
@@ -621,7 +1388,7 @@ Will be resized to the full-byte size 0..255.
 - `#FFAA0088`: Long-form, byte values for the RGB and Alpha channels.
 
 ### Functional-notation
-Uses the [ColorRGB.fromFuncString](RGB.ColorRGB.md#fromfuncstring) method to parse as a
+Uses the [ColorRGB.fromFunctional](RGB.ColorRGB.md#fromfunctional) method to parse as a
 functional notation string in the style of CSS4, with some forgiveness.
 Will accept either 3-component for RGB, or 4-component for RGBA. Each
 parameter can be either an integer, float, or percentage value which will
@@ -647,645 +1414,10 @@ rgb(200.5, 1.27e2, +64 / .5)
 
 #### Returns
 
-[`IColorClass`](../interfaces/IColorClass.IColorClass-1.md)
-
-`this` for method-chaining
-
-#### Implementation of
-
-[IColorClass](../interfaces/IColorClass.IColorClass-1.md).[fromString](../interfaces/IColorClass.IColorClass-1.md#fromstring)
-
-#### Defined in
-
-[RGB.ts:786](https://github.com/chris-pikul/coloroo/blob/14d633e/src/RGB.ts#L786)
-
-___
-
-### greenUnit
-
-▸ **greenUnit**(): `number`
-
-Gets the green component as a unit
-
-#### Returns
-
-`number`
-
-Unit value (0..1)
-
-#### Defined in
-
-[RGB.ts:259](https://github.com/chris-pikul/coloroo/blob/14d633e/src/RGB.ts#L259)
-
-___
-
-### invert
-
-▸ **invert**(`alpha?`): [`ColorRGB`](RGB.ColorRGB.md)
-
-__Immutable__
-
-Inverts this RGB colors values and returns a new color. Optionally will
-invert the alpha as well.
-
-#### Parameters
-
-| Name | Type | Default value | Description |
-| :------ | :------ | :------ | :------ |
-| `alpha` | `boolean` | `false` | (default false) If true, the alpha will be inverted as well |
-
-#### Returns
-
 [`ColorRGB`](RGB.ColorRGB.md)
 
-New ColorRGB object
+new ColorRGB object
 
 #### Defined in
 
-[RGB.ts:983](https://github.com/chris-pikul/coloroo/blob/14d633e/src/RGB.ts#L983)
-
-___
-
-### isDark
-
-▸ **isDark**(): `boolean`
-
-Performs a YIQ conversion using [ColorRGB.toYIQValue](RGB.ColorRGB.md#toyiqvalue) and then
-compares the output to a "half-way" point to decide if the color is
-considered "dark".
-
-#### Returns
-
-`boolean`
-
-Boolean true if this color is considered "dark"
-
-#### Defined in
-
-[RGB.ts:959](https://github.com/chris-pikul/coloroo/blob/14d633e/src/RGB.ts#L959)
-
-___
-
-### isLight
-
-▸ **isLight**(): `boolean`
-
-Performs a YIQ conversion using [ColorRGB.toYIQValue](RGB.ColorRGB.md#toyiqvalue) and then
-compares the output to a "half-way" point to decide if the color is
-considered "light".
-
-#### Returns
-
-`boolean`
-
-Boolean true if this color is considered "light"
-
-#### Defined in
-
-[RGB.ts:970](https://github.com/chris-pikul/coloroo/blob/14d633e/src/RGB.ts#L970)
-
-___
-
-### lerp
-
-▸ **lerp**(`other`, `delta`): [`ColorRGB`](RGB.ColorRGB.md)
-
-__Immutable__
-
-Linearly interpolates this RGB color, and an other RGB color, given a
-delta weight.
-
-#### Parameters
-
-| Name | Type | Description |
-| :------ | :------ | :------ |
-| `other` | [`ColorRGB`](RGB.ColorRGB.md) | Other color to interpolate to |
-| `delta` | `number` | Unit (0..1) weight between this and the other |
-
-#### Returns
-
-[`ColorRGB`](RGB.ColorRGB.md)
-
-New ColorRGB object
-
-#### Defined in
-
-[RGB.ts:1018](https://github.com/chris-pikul/coloroo/blob/14d633e/src/RGB.ts#L1018)
-
-___
-
-### luminosity
-
-▸ **luminosity**(): `number`
-
-Calculates the WCAG 2.0 Luminosity value of this color.
-
-**`see`** https://www.w3.org/TR/WCAG20/#relativeluminancedef
-
-#### Returns
-
-`number`
-
-Floating-point unit luminosity value
-
-#### Defined in
-
-[RGB.ts:901](https://github.com/chris-pikul/coloroo/blob/14d633e/src/RGB.ts#L901)
-
-___
-
-### parse
-
-▸ **parse**(`arg`): [`IColorClass`](../interfaces/IColorClass.IColorClass-1.md)
-
-Attempts to parse the incoming parameter as a ColorRGB object and sets the
-appropriate channels when found. Any missing components will use their
-defaults, which for RGB is 0.0, and for Alpha is 1.0.
-
-Any failure to parse the object will throw an `Error` object. If a null,
-or undefined object is supplied it will be quietly skipped.
-
-#### Parameters
-
-| Name | Type | Description |
-| :------ | :------ | :------ |
-| `arg` | `any` | The argument to attempt to parse. |
-
-#### Returns
-
-[`IColorClass`](../interfaces/IColorClass.IColorClass-1.md)
-
-`this` for method-chaining
-
-#### Implementation of
-
-[IColorClass](../interfaces/IColorClass.IColorClass-1.md).[parse](../interfaces/IColorClass.IColorClass-1.md#parse)
-
-#### Defined in
-
-[RGB.ts:872](https://github.com/chris-pikul/coloroo/blob/14d633e/src/RGB.ts#L872)
-
-___
-
-### redUnit
-
-▸ **redUnit**(): `number`
-
-Gets the red component as a unit
-
-#### Returns
-
-`number`
-
-Unit value (0..1)
-
-#### Defined in
-
-[RGB.ts:252](https://github.com/chris-pikul/coloroo/blob/14d633e/src/RGB.ts#L252)
-
-___
-
-### set
-
-▸ **set**(...`components`): [`IColorClass`](../interfaces/IColorClass.IColorClass-1.md)
-
-Sets the components of this RGB Color using variable arguments. The order
-of the variables is taken as `set(R, G, B, A)`. Any missing components are
-skipped.
-
-This will parse string values to the best of it's ability. This includes
-parameter detection, and then treatment depending on the type.
-
-For the RGB components the following formats are accepted
-- Integer 0..255 = mapped directly to the component
-- Float 0..255 = truncates the decimal point and applied
-- Percentage 0..100% = applies to the range 0..255 and set.
-
-For the alpha component, any value given is clamped to a unit 0..1. For
-floats and percentages this is straight forward, for integers it just
-becomes an on/off of 0 or 1. In other words, no byte conversion is made.
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `...components` | (`string` \| `number`)[] |
-
-#### Returns
-
-[`IColorClass`](../interfaces/IColorClass.IColorClass-1.md)
-
-`this` for method-chaining
-
-#### Implementation of
-
-[IColorClass](../interfaces/IColorClass.IColorClass-1.md).[set](../interfaces/IColorClass.IColorClass-1.md#set)
-
-#### Defined in
-
-[RGB.ts:468](https://github.com/chris-pikul/coloroo/blob/14d633e/src/RGB.ts#L468)
-
-___
-
-### setAlpha
-
-▸ **setAlpha**(`unit`): [`ColorRGB`](RGB.ColorRGB.md)
-
-Sets the alpha component of this RGB color with a unit value (0..1)
-
-#### Parameters
-
-| Name | Type | Description |
-| :------ | :------ | :------ |
-| `unit` | `number` | Unit value (0..1) |
-
-#### Returns
-
-[`ColorRGB`](RGB.ColorRGB.md)
-
-`this` for method-chaining
-
-#### Defined in
-
-[RGB.ts:594](https://github.com/chris-pikul/coloroo/blob/14d633e/src/RGB.ts#L594)
-
-___
-
-### setBlue
-
-▸ **setBlue**(`byte`): [`ColorRGB`](RGB.ColorRGB.md)
-
-Sets the green component of this RGB color with a byte value (0..255)
-
-#### Parameters
-
-| Name | Type | Description |
-| :------ | :------ | :------ |
-| `byte` | `number` | Byte value (0..255) |
-
-#### Returns
-
-[`ColorRGB`](RGB.ColorRGB.md)
-
-`this` for method-chaining
-
-#### Defined in
-
-[RGB.ts:572](https://github.com/chris-pikul/coloroo/blob/14d633e/src/RGB.ts#L572)
-
-___
-
-### setBlueUnit
-
-▸ **setBlueUnit**(`unit`): [`ColorRGB`](RGB.ColorRGB.md)
-
-Sets the blue component of this RGB color with a unit value (0..1)
-
-#### Parameters
-
-| Name | Type | Description |
-| :------ | :------ | :------ |
-| `unit` | `number` | Unit value (0..1) |
-
-#### Returns
-
-[`ColorRGB`](RGB.ColorRGB.md)
-
-`this` for method-chaining
-
-#### Defined in
-
-[RGB.ts:583](https://github.com/chris-pikul/coloroo/blob/14d633e/src/RGB.ts#L583)
-
-___
-
-### setGreen
-
-▸ **setGreen**(`byte`): [`ColorRGB`](RGB.ColorRGB.md)
-
-Sets the green component of this RGB color with a byte value (0..255)
-
-#### Parameters
-
-| Name | Type | Description |
-| :------ | :------ | :------ |
-| `byte` | `number` | Byte value (0..255) |
-
-#### Returns
-
-[`ColorRGB`](RGB.ColorRGB.md)
-
-`this` for method-chaining
-
-#### Defined in
-
-[RGB.ts:550](https://github.com/chris-pikul/coloroo/blob/14d633e/src/RGB.ts#L550)
-
-___
-
-### setGreenUnit
-
-▸ **setGreenUnit**(`unit`): [`ColorRGB`](RGB.ColorRGB.md)
-
-Sets the green component of this RGB color with a unit value (0..1)
-
-#### Parameters
-
-| Name | Type | Description |
-| :------ | :------ | :------ |
-| `unit` | `number` | Unit value (0..1) |
-
-#### Returns
-
-[`ColorRGB`](RGB.ColorRGB.md)
-
-`this` for method-chaining
-
-#### Defined in
-
-[RGB.ts:561](https://github.com/chris-pikul/coloroo/blob/14d633e/src/RGB.ts#L561)
-
-___
-
-### setRed
-
-▸ **setRed**(`byte`): [`ColorRGB`](RGB.ColorRGB.md)
-
-Sets the red component of this RGB color with a byte value (0..255)
-
-#### Parameters
-
-| Name | Type | Description |
-| :------ | :------ | :------ |
-| `byte` | `number` | Byte value (0..255) |
-
-#### Returns
-
-[`ColorRGB`](RGB.ColorRGB.md)
-
-`this` for method-chaining
-
-#### Defined in
-
-[RGB.ts:528](https://github.com/chris-pikul/coloroo/blob/14d633e/src/RGB.ts#L528)
-
-___
-
-### setRedUnit
-
-▸ **setRedUnit**(`unit`): [`ColorRGB`](RGB.ColorRGB.md)
-
-Sets the red component of this RGB color with a unit value (0..1)
-
-#### Parameters
-
-| Name | Type | Description |
-| :------ | :------ | :------ |
-| `unit` | `number` | Unit value (0..1) |
-
-#### Returns
-
-[`ColorRGB`](RGB.ColorRGB.md)
-
-`this` for method-chaining
-
-#### Defined in
-
-[RGB.ts:539](https://github.com/chris-pikul/coloroo/blob/14d633e/src/RGB.ts#L539)
-
-___
-
-### setUnits
-
-▸ **setUnits**(...`components`): [`IColorClass`](../interfaces/IColorClass.IColorClass-1.md)
-
-Sets the components of this RGB Color using variable arguments. The order
-of the variables is taken as `set(R, G, B, A)`. Any missing components are
-skipped.
-
-Each value should be a unit (0..1).
-
-#### Parameters
-
-| Name | Type |
-| :------ | :------ |
-| `...components` | `number`[] |
-
-#### Returns
-
-[`IColorClass`](../interfaces/IColorClass.IColorClass-1.md)
-
-`this` for method-chaining
-
-#### Defined in
-
-[RGB.ts:509](https://github.com/chris-pikul/coloroo/blob/14d633e/src/RGB.ts#L509)
-
-___
-
-### toArray
-
-▸ **toArray**(): `number`[]
-
-Returns this color as an Array of numbers. The first 3 components are the
-RGB channels as byte integers (0..255). The last component is the alpha
-channel as it's unit-float (0..1).
-
-#### Returns
-
-`number`[]
-
-Array of component values
-
-#### Implementation of
-
-[IColorClass](../interfaces/IColorClass.IColorClass-1.md).[toArray](../interfaces/IColorClass.IColorClass-1.md#toarray)
-
-#### Defined in
-
-[RGB.ts:420](https://github.com/chris-pikul/coloroo/blob/14d633e/src/RGB.ts#L420)
-
-___
-
-### toFuncString
-
-▸ **toFuncString**(`forceAlpha?`): `string`
-
-Converts this RGB Color into it's functional-notation string, as if it was
-being used with CSS.
-
-By default the alpha information is only included if the alpha value is
-not 1.0, or the `forceAlpha` flag is true (defaults to false). Additionally
-it is truncated to 4 points of precision.
-
-The output follows this format:
-```
-rgb(255, 180, 127)
-rgba(255, 180, 127, 180)
-```
-
-#### Parameters
-
-| Name | Type | Default value |
-| :------ | :------ | :------ |
-| `forceAlpha` | `boolean` | `false` |
-
-#### Returns
-
-`string`
-
-Functional-notation string
-
-#### Defined in
-
-[RGB.ts:406](https://github.com/chris-pikul/coloroo/blob/14d633e/src/RGB.ts#L406)
-
-___
-
-### toHexString
-
-▸ **toHexString**(`forceAlpha?`, `alphaMSB?`): `string`
-
-Converts this RGB Color into it's hexidecimal string representation.
-
-By default the alpha information is only included if the alpha value is
-not 1.0, or the `forceAlpha` flag is true (defaults to false). For
-serialization of colors it may be best to have this flag as true and
-manage the alpha channels byte position with the `alphaMSB` flag for more
-consistant byte arrangement.
-
-Additionally the `alphaMSB` switch can be used to move the alpha
-information to the Most Significant Byte portion of the integer. Otherwise
-(default) it remains as the Least Significant Byte.
-
-#### Parameters
-
-| Name | Type | Default value |
-| :------ | :------ | :------ |
-| `forceAlpha` | `boolean` | `false` |
-| `alphaMSB` | `boolean` | `false` |
-
-#### Returns
-
-`string`
-
-Hexidecimal string representation
-
-#### Defined in
-
-[RGB.ts:365](https://github.com/chris-pikul/coloroo/blob/14d633e/src/RGB.ts#L365)
-
-___
-
-### toInteger
-
-▸ **toInteger**(`forceAlpha?`, `alphaMSB?`): `number`
-
-Converts this RGB Color into it's integer representation.
-
-By default the alpha information is only included if the alpha value is
-not 1.0, or the `forceAlpha` flag is true (defaults to false). For
-serialization of colors it may be best to have this flag as true and
-manage the alpha channels byte position with the `alphaMSB` flag for more
-consistant byte arrangement.
-
-Additionally the `alphaMSB` switch can be used to move the alpha
-information to the Most Significant Byte portion of the integer. Otherwise
-(default) it remains as the Least Significant Byte.
-
-#### Parameters
-
-| Name | Type | Default value |
-| :------ | :------ | :------ |
-| `forceAlpha` | `boolean` | `false` |
-| `alphaMSB` | `boolean` | `false` |
-
-#### Returns
-
-`number`
-
-Integer number representation of the color.
-
-#### Defined in
-
-[RGB.ts:329](https://github.com/chris-pikul/coloroo/blob/14d633e/src/RGB.ts#L329)
-
-___
-
-### toString
-
-▸ **toString**(`format?`): `string`
-
-Returns the string representation of this color, with an optional formating
-parameter.
-
-The following enums are accepted for formats:
-- `INTEGER`: Integer representation including alpha as the LSB if it is not
-the default 1.0.
-- `INTEGER_ALPHA`: Integer representation with alpha included as the LSB.
-- `HEX`: Hexidecimal string representation, only includes alpha as the LSB
-if it is not the default opaque (1.0).
-- `HEX_ALPHA`: Hexidecimal string with the alpha as the LSB.
-- `FUNCTIONAL` (default): CSS-style functional notation. Only includes the
-alpha channel if it is not opaque (1.0).
-- `FUNCTIONAL_ALPHA`: CSS-style functional notation with the alpha
-channel. Uses the "rgba()" function style.
-
-#### Parameters
-
-| Name | Type | Default value | Description |
-| :------ | :------ | :------ | :------ |
-| `format` | `string` | `ColorRGB.Formats.FUNCTIONAL` | Optional enum for the output format. Defaults to functional. |
-
-#### Returns
-
-`string`
-
-String representation
-
-#### Implementation of
-
-[IColorClass](../interfaces/IColorClass.IColorClass-1.md).[toString](../interfaces/IColorClass.IColorClass-1.md#tostring)
-
-#### Defined in
-
-[RGB.ts:287](https://github.com/chris-pikul/coloroo/blob/14d633e/src/RGB.ts#L287)
-
-___
-
-### toUnitArray
-
-▸ **toUnitArray**(): `number`[]
-
-Returns this color as an Array of unit numbers (0..1). The first 3 indices
-are the R, G, and B channels. The last indice is the alpha channel.
-
-#### Returns
-
-`number`[]
-
-Array of component values as units (0..1)
-
-#### Defined in
-
-[RGB.ts:430](https://github.com/chris-pikul/coloroo/blob/14d633e/src/RGB.ts#L430)
-
-___
-
-### toYIQValue
-
-▸ **toYIQValue**(): `number`
-
-Calculates the YIQ-color encoding value for this color
-
-**`see`** https://24ways.org/2010/calculating-color-contrast
-
-#### Returns
-
-`number`
-
-YIQ value
-
-#### Defined in
-
-[RGB.ts:445](https://github.com/chris-pikul/coloroo/blob/14d633e/src/RGB.ts#L445)
+[RGB.ts:301](https://github.com/chris-pikul/coloroo/blob/ffcd5a2/src/RGB.ts#L301)

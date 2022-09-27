@@ -8,7 +8,7 @@
 
 - [default](ColorSpace.md#default)
 
-### Type aliases
+### Type Aliases
 
 - [EColorSpace](ColorSpace.md#ecolorspace)
 
@@ -22,27 +22,27 @@
 
 Renames and re-exports [ColorSpace](ColorSpace.md#colorspace)
 
-## Type aliases
+## Type Aliases
 
 ### EColorSpace
 
-Ƭ **EColorSpace**: typeof [`ColorSpace`](ColorSpace.md#colorspace)[`string`]
+Ƭ **EColorSpace**: keyof typeof [`ColorSpace`](ColorSpace.md#colorspace)
 
 TS type information for ColorSpace enum.
 
 #### Defined in
 
-[ColorSpace.ts:28](https://github.com/chris-pikul/coloroo/blob/14d633e/src/ColorSpace.ts#L28)
+[ColorSpace.ts:28](https://github.com/chris-pikul/coloroo/blob/ffcd5a2/src/ColorSpace.ts#L28)
 
 ## Variables
 
 ### ColorSpace
 
-• **ColorSpace**: [`StringEnum`](../interfaces/utils_types.StringEnum.md)
+• `Const` **ColorSpace**: [`StringEnum`](../interfaces/utils_types.StringEnum.md)
 
 Color-space string enumeration. Holds the valid values for the supported
 color-spaces.
 
 #### Defined in
 
-[ColorSpace.ts:19](https://github.com/chris-pikul/coloroo/blob/14d633e/src/ColorSpace.ts#L19)
+[ColorSpace.ts:19](https://github.com/chris-pikul/coloroo/blob/ffcd5a2/src/ColorSpace.ts#L19)

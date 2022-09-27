@@ -8,23 +8,26 @@ This code base (coloroo) is under the MIT license. See the file at the
 project root "LICENSE" for more information.
 -----------------------------------------------------------------------------
 
-Defines the implementation for the RGB color spectrum. This version of the
-RGB color-space uses 8-bit channel values for R, G, and B. Alpha is present
-as an optional unit float (0..1)
+Defines the implementation for the RGB color spectrum. The channels red,
+green, and blue are presented as unit floats (0..1) with byte integer
+interfaces.
 
 ## Table of contents
 
 ### References
 
-- [default](RGB.md#default)
+- [default](RGB.md#default-2)
 
 ### Classes
 
 - [ColorRGB](../classes/RGB.ColorRGB.md)
 
-### Type aliases
+### Interfaces
 
-- [ERGBStringFormat](RGB.md#ergbstringformat)
+- [RGBObject](../interfaces/RGB.RGBObject.md)
+
+### Type Aliases
+
 - [RGBTuple](RGB.md#rgbtuple)
 
 ## References
@@ -33,22 +36,15 @@ as an optional unit float (0..1)
 
 Renames and re-exports [ColorRGB](../classes/RGB.ColorRGB.md)
 
-## Type aliases
-
-### ERGBStringFormat
-
-Ƭ **ERGBStringFormat**: typeof `RGBFormat`[`string`]
-
-#### Defined in
-
-[RGB.ts:76](https://github.com/chris-pikul/coloroo/blob/14d633e/src/RGB.ts#L76)
-
-___
+## Type Aliases
 
 ### RGBTuple
 
-Ƭ **RGBTuple**: [`number`, `number`, `number`]
+Ƭ **RGBTuple**: [`number`, `number`, `number`, number?]
+
+Tuple array holding the red, green, blue, and optionally alpha channels.
+Each value is considered a unit float (0..1)
 
 #### Defined in
 
-[RGB.ts:33](https://github.com/chris-pikul/coloroo/blob/14d633e/src/RGB.ts#L33)
+[RGB.ts:41](https://github.com/chris-pikul/coloroo/blob/ffcd5a2/src/RGB.ts#L41)

@@ -6,6 +6,6 @@
  * -----------------------------------------------------------------------------
  */
 export { NamedColors, ENamedColor } from './NamedColors';
-export { ColorRGB, RGBFormat, ERGBFormat, RGBTuple, } from './RGB';
+export { ColorRGB, RGBTuple, RGBObject, } from './RGB';
 export { ColorSpace, EColorSpace } from './ColorSpace';
-export type { IColorClass } from './IColorClass';
+export type { IColor } from './IColor';
