@@ -66,3 +66,11 @@ export const regexpPercent = /^[+-]?\d*\.?\d+%$/;
  * additionally accepts the new "none" keyword.
  */
 export const regexpRGBFunc = /^rgba?\(\s*(?<red>none|(?!e)[+-]?(?![+-])\d*\.?\d+(?:e[+-]?\d+)?|\d*\.?\d+%)\s*,?\s*(?<green>none|(?!e)[+-]?(?![+-])\d*\.?\d+(?:e[+-]?\d+)?|\d*\.?\d+%)\s*,?\s*(?<blue>none|(?!e)[+-]?(?![+-])\d*\.?\d+(?:e[+-]?\d+)?|\d*\.?\d+%)(?:\s*[,/]\s+(?<alpha>none|(?!e)[+-]?(?![+-])\d*\.?\d+(?:e[+-]?\d+)?|\d*\.?\d+%))?\s*\)$/gi;
+
+/**
+ * Regular expression matching the CSS3 definition of HSL(A) functional
+ * notation. Features named capture groups for the components. As defined with
+ * the spec, both the hsl() and hsla() variations accept 4 components. This
+ * additionally accepts the new "none" keyword.
+ */
+export const regexpHSLFunc = /^hsla?\(\s*(?<hue>none|[+-]?\d*\.?\d+(?:deg|g?rad|turn)?)\s*,?\s*(?<saturation>none|\d*\.?\d+%)\s*,?\s*(?<lightness>none|\d*\.?\d+%)(?:\s*[,/]\s+(?<alpha>none|(?!e)[+-]?(?![+-])\d*\.?\d+(?:e[+-]?\d+)?|\d*\.?\d+%))?\s*\)$/gi;

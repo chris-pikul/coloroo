@@ -14,6 +14,8 @@
 import IColor from './IColor';
 import ColorRGB from './RGB';
 import { toPercent } from './utils/math';
+import { objectMatchesPattern } from './utils/objects';
+import { captureFirst, regexpHSLFunc } from './utils/regexp';
 
 /**
  * Tuple array holding the hue, saturation, lightness, and optionally alpha
@@ -48,6 +50,15 @@ export interface HSLObject extends Record<string, number> {
   a?:number;
 };
 
+const hslPattern:Record<string, any> = {
+  h: 1,
+  hue: 1,
+  s: 1,
+  saturation: 1,
+  l: 1,
+  lightness: 1,
+};
+
 /**
  * HSL color-space. Uses the components hue, saturation, lightness, and features
  * the alpha/opacity.
@@ -58,6 +69,29 @@ export interface HSLObject extends Record<string, number> {
  * @immutable
  */
 export class ColorHSL implements IColor {
+  private static ensureHSL(color:any):ColorHSL {
+    if(color instanceof ColorHSL) {
+      return color;
+    } else if(color instanceof ColorRGB) {
+      return ColorHSL.fromRGB(color);
+    } else if(typeof color === 'object') {
+      if(typeof color.toHSL === 'function') {
+        return new ColorHSL(color.toHSL());
+      } else if(objectMatchesPattern(color, hslPattern, true)) {
+        const obj = color as any;
+        const hue = obj.h ?? obj.hue ?? 0.0;
+        const sat = obj.s ?? obj.saturation ?? 0.0;
+        const lit = obj.l ?? obj.lightness ?? 0.0;
+        const alpha = obj.a ?? obj.alpha ?? 0.0;
+        return new ColorHSL(hue, sat, lit, alpha);
+      } else if(typeof color.toRGB === 'function') {
+        return ColorHSL.fromRGB(color.toRGB());
+      }
+    }
+
+    throw new TypeError(`given color cannot be implied or converted to ColorHSL.`);
+  }
+
   /**
    * Converts an input RGB color object into a new ColorHSL object.
    * 
@@ -111,12 +145,23 @@ export class ColorHSL implements IColor {
    * @throws {TypeError} if the string cannot be parsed
    * @throws {TypeError} if the number of components is invalid
    */
-  public static fromFunctional(_str:string):ColorHSL {
-    return new ColorHSL();
+  public static fromFunctional(str:string):ColorHSL {
+    const clnStr = str.trim().toLowerCase();
+    
+    // Use the regular expression to match against functional notation for RGB
+    const matches = captureFirst(regexpHSLFunc, clnStr);
+    if(matches === null)
+      throw new TypeError(`ColorHSL.fromFunctional() failed to parse the string "${str}".`);
+
+    // Pass the remaining values off to constructor since it converts strings
+    return ColorHSL.apply(...matches);
   }
 
   /**
    * Attempts to parse an incoming string as an HSL color-space object.
+   * 
+   * Internally uses the {@link ColorHSL.fromFunctional}, but remains here for
+   * API consistency.
    * 
    * @note Only handles HSL creation, and will not perform RGB pre-conversion or
    * parsing of any kind.
@@ -126,8 +171,8 @@ export class ColorHSL implements IColor {
    * 
    * @throws {TypeError} if the string cannot be parsed
    */
-  public static fromString(_str:string):ColorHSL {
-    return new ColorHSL();
+  public static fromString(str:string):ColorHSL {
+    return ColorHSL.fromFunctional(str);
   }
 
   /**
