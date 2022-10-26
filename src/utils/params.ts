@@ -10,7 +10,10 @@
  * @module Utilities
  */
 
+import { wrap } from './math';
 import {
+  captureFirst,
+  regexpAngle,
   regexpInteger,
   regexpNumber,
   regexpPercent,
@@ -24,6 +27,7 @@ export const ParameterType:StringEnum = {
   INTEGER: 'INTEGER',
   FLOAT: 'FLOAT',
   PERCENTAGE: 'PERCENTAGE',
+  ANGLE: 'ANGLE',
 } as const;
 
 /**
@@ -52,6 +56,9 @@ export function detectParamType(param:string):EParameterType {
   if(regexpNumber.test(clnStr))
     return ParameterType.FLOAT;
 
+  if(regexpAngle.test(clnStr))
+    return ParameterType.ANGLE;
+
   return ParameterType.UNKNOWN;
 }
 
@@ -60,6 +67,21 @@ export interface ParamConvertResults {
   type:EParameterType,
   value:number,
 };
+
+function convertAngleParam(param:string):number {
+  const clnStr = param.trim().toLowerCase();
+  const [ num, unit ] = captureFirst(regexpAngle, clnStr);
+  switch(unit) {
+    case 'grad':
+      return wrap(parseFloat(num) * (180 / 200));
+    case 'rad':
+      return wrap(parseFloat(num) * (180 / Math.PI));
+    case 'turn':
+      return wrap(parseFloat(num) * 360);
+    default:
+      return wrap(parseFloat(num));
+  }
+}
 
 export function convertParam(param:(number|string)):ParamConvertResults {
   const paramStr = param.toString();
@@ -74,6 +96,9 @@ export function convertParam(param:(number|string)):ParamConvertResults {
       break;
     case ParameterType.PERCENTAGE:
       value = parseFloat(paramStr.substring(0, paramStr.indexOf('%'))) / 100;
+      break;
+    case ParameterType.ANGLE:
+      value = convertAngleParam(paramStr);
       break;
     default:
       value = 0;

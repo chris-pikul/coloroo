@@ -60,6 +60,14 @@ export const regexpNumber = /^(?!e)[+-]?(?![+-])\d*\.?\d+(?:e[+-]?\d+)?$/i;
 export const regexpPercent = /^[+-]?\d*\.?\d+%$/;
 
 /**
+ * Regular expression matching angle units.
+ * 
+ * Captures groups for value (numerical), and the unit at the end.
+ * Supports deg, grad, rad, and turn units.
+ */
+export const regexpAngle = /^(?<value>[+-]?\d*\.?\d+)(?<unit>deg|g?rad|turn)$/gim;
+
+/**
  * Regular expression matching the CSS4 definition of RGB(A) functional
  * notation. Features named capture groups for the components. As defined with
  * the spec, both the rgb() and rgba() variations accept 4 components. This

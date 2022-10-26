@@ -13,8 +13,14 @@
  */
 import IColor from './IColor';
 import ColorRGB from './RGB';
-import { toPercent } from './utils/math';
+
+import {
+  clamp,
+  toPercent,
+  wrap,
+} from './utils/math';
 import { objectMatchesPattern } from './utils/objects';
+import { convertParam, ParameterType } from './utils/params';
 import { captureFirst, regexpHSLFunc } from './utils/regexp';
 
 /**
@@ -160,8 +166,8 @@ export class ColorHSL implements IColor {
   /**
    * Attempts to parse an incoming string as an HSL color-space object.
    * 
-   * Internally uses the {@link ColorHSL.fromFunctional}, but remains here for
-   * API consistency.
+   * Accepts the keyword "transparent", but otherwise internally uses the 
+   * {@link ColorHSL.fromFunctional} method.
    * 
    * @note Only handles HSL creation, and will not perform RGB pre-conversion or
    * parsing of any kind.
@@ -172,7 +178,12 @@ export class ColorHSL implements IColor {
    * @throws {TypeError} if the string cannot be parsed
    */
   public static fromString(str:string):ColorHSL {
-    return ColorHSL.fromFunctional(str);
+    const clnStr = str.trim().toLowerCase();
+
+    if(clnStr === 'transparent')
+      return new ColorHSL(0, 0, 0, 0);
+
+    return ColorHSL.fromFunctional(clnStr);
   }
 
   /**
@@ -197,8 +208,59 @@ export class ColorHSL implements IColor {
    * 
    * @throws {TypeError} if any component cannot be parsed.
    */
-  public static apply(..._components:Array<number | string>):ColorHSL {
-    return new ColorHSL();
+  public static apply(...components:Array<number | string>):ColorHSL {
+    // Prepare components
+    const hsl:HSLTuple = [
+      0,
+      0,
+      0,
+      1.0,
+    ];
+
+    for(let ind = 0; ind < components.length; ind++) {
+      const comp = components[ind];
+      if(comp === null || typeof comp === 'undefined')
+        continue;
+
+      const { type, value } = convertParam(comp);
+
+      switch(ind) {
+        case ColorHSL.Components.HUE:
+          // Hue is degrees if only a number is input
+          if(type === ParameterType.FLOAT || type === ParameterType.INTEGER)
+            hsl[0] = wrap(value);
+          else if(type === ParameterType.ANGLE)
+            hsl[0] = value;
+          else if(type === ParameterType.NONE)
+            hsl[0] = 0;
+          else
+            throw new TypeError(`ColorHSL.apply() received invalid hue component "${comp}", expected either a number, angle, or "none".`);
+          break;
+        case ColorHSL.Components.SATURATION:
+        case ColorHSL.Components.LIGHTNESS:
+          if(type === ParameterType.FLOAT || type === ParameterType.INTEGER || type === ParameterType.PERCENTAGE)
+            hsl[ind] = clamp(value);
+          else if(type === ParameterType.NONE)
+            hsl[ind] = 0;
+          else
+            throw new TypeError(`ColorHSL.apply() received invalid ${ind === 1 ? 'saturation' : 'lightness'} component "${comp}", expected either a number, percentage, or "none".`);
+          break;
+        case ColorHSL.Components.ALPHA:
+          if(type === ParameterType.FLOAT || type === ParameterType.INTEGER)
+            hsl[3] = clamp(value);
+          else if(type === ParameterType.PERCENTAGE)
+            hsl[3] = value;
+          else if(type === ParameterType.NONE)
+            hsl[3] = 0;
+          else
+            throw new TypeError(`ColorHSL.apply() received invalid alpha component "${comp}", expected either a number, percentage, or none.`);
+          break;
+        default:
+          break;
+      }
+    }
+
+    return new ColorHSL(...hsl);
   }
 
   /**

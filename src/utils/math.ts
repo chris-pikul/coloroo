@@ -92,3 +92,25 @@ export function ensureUnit(value:any):(number | null) {
     return clamp(value);
   return null;
 }
+
+/**
+ * Wraps a value to be within 0 and the given range.
+ * 
+ * Negative values will wrap circularly around.
+ * 
+ * Example:
+ * ```js
+ * wrap(90) == 90
+ * wrap(-90) == 270
+ * wrap(720) == 0
+ * ```
+ * 
+ * @param value Input number
+ * @param range Maximum range between 0 and this number to wrap the value to
+ * @returns {number} New number within 0..range
+ */
+export function wrap(value:number, range = 360):number {
+  if(value < 0)
+    return range - (-value % range);
+  return value % range;
+}
