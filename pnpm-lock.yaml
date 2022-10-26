@@ -2,6 +2,7 @@ lockfileVersion: 5.4
 
 specifiers:
   '@types/chai': ^4.2.22
+  '@types/error-cause': ^1.0.1
   '@types/mocha': ^9.0.0
   '@typescript-eslint/eslint-plugin': ^5.6.0
   '@typescript-eslint/parser': ^5.6.0
@@ -19,6 +20,7 @@ specifiers:
 
 devDependencies:
   '@types/chai': 4.3.1
+  '@types/error-cause': 1.0.1
   '@types/mocha': 9.1.1
   '@typescript-eslint/eslint-plugin': 5.27.0_dszb5tb7atwkjjijmmov4qhi7i
   '@typescript-eslint/parser': 5.27.0_xztl6dhthcahlo6akmb2bmjmle
@@ -370,6 +372,10 @@ packages:
 
   /@types/chai/4.3.1:
     resolution: {integrity: sha512-/zPMqDkzSZ8t3VtxOa4KPq7uzzW978M9Tvh+j7GHKuo6k6GTLxPJ4J5gE5cjfJ26pnXst0N5Hax8Sr0T2Mi9zQ==}
+    dev: true
+
+  /@types/error-cause/1.0.1:
+    resolution: {integrity: sha512-+jboV83Oc3rUWnlZEXq2L6GU7qc8Gd5uI1nN2O5QE54goJapuYGWQpKXnj/s57BXlvohRgcICgQ99AB6RqxvXA==}
     dev: true
 
   /@types/json-schema/7.0.11:

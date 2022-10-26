@@ -88,7 +88,7 @@ export class ColorHSL implements IColor {
         const hue = obj.h ?? obj.hue ?? 0.0;
         const sat = obj.s ?? obj.saturation ?? 0.0;
         const lit = obj.l ?? obj.lightness ?? 0.0;
-        const alpha = obj.a ?? obj.alpha ?? 0.0;
+        const alpha = obj.a ?? obj.alpha ?? obj.opacity ?? 0.0;
         return new ColorHSL(hue, sat, lit, alpha);
       } else if(typeof color.toRGB === 'function') {
         return ColorHSL.fromRGB(color.toRGB());
@@ -321,6 +321,65 @@ export class ColorHSL implements IColor {
    */
   readonly alpha:number = 1.0;
 
+  /**
+   * Creates a new color in the HSL color-space.
+   * 
+   * Accepts variable amount of arguments, and depending on the number, dictates
+   * how the color will be created.
+   * 
+   * ## Single Argument
+   * 
+   * For single arguments, the following types, and their results are applied:
+   * - `string`: Attempts to parse the string into the proper HSL components.
+   *   - `"transparent"`: Magic keyword resulting in black transparent color.
+   *   - `"hsl(90deg 50% 25% / 0.5)"`: Functional notation that should conform
+   *     to at least the CSS3 specifications.
+   * - `Array`: Can contain up to 4 components that are mapped directly to H, S,
+   *    L, and A in order. Each component can be either a string, or a number,
+   *    and will be attempted to be parsed by {@link ColorHSL.apply}.
+   * - `object`: Plane objects will have their properties checked to see which
+   *    method is best for converting into HSL. The following options are
+   *    available:
+   *   - It is an instance of `ColorHSL` it is copied.
+   *   - It is an instance of `ColorRGB` it is converted.
+   *   - If it has a `toHSL()` function, that is called and then copied.
+   *   - If it has any of the following properties by name:
+   *       - `h` or `hue`
+   *       - `s` or `saturation`
+   *       - `l` or `lightness`
+   *       - `a` or `alpha` or `opacity`
+   *   - If it has a `toRGB()` function, then it is called and the result is
+   *     converted from RGB space to HSL.
+   * 
+   * ## Multiple Arguments
+   * 
+   * When multiple arguments are supplied they must be either `string` or
+   * `number` types, and are interpreted as the HSL(A) components directly.
+   * 
+   * Internally {@link ColorHSL.apply} is used to parse strings and ensure that
+   * the correctly clamped values are applied.
+   * 
+   * Note that if all the arguments are numbers, the operation is quicker and
+   * the values are clamped appropriately and applied in-place.
+   * 
+   * Either way of usage here are the valid arguments for each component:
+   * 
+   * - Hue: If a number is applied, it is clamped to 0..360. Otherwise a string
+   * can be supplied, in which case it needs to be an angle value following
+   * `<number><unit>` where valid units are "deg", "grad", "rad", and "turn".
+   * - Saturation: If a number is applied, it is clamped to 0..1. Otherwise a
+   * string can be supplied specifying a percentage. Should follow the format
+   * `<number>%`.
+   * - Lightness: If a number is applied, it is clamped to 0..1. Otherwise a
+   * string can be supplied specifying a percentage. Should follow the format
+   * `<number>%`.
+   * - Alpha: If a number is applied, it is clamped to 0..1. Otherwise the
+   * string can be a percentage, or a number that can be parsed such as
+   * scientific-notation.
+   * 
+   * In all cases, the special "none" keyword from CSS is accepted for any
+   * component and results in the zero value.
+   */
   constructor(
     _arg0 ?: (ColorHSL | HSLObject | IColor | Array<number|string> | string | number),
     _sat ?: (string | number),
@@ -338,6 +397,66 @@ export class ColorHSL implements IColor {
     this.get = this.get.bind(this);
     this.set = this.set.bind(this);
     this.setAlpha = this.setAlpha.bind(this);
+
+    // Handle initialization arguments
+    if(arguments.length) {
+      let copy:ColorHSL = null;
+
+      if(arguments.length === 1) {
+        // Only 1 argument, should be an object, or functional string        
+        if(typeof _arg0 === 'string') {
+          // Handle a string by using the static method. Should be functional
+          copy = ColorHSL.fromString(_arg0);
+        } else if(_arg0 instanceof ColorHSL) {
+          // Copy straight for something of the same class
+          copy = _arg0;
+        } else if(_arg0 instanceof ColorRGB) {
+          // We know how to handle RGB objects since they are the basis
+          copy = ColorHSL.fromRGB(_arg0);
+        } else if(Array.isArray(_arg0)) {
+          // Arrays are tuples and we can just use apply, but re-word the error
+          try {
+            copy = ColorHSL.apply(..._arg0);
+          } catch (err) {
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore: new spec for error cause
+            throw new TypeError(`ColorHSL was constructed with an array, but one of the components was invalid.`, { cause: err });
+          }
+        } else if(typeof _arg0 === 'object') {
+          // Some sort of generic object, attempt to coerce it
+          try {
+            copy = ColorHSL.ensureHSL(_arg0);
+          } catch (err) {
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore: new spec for error cause
+            throw new TypeError(`ColorHSL was constructed with an object, but cannot be coerced into a proper HSL color.`, { cause: err });
+          }
+        } else {
+          throw new TypeError(`ColorHSL was constructed with an unsupported argument type "${typeof _arg0}".`);
+        }
+      } else {
+        // More than 1 argument are taken as components.
+        const args = [ ...arguments ];
+        
+        // If every argument is a number, take them directly to avoid overhead
+        if(args.every(val => typeof val === 'number')) {
+          this.hue = wrap(_arg0 as number ?? 0.0);
+          this.saturation = clamp(_sat as number ?? 0.0);
+          this.lightness = clamp(_lit as number ?? 0.0);
+          this.alpha = clamp(_alpha as number ?? 1.0);
+        } else {
+          copy = ColorHSL.apply(...arguments);
+        }
+      }
+
+      // Check if we have a successful "copy" to apply
+      if(copy) {
+        this.hue = copy.hue;
+        this.saturation = copy.saturation;
+        this.lightness = copy.lightness;
+        this.alpha = copy.alpha;
+      }
+    }
   }
 
   toString():string {

@@ -14,7 +14,11 @@
     "esModuleInterop": true,
     "sourceMap": true,
 
-    "rootDir": "./src/"
+    "rootDir": "./src/",
+
+    "types": [
+      "error-cause"
+    ]
   },
   
   "include": [ "./src" ],
