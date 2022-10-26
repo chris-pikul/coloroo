@@ -342,5 +342,22 @@ export class ColorHSL implements IColor {
   setAlpha(alpha = 1.0):ColorHSL {
     return new ColorHSL(this.hue, this.saturation, this.lightness, alpha);
   }
+
+  toYIQValue = ():number => (this.toRGB().toYIQValue());
+
+  luminosity = ():number => (this.toRGB().luminosity());
+
+  contrast = (other:IColor):number => (this.toRGB().contrast(other));
+
+  contrastLevel = (other:IColor):string => (this.toRGB().contrastLevel(other));
+
+  pickUsingContrast = (options?:Array<IColor>):ColorHSL => {
+    const rgb:ColorRGB = this.toRGB().pickUsingContrast(options);
+    return ColorHSL.fromRGB(rgb);
+  };
+
+  isDark = ():boolean => (this.toRGB().isDark());
+
+  isLight = ():boolean => (this.toRGB().isLight());
 }
 export default ColorHSL;
