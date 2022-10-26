@@ -14,6 +14,10 @@ export {
   RGBObject,
 } from './RGB';
 
+// HSL Color-space
+export { ColorHSL } from './HSL';
+export type { HSLTuple, HSLObject } from './HSL';
+
 export { ColorSpace, EColorSpace } from './ColorSpace';
 
 export type { IColor } from './IColor';
