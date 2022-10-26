@@ -65,8 +65,37 @@ export class ColorHSL implements IColor {
    * object for use during conversion.
    * @returns {ColorHSL} new ColorHSL object
    */
-  public static fromRGB(_rgb:ColorRGB):ColorHSL {
-    return new ColorHSL();
+  public static fromRGB(rgb:ColorRGB):ColorHSL {
+    const min = rgb.minChannel() as number;
+    const [ max, maxInd ] = rgb.maxChannel(true) as [number, number];
+    const chroma = max - min;
+
+    // Calculate hue
+    let hue = 0.0;
+    if(chroma !== 0) {
+      switch(maxInd) {
+        case ColorRGB.Channels.RED:
+          hue = ((rgb.green - rgb.blue) / chroma) % 6;
+          break;
+        case ColorRGB.Channels.GREEN:
+          hue = ((rgb.blue - rgb.red) / chroma) % 6;
+          break;
+        case ColorRGB.Channels.BLUE:
+          hue = ((rgb.red - rgb.green) / chroma) % 6;
+          break;
+        default:
+          throw new Error(`ColorHSL.fromRGB expected a valid maximum channel within range`);
+      }
+    }
+    hue *= 60;
+
+    // Calculate lightness
+    const lit = (max + min) / 2.0;
+
+    // Calculate saturation
+    const sat = chroma === 0 ? 0 : (chroma / (1 - Math.abs((2 * lit) - 1)));
+
+    return new ColorHSL(hue, sat, lit, rgb.alpha);
   }
 
   /**
@@ -198,6 +227,10 @@ export class ColorHSL implements IColor {
     this.toRecord = this.toRecord.bind(this);
     this.toRGB = this.toRGB.bind(this);
     this.toFunctional = this.toFunctional.bind(this);
+
+    this.get = this.get.bind(this);
+    this.set = this.set.bind(this);
+    this.setAlpha = this.setAlpha.bind(this);
   }
 
   toString():string {
@@ -234,8 +267,47 @@ export class ColorHSL implements IColor {
     return this.toObject(forceAlpha);
   }
 
+  /**
+   * Converts this HSL color-space object into a new RGB color-space object.
+   * 
+   * Alpha is maintained and passed through to the new ColorRGB object.
+   * 
+   * @returns {ColorRGB} new ColorRGB object
+   */
   toRGB(): ColorRGB {
-    return new ColorRGB();
+    const chroma = (1 - Math.abs((this.lightness * 2.0) - 1)) * this.saturation;
+    
+    // X is the second largest channel
+    const x = chroma * (1 - Math.abs(((this.hue / 60.0) % 2) - 1));
+    
+    let red = 0;
+    let green = 0;
+    let blue = 0;
+
+    if(this.hue >= 0 && this.hue < 60) {
+      red = chroma;
+      green = x;
+    } else if(this.hue >= 60 && this.hue < 120) {
+      red = x;
+      green = chroma;
+    } else if(this.hue >= 120 && this.hue < 180) {
+      green = chroma;
+      blue = x;
+    } else if(this.hue >= 180 && this.hue < 240) {
+      green = x;
+      blue = chroma;
+    } else if(this.hue >= 240 && this.hue < 300) {
+      red = x;
+      blue = chroma;
+    } else {
+      red = chroma;
+      blue = x;
+    }
+    
+    // Calculate the offset that lightness provides us for a minimum channel
+    const offset = this.lightness - (chroma / 2.0);
+
+    return new ColorRGB(red + offset, green + offset, blue + offset, this.alpha);
   }
 
   toFunctional(forceAlpha = false, whole = false):string {
